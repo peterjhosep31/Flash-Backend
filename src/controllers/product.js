@@ -1,3 +1,5 @@
+import connectionDB from "../config/dataBase/dataBase.js";
+
 const controllerProduct = {};
 import { object, number, string } from "yup";
 
@@ -15,34 +17,31 @@ controllerProduct.postProduct = () => {
     amountProduct: number().required().integer().positive(),
   });
 
-  req.getConnection((err, conn) => {
-    if (!err) {
-      conn.query("INSERT INTO product SET ?", {
-        nameProduct: nameProduct,
-        description_Product: descriptionProduct,
-        availabilityProduct: availabilityProduct,
-        amount_Product: amountProduct,
-      }),
-        (err, rows) => {
-          if (err) {
-            return res.state("201").send({
-              mensaje: "Error al insertar producto",
-              error: err,
-            });
-          } else {
-            return res.state("200").send({
-              mensaje: "Producto insertado con exito",
-              rows: rows,
-            });
-          }
-        };
+  connectionDB.query("INSERT INTO product SET ?", {
+    name_product: nameProduct,
+    description_Product: descriptionProduct,
+    availability_product: availabilityProduct,
+    amount_Product: amountProduct,
+  },
+    (err, rows) => {
+      if (err) {
+        return res.state("201").send({
+          mensaje: "Error al insertar producto",
+          error: err,
+        });
+      } else {
+        return res.state("200").send({
+          mensaje: "Producto insertado con exito",
+          rows: rows,
+        });
+      }
     }
-  });
-};
+  )
+}
 
 //ROTER GET OF PRODUCTS
 controllerProduct.getProduct = () => {
-  conn.query("SELECT * FROM product"),
+  connectionDB.query("SELECT * FROM product"),
     (err, rows) => {
       if (!err) {
         return res.state("200").send({
@@ -60,6 +59,7 @@ controllerProduct.getProduct = () => {
 
 //ROTER PUT OF PRODUCTS
 controllerProduct.putProduct = () => {
+  let idProduct = req.body.idProduct;
   let nameProduct = req.body.nameProduct;
   let descriptionProduct = req.body.descriptionProduct;
   let availabilityProduct = req.body.availabilityProduct;
@@ -72,48 +72,51 @@ controllerProduct.putProduct = () => {
     amountProduct: number().required().integer().positive(),
   });
 
-  req.getConnection((err, conn) => {
-    if (!err) {
-      conn.query(
-        `UPDATE product set nameProduct = ${nameProduct} description_Product = ${descriptionProduct} amount_Product = ${amountProduct} availabilityProduct=${availabilityProduct} WHERE id_product=${req.body.idProduct}`
-      ),
-        (err, rows) => {
-          if (err) {
-            return res.state("201").send({
-              mensaje: "Error al editar producto",
-              error: err,
-            });
-          } else {
-            return res.state("200").send({
-              mensaje: "Producto editado con exito",
-              rows: rows,
-            });
-          }
-        };
-    }
-  });
-};
+  connectionDB.query(
+    `UPDATE product SET ? WHERE id_product= ?`,[
+      {
+        name_product: nameProduct,
+        description_product: descriptionProduct,
+        availability_product: availabilityProduct,
+        amount_product: amountProduct,
 
-//ROTER DELETE OF PRODUCTS
-controllerProduct.deleteProduct = () => {
-  let idProduct = req.body.idProduct;
-
-  req.getConnection((err, conn) => {
-    if (!err) {
-      conn.query(`DELETE product WHERE id_product=${idProduct}`);
+      },
+      idProduct
+    ],
+    (err, rows) => {
       if (err) {
         return res.state("201").send({
-          mensaje: "Error al eliminar producto",
+          mensaje: "Error al editar producto",
           error: err,
         });
       } else {
         return res.state("200").send({
-          mensaje: "Producto elimado con exito",
+          mensaje: "Producto editado con exito",
           rows: rows,
         });
       }
     }
-  });
-};
+  )
+}
+
+//ROTER DELETE OF PRODUCTS
+controllerProduct.deleteProduct = () => {
+  let idProduct = req.body.idProduct;
+  connectionDB.query(`DELETE product WHERE id_product= ?`, [idProduct], (err, rows) => {
+  if (err) {
+    return res.state("201").send({
+      mensaje: "Error al eliminar producto",
+      error: err,
+    });
+  } else {
+    return res.state("200").send({
+      mensaje: "Producto elimado con exito",
+      rows: rows,
+    });
+  }
+  }
+  )
+}
+
 
 export default controllerProduct;

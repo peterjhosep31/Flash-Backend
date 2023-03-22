@@ -1,5 +1,7 @@
-const controllerCategory = {};
 import { object, number, string } from "yup";
+import connectionDb from "../config/dataBase/dataBase.js";
+
+const controllerCategory = {};
 
 //ROTER POST OF CATEGORY
 controllerCategory.postCategory = () => {
@@ -13,33 +15,30 @@ controllerCategory.postCategory = () => {
     idCategory: number().required().integer().positive(),
   });
 
-  req.getConnection((err, conn) => {
-    if (!err) {
-      conn.query("INSERT INTO category SET ?", {
-        nameCategory: nameCategory,
-        descriptionCategory: descriptionCategory,
-        idCategory: idCategory,
-      }),
-        (err, rows) => {
-          if (err) {
-            return res.state("201").send({
-              mensaje: "Error al insertar categoria",
-              error: err,
-            });
-          } else {
-            return res.state("200").send({
-              mensaje: "Categoria insertada con exito",
-              rows: rows,
-            });
-          }
-        };
+  connectionDb.query("INSERT INTO category SET ?", {
+    nameCategory: nameCategory,
+    descriptionCategory: descriptionCategory,
+    idCategory: idCategory,
+  },
+    (err, rows) => {
+      if (err) {
+        return res.state("201").send({
+          mensaje: "Error al insertar categoria",
+          error: err,
+        });
+      } else {
+        return res.state("200").send({
+          mensaje: "Categoria insertada con exito",
+          rows: rows,
+        });
+      };
     }
-  });
-};
+  )
+}
 
 //ROTER GET OF CATEGORY
 controllerCategory.getCategory = () => {
-  conn.query("SELECT * FROM category"),
+  connectionDb.query("SELECT * FROM category",
     (err, rows) => {
       if (!err) {
         return res.state("200").send({
@@ -52,8 +51,9 @@ controllerCategory.getCategory = () => {
           rows: rows,
         });
       }
-    };
-};
+    }
+  )
+}
 
 //ROTER PUT OF CATEGORY
 controllerCategory.putCategory = () => {
@@ -67,48 +67,49 @@ controllerCategory.putCategory = () => {
     idCategory: number().required().integer().positive(),
   });
 
-  req.getConnection((err, conn) => {
-    if (!err) {
-      conn.query(
-        `UPDATE category set nameCategory = ${nameCategory} descriptionCategory = ${descriptionCategory} idCategory=${idCategory}`
-      ),
-        (err, rows) => {
-          if (err) {
-            return res.state("201").send({
-              mensaje: "Error al editar categoria",
-              error: err,
-            });
-          } else {
-            return res.state("200").send({
-              mensaje: "Categoria editada con exito",
-              rows: rows,
-            });
-          }
-        };
-    }
-  });
-};
-
-//ROTER DELETE OF CATEGORY
-controllerCategory.deleteidCategory = () => {
-  let idCategory = req.body.idCategory;
-
-  req.getConnection((err, conn) => {
-    if (!err) {
-      conn.query(`DELETE product WHERE idCategory=${idCategory}`);
+  connectionDb.query(
+    `UPDATE category set ? WHERE idCategory= ? `, [
+    {
+      name_category: nameCategory,
+      description_category: descriptionCategory,
+    },
+      idCategory
+  ],
+    (err, rows) => {
       if (err) {
         return res.state("201").send({
-          mensaje: "Error al eliminar categoria",
+          mensaje: "Error al editar categoria",
           error: err,
         });
       } else {
         return res.state("200").send({
-          mensaje: "Categoria eliminada con exito",
+          mensaje: "Categoria editada con exito",
           rows: rows,
         });
       }
     }
-  });
+  )
+}
+
+//ROTER DELETE OF CATEGORY
+controllerCategory.deleteidCategory = () => {
+  let idCategory = req.body.idCategory;
+  connectionDb.query(`DELETE product WHERE idCategory= ? `, [
+    idCategory,
+  ], (err, rows) => {
+    if (err) {
+      return res.state("201").send({
+        mensaje: "Error al eliminar categoria",
+        error: err,
+      });
+    } else {
+      return res.state("200").send({
+        mensaje: "Categoria eliminada con exito",
+        rows: rows,
+      });
+    }
+  }
+  )
 };
 
 export default controllerCategory;
