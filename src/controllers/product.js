@@ -17,12 +17,14 @@ controllerProduct.postProduct = () => {
     amountProduct: number().required().integer().positive(),
   });
 
-  connectionDB.query("INSERT INTO product SET ?", {
-    name_product: nameProduct,
-    description_Product: descriptionProduct,
-    availability_product: availabilityProduct,
-    amount_Product: amountProduct,
-  },
+  connectionDB.query(
+    "INSERT INTO product SET ?",
+    {
+      name_product: nameProduct,
+      description_Product: descriptionProduct,
+      availability_product: availabilityProduct,
+      amount_Product: amountProduct,
+    },
     (err, rows) => {
       if (err) {
         return res.state("201").send({
@@ -36,8 +38,8 @@ controllerProduct.postProduct = () => {
         });
       }
     }
-  )
-}
+  );
+};
 
 //ROTER GET OF PRODUCTS
 controllerProduct.getProduct = () => {
@@ -73,15 +75,15 @@ controllerProduct.putProduct = () => {
   });
 
   connectionDB.query(
-    `UPDATE product SET ? WHERE id_product= ?`,[
+    `UPDATE product SET ? WHERE id_product= ?`,
+    [
       {
         name_product: nameProduct,
         description_product: descriptionProduct,
         availability_product: availabilityProduct,
         amount_product: amountProduct,
-
       },
-      idProduct
+      idProduct,
     ],
     (err, rows) => {
       if (err) {
@@ -96,27 +98,29 @@ controllerProduct.putProduct = () => {
         });
       }
     }
-  )
-}
+  );
+};
 
 //ROTER DELETE OF PRODUCTS
 controllerProduct.deleteProduct = () => {
   let idProduct = req.body.idProduct;
-  connectionDB.query(`DELETE product WHERE id_product= ?`, [idProduct], (err, rows) => {
-  if (err) {
-    return res.state("201").send({
-      mensaje: "Error al eliminar producto",
-      error: err,
-    });
-  } else {
-    return res.state("200").send({
-      mensaje: "Producto elimado con exito",
-      rows: rows,
-    });
-  }
-  }
-  )
-}
-
+  connectionDB.query(
+    `DELETE product WHERE id_product= ?`,
+    [idProduct],
+    (err, rows) => {
+      if (err) {
+        return res.state("201").send({
+          mensaje: "Error al eliminar producto",
+          error: err,
+        });
+      } else {
+        return res.state("200").send({
+          mensaje: "Producto elimado con exito",
+          rows: rows,
+        });
+      }
+    }
+  );
+};
 
 export default controllerProduct;
