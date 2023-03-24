@@ -5,12 +5,13 @@ import sessionEmployee from "../controllers/sections/seccionsEmpleyoee.js"
 import sessionAdmin from "../controllers/sections/SeccionsAdmin.js"
 import product from "../controllers/product.js";
 import category from "../controllers/category.js";
-
-
+import store from "../controllers/store.js";
+import offer from "../controllers/offer.js";
 
 const routesExpress = express.Router();
 routesExpress.use(express.json());
 
+// RUTAS HECHAS POR EL MASSS FEO
 // ROUTERS OF SIG IN AND SIG UP - CUSTOMER
 routesExpress.get("/loginCustomer", sessionCustomer.Login);
 routesExpress.get("/getCustomer", sessionCustomer.ListDataStaff);
@@ -32,7 +33,6 @@ routesExpress.put("/stateEmployee", sessionEmployee.UpdateState);
 routesExpress.put("/updateEmailEmployee", sessionEmployee.UpdateEmail);
 routesExpress.delete("/deleteEmployee", sessionEmployee.DeleteDataStaff);
 
-
 // ROUTERS OF SIG IN AND SIG UP - ADMINISTRATOR
 routesExpress.get("/loginAdmin", sessionAdmin.Login);
 routesExpress.get("/getAdmin", sessionAdmin.ListDataAdmin);
@@ -43,7 +43,7 @@ routesExpress.put("/recoverPassAdmin", sessionAdmin.RecoverPassword);
 routesExpress.put("/updatePassAdmin", sessionAdmin.UpdatePassword);
 routesExpress.put("/updateEmailAdmin", sessionAdmin.updateEmailAdmin);
 
-//TODO rutas de tati
+//RUTAS HECHAS POR LA MASSS LA HERMOSA
 // RUOTES GET, POST,DELETE,PUT OF PRODUCTS
 routesExpress.post("/postProduct", product.postProduct);
 routesExpress.put("/putProduct", product.putProduct);
@@ -54,13 +54,18 @@ routesExpress.delete("/deleteProduct", product.deleteProduct);
 routesExpress.post("/postCategory", category.postCategory);
 routesExpress.put("/putCategory", category.putCategory);
 routesExpress.get("/getCategory", category.getCategory);
-routesExpress.delete("/deleteCategory", category.deleteidCategory);
+routesExpress.delete("/deleteCategory", category.deleteCategory);
 
+// RUOTES GET, POST,DELETE,PUT OF STORE
+routesExpress.post("/postStore", store.postStore);
+routesExpress.put("/putStore", store.putStore);
+routesExpress.get("/getStore", store.getStore);
+routesExpress.delete("/deleteStore", store.deleteStore);
 
-// // RUOTES GET, POST,DELETE,PUT OF STORE
-// routesExpress.post("/postStore", category.postStore);
-// routesExpress.put("/putStore", category.putStore);
-// routesExpress.get("/getStore", category.getStore);
-// routesExpress.delete("/deleteStore", category.deleteStore);
+// RUOTES GET, POST,DELETE,PUT OF OFFER
+routesExpress.post("/postOffer", offer.postOffer);
+routesExpress.put("/putOffer", offer.putOffer);
+routesExpress.get("/getOffer", offer.getOffer);
+routesExpress.delete("/deleteOffer", offer.deleteOffer);
 
 export default routesExpress;

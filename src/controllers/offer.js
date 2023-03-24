@@ -2,43 +2,43 @@ import bcryptjs from "bcryptjs";
 import connectionDB from "../config/dataBase/dataBase.js";
 import { object, number, string } from "yup";
 
-const controllerProduct = {};
+const controllerOffer = {};
 
-//ROTER POST OF PRODUCTS
-controllerProduct.postProduct = () => {
-  let idProduct = req.body.idProduct;
-  let nameProduct = req.body.nameProduct;
-  let descriptionProduct = req.body.descriptionProduct;
-  let availabilityProduct = req.body.availabilityProduct;
-  let amountProduct = req.body.amountProduct;
+//ROTER POST OF OFFER
+controllerOffer.postOffer = () => {
+  let idOffer = req.body.idProduct;
+  let nameOffer = req.body.nameProduct;
+  let descriptionOffer = req.body.descriptionProduct;
+  let availabilityOffer = req.body.availabilityProduct;
+  let amountOffer = req.body.amountProduct;
 
-  let product = object({
-    idProduct: number().positive().required(),
-    nameProduct: string().required(),
-    descriptionProduct: string().required(),
-    availabilityProduct: string().required(),
-    amountProduct: number().required().integer().positive(),
+  let offer = object({
+    idOffer: number().positive().required(),
+    nameOffer: string().required(),
+    descriptionOffer: string().required(),
+    availabilityOffer: string().required(),
+    amountOffer: number().required().integer().positive(),
   });
 
   connectionDB.query(
-    "INSERT INTO product SET ?",
+    "INSERT INTO offer SET ?",
     {
-      id_product: idProduct,
-      name_product: nameProduct,
-      description_product: descriptionProduct,
-      availability_product: availabilityProduct,
-      amount_product: amountProduct,
-      id_product_category: 1,
+      id_offer: idOffer,
+      name_offer: nameOffer,
+      description_offer: descriptionOffer,
+      amount_offer: availabilityOffer,
+      availability_product: amountOffer,
+      id_product_offer: 1,
     },
     (err, rows) => {
       if (err) {
         return res.state("201").send({
-          mensaje: "Error al insertar producto",
+          mensaje: "Error al insertar oferta",
           error: err,
         });
       } else {
         return res.state("200").send({
-          mensaje: "Producto insertado con exito",
+          mensaje: "Oferta insertado con exito",
           rows: rows,
         });
       }
@@ -46,40 +46,40 @@ controllerProduct.postProduct = () => {
   );
 };
 
-//ROTER GET OF PRODUCTS
-controllerProduct.getProduct = () => {
-  connectionDB.query("SELECT * FROM product"),
+//ROTER GET OF OFFER
+controllerOffer.getOffer = () => {
+  connectionDB.query("SELECT * FROM offer"),
     (err, rows) => {
       if (!err) {
         return res.state("200").send({
-          mensaje: " Error al mostrar producto",
+          mensaje: " Error al mostrar oferta",
           error: err,
         });
       } else {
         return res.state("200").send({
-          mensaje: "Mostrando producto con exito",
+          mensaje: "Mostrando OFERTA con exito",
           rows: rows,
         });
       }
     };
 };
 
-//ROTER PUT OF PRODUCTS
-controllerProduct.putProduct = () => {
-  let idProduct = req.body.idProduct;
-  let nameProduct = req.body.nameProduct;
-  let descriptionProduct = req.body.descriptionProduct;
-  let availabilityProduct = req.body.availabilityProduct;
-  let amountProduct = req.body.amountProduct;
+//ROTER PUT OF OFFER
+controllerOffer.putOffer = () => {
+  let idOffer = req.body.idProduct;
+  let nameOffer = req.body.nameProduct;
+  let descriptionOffer = req.body.descriptionProduct;
+  let availabilityOffer = req.body.availabilityProduct;
+  let amountOffer = req.body.amountProduct;
   let idEmployee = req.body.idEmpleyee;
   let passwordEmployee = req.body.passwordEmployee;
 
-  let product = object({
-    idProduct: number().required().positive(),
-    nameProduct: string().required(),
-    descriptionProduct: string().required(),
-    availabilityProduct: string().required(),
-    amountProduct: number().required().integer().positive(),
+  let offer = object({
+    idOffer: number().positive().required(),
+    nameOffer: string().required(),
+    descriptionOffer: string().required(),
+    availabilityOffer: string().required(),
+    amountOffer: number().required().integer().positive(),
     idEmployee: number().required().positive(),
     passwordEmployee: require(),
   });
@@ -99,25 +99,25 @@ controllerProduct.putProduct = () => {
       bcryptjs.compare(passwordDB, passwordEmployee, (err, result) => {
         if (result) {
           connectionDB.query(
-            `UPDATE product SET ? WHERE id_product= ?`,
+            `UPDATE offer SET ? WHERE id_offer= ?`,
             [
               {
-                name_product: nameProduct,
-                description_product: descriptionProduct,
-                availability_product: availabilityProduct,
-                amount_product: amountProduct,
+                name_offer: nameOffer,
+                description_offer: descriptionOffer,
+                amount_offer: availabilityOffer,
+                availability_product: amountOffer,
               },
-              idProduct,
+              idOffer,
             ],
             (err, rows) => {
               if (err) {
                 return res.state("201").send({
-                  mensaje: "Error al editar producto",
+                  mensaje: "Error al editar oferta",
                   error: err,
                 });
               } else {
                 return res.state("200").send({
-                  mensaje: "Producto editado con exito",
+                  mensaje: "Oferta editado con exito",
                   rows: rows,
                 });
               }
@@ -129,14 +129,14 @@ controllerProduct.putProduct = () => {
   );
 };
 
-//ROTER DELETE OF PRODUCTS
-controllerProduct.deleteProduct = () => {
-  let idProduct = req.body.idProduct;
+//ROTER DELETE OF OFFER
+controllerOffer.deleteOffer = () => {
+  let idOffer = req.body.idProduct;
   let idEmployee = req.body.idEmpleyee;
   let passwordEmployee = req.body.passwordEmployee;
 
   let product = object({
-    idProduct: number().required().positive(),
+    idOffer: number().required().positive(),
     idEmployee: number().required().positive(),
     passwordEmployee: require(),
   });
@@ -156,17 +156,17 @@ controllerProduct.deleteProduct = () => {
       bcryptjs.compare(passwordDB, passwordEmployee, (err, result) => {
         if (result) {
           connectionDB.query(
-            `DELETE product WHERE id_product= ?`,
-            [idProduct],
+            `DELETE offer WHERE id_offer= ?`,
+            [idOffer],
             (err, rows) => {
               if (err) {
                 return res.state("201").send({
-                  mensaje: "Error al eliminar producto",
+                  mensaje: "Error al eliminar oferta",
                   error: err,
                 });
               } else {
                 return res.state("200").send({
-                  mensaje: "Producto eliminado con exito",
+                  mensaje: "Oferta eliminado con exito",
                   rows: rows,
                 });
               }
@@ -178,4 +178,4 @@ controllerProduct.deleteProduct = () => {
   );
 };
 
-export default controllerProduct;
+export default controllerOffer;
