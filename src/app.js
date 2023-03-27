@@ -14,7 +14,7 @@ app.use(express.json());
 
 
 app.listen(app.set("port"), () => {
-  console.log("Server on port", app.set("port"));
+  console.log("✔️✔️   Server on port", app.set("port"), "❗");
 });
 
 // export default myConnectionDataBase;
