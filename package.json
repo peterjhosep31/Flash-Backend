@@ -5,13 +5,17 @@
   "main": "app.js",
   "type": "module",
   "scripts": {
-    "dev": "nodemon src/app.js"
+    "build": "babel src --out-dir build",
+    "dev": "nodemon src/app.js --exect babel-node",
+    "start": "node build/app.js"
+
   },
   "author": "Anonimous",
   "license": "ISC",
   "dependencies": {
     "bcryptjs": "^2.4.3",
-    "cloudinary": "^1.35.0",
+    "body-parser": "^1.20.2",
+    "cloudinary": "^1.36.1",
     "cookie-parser": "^1.4.6",
     "cors": "^2.8.5",
     "dotenv": "^16.0.3",
