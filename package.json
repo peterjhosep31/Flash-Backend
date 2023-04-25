@@ -1,16 +1,15 @@
 {
-  "name": "backend",
+  "name": "Flash-Bakend",
   "version": "1.0.0",
-  "description": "",
-  "main": "app.js",
+  "description": "Proyecto formativo",
+  "main": "index.js",
   "type": "module",
   "scripts": {
     "build": "babel src --out-dir build",
-    "dev": "nodemon src/app.js --exect babel-node",
-    "start": "node build/app.js"
-
+    "dev": "nodemon src/index.js --exect babel-node",
+    "start": "node build/index.js"
   },
-  "author": "Anonimous",
+  "author": "Team_Developer_Flash",
   "license": "ISC",
   "dependencies": {
     "bcryptjs": "^2.4.3",
@@ -23,6 +22,7 @@
     "express-session": "^1.17.3",
     "express-validator": "^6.14.3",
     "jsonwebtoken": "^9.0.0",
+    "morgan": "^1.10.0",
     "mysql": "^2.18.1",
     "nodemailer": "^6.8.0",
     "yup": "^1.0.2"

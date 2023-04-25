@@ -1,19 +1,28 @@
 import express from "express";
-import dotenv from "dotenv";
+import morgan from "morgan";
 
-import routes from "./routes/routes.js";
+import './config/dataBase/dataBase.js'
+import routes from './routes/routes.js'
+
+
 
 const app = express();
-dotenv.config();
 
-app.use(routes);
+app.use(morgan("dev"));
 app.use(express.json());
+app.use(express.urlencoded({ extended: false }));
 
-
-app.set("port", process.env.PORT_SERVER || 3000);
-
-app.listen(app.set("port"), () => {
-  console.log("✔️✔️   Server on port", app.set("port"), "❗");
+app.get("/", (req, res) => {
+  return res.json({
+    message: "Welcome to my application",
+    name: "Flash-Bakend",
+    author: "Team_Developer_Flash",
+    description: "Proyecto formativo",
+    version: "1.0.0",
+  });
 });
+
+app.use("/api", routes);
+
 
 export default app;

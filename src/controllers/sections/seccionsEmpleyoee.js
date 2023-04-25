@@ -5,64 +5,7 @@ import connectionEmail from "../../config/email/email.js";
 
 const controllerSesionEmpleyoee = {};
 
-controllerSesionEmpleyoee.Registre = (req, res) => {
-  let idUser = req.body.document;
-  let nameUser = req.body.name;
-  let emailUser = req.body.email;
-  let phoneUser = req.body.phone;
-  let passwordUser = req.body.password;
-  let stateEmployee = req.body.state;
-  let storeUser = req.body.store;
-  let passWordUserHas = bcryptjs.hash(passwordUser, 10);
 
-  connectionDB.query(
-    "INSERT INTO employee SET ?",
-    {
-      id_employee: idUser,
-      name_employee: nameUser,
-      email_employee: emailUser,
-      phone_number_employee: phoneUser,
-      password_employee: passWordUserHas,
-      state_employee: stateEmployee,
-      store_employee: storeUser,
-    },
-    (err, rows) => {
-      if (!err) {
-        connectionEmail.sendMail(
-          {
-            from: "2022.flash.sale@gmail.com",
-            to: emailUser,
-            subject: "Registro de usuario",
-            html: `<h1>Registro de Empleado</h1>
-            <p>Usted acaba de ser registrado en nuestra pagina en cuestion de minutos se le informara que local se la a agsinado</p>
-            <p>Atentamente, el equipo de Flash.</p>`,
-          }
-            .then((res) => console.log("Correo enviado"))
-            .catch((err) =>
-              console.log(
-                "Error al enviar el correo\n",
-                err,
-                "\n_____________________________"
-              )
-            )
-        );
-        return res.status("200").send({
-          mensaje: "Usuario registrado con exito",
-        });
-      } else if (err.code == "ER_DUP_ENTRY") {
-        return res.status("202").send({
-          mensaje: "Error al registrar el usuario, el usuario ya existe",
-          error: err,
-        });
-      } else {
-        return res.status("202").send({
-          mensaje: "Error al registrar el usuario",
-          error: err,
-        });
-      }
-    }
-  );
-};
 
 controllerSesionEmpleyoee.Login = (req, res) => {
   let emailUser = req.body.email;

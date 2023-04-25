@@ -3,53 +3,12 @@ import dotenv from "dotenv";
 
 import connectionDb from "../../config/dataBase/dataBase.js";
 import connectionEmail from "../../config/email/email.js";
-import uploadImagesUser from "../../config/cloudinary/uploadImagesUser.js";
 import generateAccessToken from "../../config/accessToken/generateToken.js";
-import validateToken from "./../../config/accessToken/validaToken.js";
 
 dotenv.config();
 
 const controllerSesionAdmin = {};
 
-controllerSesionAdmin.Registre = async (req, res) => {
-  let iduser = req.body.document;
-  let nameuser = req.body.name;
-  let emailuser = req.body.email;
-  let phoneuser = req.body.phone;
-  let passworduser = req.body.password;
-  let passwordHash = await bcryptjs.hash(passworduser, 10);
-  let photoRoute = req.body.image;
-  let photo = await uploadImagesUser(photoRoute);
-  let urlPhoto = photo.secure_url;
-  let idPhoto = photo.public_id;
-  let codePermission = 1;
-
-  await connectionDb.query(
-    "INSERT INTO administrator SET ?",
-    {
-      id_admin: iduser,
-      name_admin: nameuser,
-      email_admin: emailuser,
-      phone_number_admin: phoneuser,
-      password_admin: passwordHash,
-      img_admin: urlPhoto,
-      id_img_admin: idPhoto,
-      id_permissions_admin: codePermission,
-    },
-    (err, rows) => {
-      if (err) {
-        return res.status("202").send({
-          mensaje: "Error al registrar el usuario",
-          error: err,
-        });
-      } else {
-        return res.status("200").send({
-          mensaje: "Usuario registrado con exito",
-        });
-      }
-    }
-  );
-};
 
 controllerSesionAdmin.Login = async (req, res) => {
   let email = req.body.email;
