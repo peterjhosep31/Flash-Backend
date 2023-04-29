@@ -28,6 +28,7 @@ controllerAuth.singIn = async (req, res) => {
             let user = {
               id: rows[0].id_admin,
               email: rows[0].email_admin,
+              permise: rows[0].id_permissions_admin,
             };
             let accessToken = await jwt.generateAccessToken(user);
             return res.status("200").send({
@@ -55,6 +56,7 @@ controllerAuth.singIn = async (req, res) => {
                     let user = {
                       id: rows[0].id_employee,
                       email: rows[0].email_employee,
+                      permise: rows[0].id_permissions_employee,
                     };
                     let accessToken = await jwt.generateAccessToken(user);
                     return res.status("200").send({
@@ -82,6 +84,7 @@ controllerAuth.singIn = async (req, res) => {
                             let user = {
                               id: rows[0].id_customer,
                               email: rows[0].email_customer,
+                              permise: rows[0].id_permissions_customer,
                             };
                             let accessToken = await jwt.generateAccessToken(
                               user

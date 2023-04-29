@@ -1,6 +1,10 @@
 import bcryptjs from "bcryptjs";
 import connectionDB from "../config/dataBase/dataBase.js";
-import { object, number, string } from "yup";
+import {
+  object,
+  number,
+  string
+} from "yup";
 
 const controllerOffer = {};
 
@@ -21,8 +25,7 @@ controllerOffer.postOffer = () => {
   });
 
   connectionDB.query(
-    "INSERT INTO offer SET ?",
-    {
+    "INSERT INTO offer SET ?", {
       id_offer: idOffer,
       name_offer: nameOffer,
       description_offer: descriptionOffer,
@@ -100,8 +103,7 @@ controllerOffer.putOffer = () => {
         if (result) {
           connectionDB.query(
             `UPDATE offer SET ? WHERE id_offer= ?`,
-            [
-              {
+            [{
                 name_offer: nameOffer,
                 description_offer: descriptionOffer,
                 amount_offer: availabilityOffer,

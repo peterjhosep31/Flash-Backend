@@ -29,8 +29,7 @@ controllerAuth.signUpAdmin = async (req, res) => {
           });
         } else if (rows.length === 0) {
           await connectionDb.query(
-            "INSERT INTO administrator SET ?",
-            {
+            "INSERT INTO administrator SET ?", {
               id_admin: iduser,
               name_admin: nameuser,
               email_admin: emailuser,
@@ -102,8 +101,7 @@ controllerAuth.signUpEmployee = async (req, res) => {
           });
         } else if (rows.length === 0) {
           await connectionDb.query(
-            "INSERT INTO employee SET ?",
-            {
+            "INSERT INTO employee SET ?", {
               id_employee: idUser,
               name_employee: nameUser,
               email_employee: emailUser,
@@ -165,8 +163,7 @@ controllerAuth.signUpCustomer = async (req, res) => {
           });
         } else if (rows.length === 0) {
           await connectionDb.query(
-            "INSERT INTO customer SET ?",
-            {
+            "INSERT INTO customer SET ?", {
               id_customer: idUser,
               name_customer: nameUser,
               email_customer: emailUser,

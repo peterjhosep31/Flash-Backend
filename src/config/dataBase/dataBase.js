@@ -6,12 +6,12 @@ dotenv.config();
 
 
 const myConnectionDataBase = mysql.createConnection({
-  host: process.env.HOST_DB,
-  user: process.env.USER_DB_ADMIN,
-  password: process.env.PASSWORD_DB_ADMIN,
-  database: process.env.DATA_BASE,
-  charset: process.env.CHARSET_DB,
-  port: process.env.PORT_DB,
+    host: process.env.HOST_DB,
+    user: process.env.USER_DB_ADMIN,
+    password: process.env.PASSWORD_DB_ADMIN,
+    database: process.env.DATA_BASE,
+    charset: process.env.CHARSET_DB,
+    port: process.env.PORT_DB,
 });
 
 myConnectionDataBase.connect((err) => {

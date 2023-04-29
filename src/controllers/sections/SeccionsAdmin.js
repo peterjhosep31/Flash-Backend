@@ -49,7 +49,7 @@ controllerSesionAdmin.Login = async (req, res) => {
   );
 };
 
-controllerSesionAdmin.UpdateDataStaff = async (req, res)=> {
+controllerSesionAdmin.UpdateDataStaff = async (req, res) => {
   let idUser = req.body.document;
   let nameUser = req.body.name;
   let phoneUser = req.body.phone;
@@ -59,8 +59,7 @@ controllerSesionAdmin.UpdateDataStaff = async (req, res)=> {
 
   connectionDb.query(
     "UPDATE administrator SET ? WHERE id_admin = ?",
-    [
-      {
+    [{
         name_admin: nameUser,
         email_admin: emailUser,
         phone_number_admin: phoneUser,
@@ -91,8 +90,7 @@ controllerSesionAdmin.UpdatePhotoStaff = (req, res) => {
 
   connectionDb.query(
     "UPDATE administrator SET ? WHERE id_admin = ?",
-    [
-      {
+    [{
         img_admin: urlPhoto,
         id_img_admin: idPhoto,
       },
@@ -120,8 +118,7 @@ controllerSesionAdmin.RecoverPassword = (req, res) => {
 
   connectionDb.query(
     "UPDATE administrator SET ? WHERE email_admin = ?",
-    [
-      {
+    [{
         code_recover_password: passwordHash,
         password_admin: codeRecoverPassword,
       },
@@ -134,8 +131,7 @@ controllerSesionAdmin.RecoverPassword = (req, res) => {
           error: err,
         });
       } else {
-        connectionEmail.sendMail(
-          {
+        connectionEmail.sendMail({
             from: "2022.flash.sale@gmail.com",
             to: email,
             subject: "Recuperación de contraseña",
@@ -145,14 +141,14 @@ controllerSesionAdmin.RecoverPassword = (req, res) => {
                 <p>Gracias por preferirnos.</p>
                 `,
           }
-            .then((res) => console.log("Correo enviado"))
-            .catch((err) =>
-              console.log(
-                "_________ERROR AL ENVIAR EL MAIL _________\n",
-                err,
-                "\n__________________________________"
-              )
+          .then((res) => console.log("Correo enviado"))
+          .catch((err) =>
+            console.log(
+              "_________ERROR AL ENVIAR EL MAIL _________\n",
+              err,
+              "\n__________________________________"
             )
+          )
         );
         return res.status("200").send({
           mensaje: "Correo enviado con exito",
@@ -184,8 +180,7 @@ controllerSesionAdmin.UpdatePassword = (req, res) => {
             if (result) {
               connectionDb.query(
                 "UPDATE administrator SET ? WHERE email_admin = ?",
-                [
-                  {
+                [{
                     password_admin: newpasswordHash,
                   },
                   email,
@@ -205,8 +200,7 @@ controllerSesionAdmin.UpdatePassword = (req, res) => {
               );
             } else {
               return res.status("202").send({
-                mensaje:
-                  "Error al actualizar la contraseña, contraseña incorrecta",
+                mensaje: "Error al actualizar la contraseña, contraseña incorrecta",
                 error: err,
               });
             }
@@ -262,7 +256,9 @@ controllerSesionAdmin.updateEmailAdmin = (req, res) => {
         if (idAdminDB == idAdmin) {
           connectionDb.query(
             "UPDATE administrator SET ? WHERE id_admin = ?",
-            [{ email_admin: newEmailAdmin }, idAdmin],
+            [{
+              email_admin: newEmailAdmin
+            }, idAdmin],
             (err, rows) => {
               if (err) {
                 return res.status("202").send({

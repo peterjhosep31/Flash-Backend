@@ -172,16 +172,14 @@ controllerSesionEmpleyoee.RecoverPassword = (req, res) => {
   let passwordHash = bcryptjs.hash(codeRecoverPassword, 10);
   connectionDB.query(
     "UPDATE employee SET ? WHERE email_employee = ?",
-    [
-      {
+    [{
         password_employee: passwordHash,
       },
       emailUser,
     ],
     (err, rows) => {
       if (!err) {
-        connectionEmail.sendMail(
-          {
+        connectionEmail.sendMail({
             from: "2022.flash.sale@gmail.com",
             to: emailUser,
             subject: "Recuperacion de contraseña",
@@ -190,14 +188,14 @@ controllerSesionEmpleyoee.RecoverPassword = (req, res) => {
           <p>Atentamente, el equipo de Flash.</p>`,
           }
 
-            .then((res) => console.log("Correo enviado"))
-            .catch((err) =>
-              console.log(
-                "Error al enviar el correo\n",
-                err,
-                "\n_____________________________"
-              )
+          .then((res) => console.log("Correo enviado"))
+          .catch((err) =>
+            console.log(
+              "Error al enviar el correo\n",
+              err,
+              "\n_____________________________"
             )
+          )
         );
         return res.status("200").send({
           mensaje: "Contraseña recuperada con exito",
@@ -228,8 +226,7 @@ controllerSesionEmpleyoee.UpdatePassword = (req, res) => {
             if (result) {
               connectionDB.query(
                 "UPDATE employee SET ? WHERE email_employee = ?",
-                [
-                  {
+                [{
                     password_employee: newpasswordHash,
                   },
                   emailUser,
@@ -249,8 +246,7 @@ controllerSesionEmpleyoee.UpdatePassword = (req, res) => {
               );
             } else {
               return res.status("202").send({
-                mensaje:
-                  "Error al actualizar la contraseña, contraseña incorrecta",
+                mensaje: "Error al actualizar la contraseña, contraseña incorrecta",
                 error: err,
               });
             }
@@ -288,7 +284,9 @@ controllerSesionEmpleyoee.UpdateState = (req, res) => {
             if (result) {
               connectionDB.query(
                 "UPDATE employee SET ? WHERE id_employee = ?",
-                [{ state_employee: stateEmployee }, idUser],
+                [{
+                  state_employee: stateEmployee
+                }, idUser],
                 (err, rows) => {
                   if (!err) {
                     return res.status("200").send({
@@ -348,8 +346,7 @@ controllerSesionEmpleyoee.UpdateEmail = (req, res) => {
           if (parameter == true) {
             connectionDB.query(
               "UPDATE customer SET ? WHERE id_customer = ?",
-              [
-                {
+              [{
                   email_customer: emailUser,
                 },
                 idUser,

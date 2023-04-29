@@ -8,8 +8,7 @@ controllerCategory.postCategory = (req, res) => {
   let descriptionCategory = req.body.descriptionCategory;
 
   connectionDb.query(
-    "INSERT INTO category SET ?",
-    {
+    "INSERT INTO category SET ?", {
       id_category: idCategory,
       name_category: nameCategory,
       description_category: descriptionCategory,
@@ -72,8 +71,7 @@ controllerCategory.putCategory = (req, res) => {
         if (result) {
           connectionDB.query(
             `UPDATE category SET ? WHERE id_category= ?`,
-            [
-              {
+            [{
                 name_category: nameCategory,
                 description_category: descriptionCategory,
                 id_category: idCategory,

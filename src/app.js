@@ -10,7 +10,9 @@ const app = express();
 
 app.use(morgan("dev"));
 app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
+app.use(express.urlencoded({
+  extended: false
+}));
 
 app.get("/", (req, res) => {
   return res.json({

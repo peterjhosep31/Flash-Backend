@@ -28,6 +28,10 @@
     "yup": "^1.0.2"
   },
   "devDependencies": {
-    "nodemon": "^2.0.21"
+    "@babel/cli": "^7.21.0",
+    "@babel/core": "^7.21.4",
+    "@babel/node": "^7.20.7",
+    "@babel/preset-env": "^7.21.4",
+    "nodemon": "^2.0.22"
   }
 }

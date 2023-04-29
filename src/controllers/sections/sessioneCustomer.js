@@ -15,8 +15,7 @@ controllerSesionCustomer.Registre = (req, res) => {
   let passwordHash = bcryptjs.hash(passwordUser, 10);
 
   connectionDB.query(
-    `INSERT INTO customer SET ?`,
-    {
+    `INSERT INTO customer SET ?`, {
       id_customer: idUser,
       name_customer: nameUser,
       //! Cambiar admin por customer
@@ -228,8 +227,7 @@ controllerSesionCustomer.RecoverPassword = (req, res) => {
   let passwordHash = bcryptjs.hash(codeRecoverPassword, 10);
   connectionDB.query(
     "UPDATE customer SET ? WHERE email_customer = ?",
-    [
-      {
+    [{
         pasword_customer: passwordHash,
       },
       emailUser,
@@ -288,14 +286,13 @@ controllerSesionCustomer.ChangePassword = (req, res) => {
             (err, result) => {
               if (result) {
                 connectionDB.query(
-                  "UPDATE customer SET ? WHERE email_customer = ?",
-                  [
-                    {
-                      pasword_customer: newPassword,
-                    },
-                    emailUser,
-                  ]
-                ),
+                    "UPDATE customer SET ? WHERE email_customer = ?",
+                    [{
+                        pasword_customer: newPassword,
+                      },
+                      emailUser,
+                    ]
+                  ),
                   (err, rows) => {
                     if (err) {
                       return res.status("202").send({
@@ -309,8 +306,7 @@ controllerSesionCustomer.ChangePassword = (req, res) => {
                   };
               } else {
                 return res.status("202").send({
-                  mensaje:
-                    "Error al actualizar la contraseña, contraseña incorrecta",
+                  mensaje: "Error al actualizar la contraseña, contraseña incorrecta",
                   error: err,
                 });
               }
@@ -348,14 +344,13 @@ controllerSesionCustomer.UpdateEmailCustomer = (req, res) => {
             (err, result) => {
               if (result) {
                 connectionDB.query(
-                  "UPDATE customer SET ? WHERE id_customer = ?",
-                  [
-                    {
-                      email_customer: newEmailUser,
-                    },
-                    idUser,
-                  ]
-                ),
+                    "UPDATE customer SET ? WHERE id_customer = ?",
+                    [{
+                        email_customer: newEmailUser,
+                      },
+                      idUser,
+                    ]
+                  ),
                   (err, rows) => {
                     if (err) {
                       return res.status("202").send({
@@ -369,8 +364,7 @@ controllerSesionCustomer.UpdateEmailCustomer = (req, res) => {
                   };
               } else {
                 return res.status("202").send({
-                  mensaje:
-                    "Error al actualizar el email, contraseña incorrecta",
+                  mensaje: "Error al actualizar el email, contraseña incorrecta",
                   error: err,
                 });
               }

@@ -1,13 +1,15 @@
 import express from "express";
 
-import productsRoutes from './products.routes.js'
-import authUser from './auth.routes.js'
-import category from './categorys.routes.js'
+import productsRoutes from './products.routes.js';
+import authUserRoutes from './auth.routes.js';
+import storeRoutes from "./store.routes.js"
 
 const routesExpress = express.Router();
 
 routesExpress.use('/products', productsRoutes);
-routesExpress.use('/authUser', authUser);
+routesExpress.use('/authUser', authUserRoutes);
+routesExpress.use('/stores', storeRoutes);
+
 // routesExpress.use('/category', category);
 
 
@@ -49,10 +51,7 @@ routesExpress.use('/authUser', authUser);
 
 
 // // RUOTES GET, POST,DELETE,PUT OF STORE
-// routesExpress.post("/postStore", store.postStore);
-// routesExpress.put("/putStore", store.putStore);
-// routesExpress.get("/getStore", store.getStore);
-// routesExpress.delete("/deleteStore", store.deleteStore);
+
 
 // // RUOTES GET, POST,DELETE,PUT OF OFFER
 // routesExpress.post("/postOffer", offer.postOffer);
