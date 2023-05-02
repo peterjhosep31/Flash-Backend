@@ -1,97 +1,64 @@
 import connectionDb from "../../config/dataBase/dataBase.js";
-import uploadImagesUser from "../../config/cloudinary/uploadImagesUser.js";
+import uploadImages from "../../config/cloudinary/uploadImages.js";
 import encrypted from "../../config/bcryptjs/encryptPassword.js";
 
 const controllerAuth = {};
 
 controllerAuth.signUpAdmin = async (req, res) => {
-  let iduser = req.body.document;
-  let nameuser = req.body.name;
-  let emailuser = req.body.email;
-  let phoneuser = req.body.phone;
-  let passworduser = req.body.password;
-  let passwordHash = await encrypted.encryptPassword(passworduser);
-  let photoRoute = req.body.image;
-  let photo = await uploadImagesUser(photoRoute);
-  let urlPhoto = photo.secure_url;
-  let idPhoto = photo.public_id;
+  let emailuser = (req.body.email) ? req.body.email : null;
+  let nameuser = (req.body.name) ? req.body.name : null;
+  let passworduser = (req.body.password) ? req.body.password : null;
+  let passwordHash = (passworduser != null) ? await encrypted.encryptPassword(passworduser) : null;
   let codePermission = 1;
 
-  await connectionDb.query(
-    "SELECT * FROM administrator WHERE id_admin = ?",
-    [iduser],
-    async (err, rows) => {
-      if (!err) {
-        if (rows.length > 0) {
-          return res.status("202").send({
-            mensaje: "El usuario ya existe",
-            userName: rows[0].name_admin,
-          });
-        } else if (rows.length === 0) {
-          await connectionDb.query(
-            "INSERT INTO administrator SET ?", {
-              id_admin: iduser,
-              name_admin: nameuser,
-              email_admin: emailuser,
-              phone_number_admin: phoneuser,
-              password_admin: passwordHash,
-              img_admin: urlPhoto,
-              id_img_admin: idPhoto,
-              id_permissions_admin: codePermission,
-            },
-            (err, rows) => {
-              if (err) {
-                return res.status("202").send({
-                  mensaje: "Error al registrar el usuario",
-                  error: err,
-                });
-              } else {
-                return res.status("200").send({
-                  mensaje: "Usuario registrado con exito",
-                });
-              }
-            }
-          );
-        }
-      } else if (err) {
+  await connectionDb.query("SELECT * FROM administrator WHERE email_admin = ?", [emailuser], async (err, rows) => {
+    if (!err) {
+      if (rows.length > 0) {
         return res.status("202").send({
-          mensaje: "Error al registrar el usuario",
-          error: err,
+          mensaje: "El usuario ya existe",
+          userName: rows[0].name_admin
         });
+      } else if (rows.length === 0) {
+        await connectionDb.query("INSERT INTO administrator SET ?", {
+          name_admin: nameuser,
+          email_admin: emailuser,
+          password_admin: passwordHash,
+          id_permissions_admin: codePermission
+        }, (err, rows) => {
+          if (err) {
+            return res.status("202").send({
+              mensaje: "Error al registrar el usuario",
+              error: err
+            });
+          } else {
+            return res.status("200").send({
+              mensaje: "Usuario registrado con exito"
+            });
+          }
+        }
+        );
       }
+    } else if (err) {
+      return res.status("202").send({
+        mensaje: "Error al registrar el usuario",
+        error: err
+      });
     }
+  }
   );
 };
 
 controllerAuth.signUpEmployee = async (req, res) => {
-  let stateUser = null;
-
-  let idUser = req.body.document;
-  let nameUser = req.body.name;
-  let emailUser = req.body.email;
-  let phoneUser = req.body.phone;
-  let passwordUser = req.body.password;
-  let photoRoute = req.body.image;
-  let codePermission = req.body.permission;
-  let store = req.body.idStore;
-
-  let state = req.body.stateUser;
-  if (state == 1) {
-    stateUser = "asset";
-  } else if (state == 0) {
-    stateUser = "deactivated";
-  } else {
-    state = "not asset";
-  }
-
-  let passwordHash = await encrypted.encryptPassword(passwordUser);
-  let photo = await uploadImagesUser(photoRoute);
-  let urlPhoto = photo.secure_url;
-  let idPhoto = photo.public_id;
+  let nameUser = (req.body.name) ? req.body.name : null;
+  let emailUser = (req.body.email) ? req.body.email : null;
+  let passwordUser = (req.body.password) ? req.body.password : null
+  let passwordHash = (passwordUser != null) ? await encrypted.encryptPassword(passwordUser) : null;
+  let store = (req.body.idStore) ? req.body.idStore : null;
+  let codePermission = 2;
 
   await connectionDb.query(
-    "SELECT * FROM employee WHERE id_employee = ?",
-    [idUser],
+    "SELECT * FROM employee WHERE email_employee = ?",
+    [emailUser],
     async (err, rows) => {
       if (!err) {
         if (rows.length > 0) {
@@ -102,17 +69,13 @@ controllerAuth.signUpEmployee = async (req, res) => {
         } else if (rows.length === 0) {
           await connectionDb.query(
             "INSERT INTO employee SET ?", {
-              id_employee: idUser,
-              name_employee: nameUser,
-              email_employee: emailUser,
-              phone_number_employee: phoneUser,
-              password_employee: passwordHash,
-              img_employee: urlPhoto,
-              id_img_employee: idPhoto,
-              state_employee: stateUser,
-              id_permissions_employee: codePermission,
-              id_store: store
-            },
+            name_employee: nameUser,
+            email_employee: emailUser,
+            password_employee: passwordHash,
+            state_employee: 'asset',
+            id_permissions_employee: codePermission,
+            id_store: store
+          },
             (err, rows) => {
               if (err) {
                 return res.status("202").send({
@@ -138,18 +101,12 @@ controllerAuth.signUpEmployee = async (req, res) => {
 };
 
 controllerAuth.signUpCustomer = async (req, res) => {
-  let idUser = req.body.document;
   let nameUser = req.body.name;
   let emailUser = req.body.email;
-  let phoneUser = req.body.phone;
   let passwordUser = req.body.password;
-  let photoRoute = req.body.image;
-  let codePermission = req.body.permission;
-
   let passwordHash = await encrypted.encryptPassword(passwordUser);
-  let photo = await uploadImagesUser(photoRoute);
-  let urlPhoto = photo.secure_url;
-  let idPhoto = photo.public_id;
+  let codePermission = 3;
+
 
   await connectionDb.query(
     "SELECT * FROM customer WHERE id_customer = ?",
@@ -164,15 +121,11 @@ controllerAuth.signUpCustomer = async (req, res) => {
         } else if (rows.length === 0) {
           await connectionDb.query(
             "INSERT INTO customer SET ?", {
-              id_customer: idUser,
-              name_customer: nameUser,
-              email_customer: emailUser,
-              phone_number_customer: phoneUser,
-              password_customer: passwordHash,
-              img_customer: urlPhoto,
-              id_img_customer: idPhoto,
-              id_permissions_customer: codePermission,
-            },
+            name_customer: nameUser,
+            email_customer: emailUser,
+            password_customer: passwordHash,
+            id_permissions_customer: codePermission,
+          },
             (err, rows) => {
               if (err) {
                 return res.status("202").send({
