@@ -1,4 +1,6 @@
-import { Router } from "express";
+import {
+  Router
+} from "express";
 
 import products from "../controllers/product.controllers.js";
 import jwtConfiguration from "../config/accessToken/jsonWebToken.js"

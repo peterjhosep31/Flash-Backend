@@ -1,7 +1,7 @@
 // import { object, number, string } from "yup";
 
 import connectionDB from "../config/dataBase/dataBase.js";
-import uploadImages from "../config/cloudinary/uploadImages.js";
+import uploadImages from "../config/cloudinary/uploadImagesUser.js";
 import utilities from "../helper/productUseful.js"
 
 const controllerProduct = {};
@@ -16,8 +16,8 @@ controllerProduct.postProduct = async (req, res) => {
   let priceProduct = (req.body.price) ? req.body.price : null;
   let imgProductRute = (req.body.image) ? req.body.image : null;
   // let imgProduct = (imgProductRute == null || imgProductRute == "") ? null : await uploadImages.uploadImagesUser(imgProductRute);
-  // let urlImgProduct = (imgProduct != null) ? imgProduct.secure_url : null;
-  // let idImgProduct = (imgProduct != null) ? imgProduct.public_id : null;
+  let urlImgProduct = (imgProduct != null) ? imgProduct.secure_url : null;
+  let idImgProduct = (imgProduct != null) ? imgProduct.public_id : null;
 
   let categoryProduct = (req.body.category) ? req.body.category : null;
   let offerProduct = (req.body.offer) ? req.body.offer : null;

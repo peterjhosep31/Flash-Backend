@@ -1,20 +1,23 @@
 import connectionDb from "../../config/dataBase/dataBase.js";
-import uploadImages from "../../config/cloudinary/uploadImages.js";
+// import uploadImages from "../../config/cloudinary/uploadImages.js";
 import encrypted from "../../config/bcryptjs/encryptPassword.js";
 
 const controllerAuth = {};
 
 controllerAuth.signUpAdmin = async (req, res) => {
-  let emailuser = (req.body.email) ? req.body.email : null;
-  let nameuser = (req.body.name) ? req.body.name : null;
-  let passworduser = (req.body.password) ? req.body.password : null;
+  console.log("tatiana");
+  console.log(req.body);
+ try {
+  let emailuser = (req.body.data.email) ? req.body.data.email : null;
+  let nameuser = (req.body.data.nameUser) ? req.body.data.nameUser : null;
+  let passworduser = (req.body.data.password) ? req.body.data.password : null;
   let passwordHash = (passworduser != null) ? await encrypted.encryptPassword(passworduser) : null;
-  let codePermission = 1;
+  let codePermission ="administrador";
 
   await connectionDb.query("SELECT * FROM administrator WHERE email_admin = ?", [emailuser], async (err, rows) => {
     if (!err) {
       if (rows.length > 0) {
-        return res.status("202").send({
+        return res.status("400").send({
           mensaje: "El usuario ya existe",
           userName: rows[0].name_admin
         });
@@ -23,10 +26,10 @@ controllerAuth.signUpAdmin = async (req, res) => {
           name_admin: nameuser,
           email_admin: emailuser,
           password_admin: passwordHash,
-          id_permissions_admin: codePermission
+          rol : codePermission
         }, (err, rows) => {
           if (err) {
-            return res.status("202").send({
+            return res.status("400").send({
               mensaje: "Error al registrar el usuario",
               error: err
             });
@@ -39,13 +42,18 @@ controllerAuth.signUpAdmin = async (req, res) => {
         );
       }
     } else if (err) {
-      return res.status("202").send({
+      return res.status("400").send({
         mensaje: "Error al registrar el usuario",
         error: err
       });
     }
   }
   );
+ } catch (error) {
+
+  return res.sen("error")
+  
+ }
 };
 
 controllerAuth.signUpEmployee = async (req, res) => {

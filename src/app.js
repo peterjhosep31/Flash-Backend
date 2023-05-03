@@ -5,6 +5,8 @@ import cors from "cors";
 import './config/dataBase/dataBase.js'
 import routes from './routes/routes.js'
 
+
+
 const app = express();
 
 app.use(morgan("dev"));
@@ -26,7 +28,7 @@ app.get("/", (req, res) => {
   });
 });
 
-app.use(routes);
+app.use( routes);
 
 
 export default app;
