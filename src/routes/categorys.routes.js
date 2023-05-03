@@ -1,15 +1,13 @@
-import {
-  Router
-} from "express";
+import { Router } from "express";
 
-import categorys from "../controllers/category.controllers.js"
-import jwtConfiguration from "../config/accessToken/jsonWebToken.js"
+import jwt from "../config/accessToken/jsonWebToken.js"
+import category from "../controllers/category.controllers.js";
 
 const routes = Router();
 
-routes.get('/categorysCponsultation', categorys.getCategory);
-routes.post('/addCategory', jwtConfiguration.validateToken, categorys.postCategory)
-routes.put('/updateCategory', jwtConfiguration.validateToken, categorys.putCategory)
-routes.delete('/deleteCategory', jwtConfiguration.validateToken, categorys.deleteCategory)
+routes.get("/consultationCategories", jwt.validateToken, category.getCategory);
+routes.post("/createCategory", [jwt.validateToken, jwt.validateRoleAdministrator], category.postCategory);
+routes.put("/updateCategory", [jwt.validateToken, jwt.validateRoleAdministrator], category.putCategory);
+routes.delete("/deleteCategory", [jwt.validateToken, jwt.validateRoleAdministrator], category.deleteCategory);
 
 export default routes;

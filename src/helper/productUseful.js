@@ -8,13 +8,13 @@ useful.availability = (data) => {
   }
 }
 
-useful.isEmpty = (data) => {
-  if (data == null || data == undefined) {
-    return true;
-  } else {
-    return false;
-  }
-}
+// useful.isEmpty = (data) => {
+//   if (data == null || data == undefined) {
+//     return true;
+//   } else {
+//     return false;
+//   }
+// }
 
 
 export default useful;
