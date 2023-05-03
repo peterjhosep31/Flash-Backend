@@ -182,6 +182,7 @@ controllerCategory.deleteCategory = (req, res) => {
                 mensaje: "Esta categoria no existe"
               });
             } else if (rows.length > 0) {
+              let deleteImage = await cloudinaryDelete.deleteImage(rows[0].id_img_category);
               connectionDb.query("DELETE FROM category WHERE id_category = ?", [idCategory], async (err, rows) => {
                 if (err) {
                   return res.status(500).send({
