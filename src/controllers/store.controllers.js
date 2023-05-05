@@ -8,20 +8,17 @@ import password from "../helper/password.js";
 const controllerStore = {};
 
 controllerStore.postStore = async (req, res) => {
-  let nameStore = null;
   let locationStore = null;
-  let phoneStore = null;
-  let descriptionStore = null;
   let routeImage = null;
   let imageStore = null;
   let crateFolder = null;
   let urlImage = null;
   let idImage = null;
 
-  let codeStore = req.body.code ? req.body.code : null;
   let idAdmin = req.user.emailUser ? req.user.emailUser : null;
   let passwordAdmin = req.body.password ? req.body.password : null;
   let emailEmployee = req.body.emialEmployee ? req.body.emialEmployee : null;
+  let nameStore = req.body.name ? req.body.name : null;
 
   await connectionDB.query(
     "SELECT password_admin FROM administrator WHERE email_admin = ?",
@@ -41,8 +38,8 @@ controllerStore.postStore = async (req, res) => {
 
         if (comparePassword) {
           await connectionDB.query(
-            "SELECT * FROM store WHERE id_store = ?",
-            [codeStore],
+            "SELECT * FROM store WHERE name_store = ?",
+            [nameStore],
             async (err, rows) => {
               if (!err) {
                 if (rows.length > 0) {
@@ -51,11 +48,8 @@ controllerStore.postStore = async (req, res) => {
                     storeName: rows[0].name_store,
                   });
                 } else if (rows.length === 0) {
-                  nameStore = req.body.name ? req.body.name : null;
                   crateFolder = nameStore != null ? await uploadImages.createFolder(nameStore) : null;
-                  locationStore = req.body.location ? req.body.location : null;
-                  phoneStore = req.body.phone ? req.body.phone : null;
-                  descriptionStore = req.body.description ? req.body.description : null;
+                  locationStore = req.body.location ? req.body.location : null;                  descriptionStore = req.body.description ? req.body.description : null;
                   routeImage = req.body.image ? req.body.image : null;
                   imageStore = routeImage != null ? await uploadImages.uploadImagesStore(routeImage, crateFolder.path) : null;
                   urlImage = imageStore != null ? imageStore.secure_url : null;
@@ -83,8 +77,6 @@ controllerStore.postStore = async (req, res) => {
                     id_store: codeStore,
                     name_store: nameStore,
                     location_store: locationStore,
-                    phone_number_store: phoneStore,
-                    description_store: descriptionStore,
                     img_store: urlImage,
                     id_img_store: idImage,
                     email_store: emailStore,
