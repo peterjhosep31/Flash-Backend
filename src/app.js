@@ -4,6 +4,7 @@ import cors from "cors";
 
 import './config/dataBase/dataBase.js'
 import routes from './routes/routes.js'
+// import 
 
 
 
@@ -28,7 +29,7 @@ app.get("/", (req, res) => {
   });
 });
 
-app.use( routes);
+app.use(routes);
 
 
 export default app;

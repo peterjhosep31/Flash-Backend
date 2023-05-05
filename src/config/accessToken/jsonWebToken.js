@@ -6,6 +6,7 @@ dotenv.config();
 const jsonWebToken = {};
 
 jsonWebToken.generateAccessToken = async (user) => {
+  console.log(user);
   return jwt.sign({
     user
   }, process.env.SECRECT_KEY_JWT, {
@@ -29,9 +30,8 @@ jsonWebToken.validateToken = (req, res, next) => {
           .send("Acceso denagado, el token expiro o puede ser incorrecto");
       } else {
         req.user = {
-          idUser: result.user.id,
+          emailUser: result.user.email
         };
-
         next();
       }
     }

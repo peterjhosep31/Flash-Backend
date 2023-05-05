@@ -4,7 +4,6 @@ import {
 
 import authSingUp from "../controllers/auth/auth.signUp.controllers.js";
 import authSingIn from "../controllers/auth/auth.singIn.controllers.js";
-import jwtConfiguration from "../config/accessToken/jsonWebToken.js";
 
 const routes = Router();
 

@@ -2,6 +2,8 @@ import connectionDB from "../config/dataBase/dataBase.js";
 import uploadImages from "../config/cloudinary/uploadImages.js";
 import deleteImages from "../config/cloudinary/deleteImages.js";
 import bcryptjs from "../config/bcryptjs/encryptPassword.js";
+import nodemailer from "../config/email/email.js";
+import password from "../helper/password.js";
 
 const controllerStore = {};
 
@@ -17,16 +19,17 @@ controllerStore.postStore = async (req, res) => {
   let idImage = null;
 
   let codeStore = req.body.code ? req.body.code : null;
-  let idAdmin = req.user.idUser ? req.user.idUser : null;
+  let idAdmin = req.user.emailUser ? req.user.emailUser : null;
   let passwordAdmin = req.body.password ? req.body.password : null;
+  let emailEmployee = req.body.emialEmployee ? req.body.emialEmployee : null;
 
   await connectionDB.query(
-    "SELECT password_admin FROM administrator WHERE id_admin = ?",
+    "SELECT password_admin FROM administrator WHERE email_admin = ?",
     [idAdmin],
     async (err, rows) => {
       if (err) {
-        return res.status(202).send({
-          mensaje: "No se encontro el usuario",
+        return res.status(404).send({
+          mensaje: "No se encontro el usuarioo",
           error: err,
         });
       } else if (rows.length > 0) {
@@ -49,25 +52,31 @@ controllerStore.postStore = async (req, res) => {
                   });
                 } else if (rows.length === 0) {
                   nameStore = req.body.name ? req.body.name : null;
-                  crateFolder =
-                    nameStore != null ?
-                      await uploadImages.createFolder(nameStore) :
-                      null;
+                  crateFolder = nameStore != null ? await uploadImages.createFolder(nameStore) : null;
                   locationStore = req.body.location ? req.body.location : null;
                   phoneStore = req.body.phone ? req.body.phone : null;
-                  descriptionStore = req.body.description ?
-                    req.body.description :
-                    null;
+                  descriptionStore = req.body.description ? req.body.description : null;
                   routeImage = req.body.image ? req.body.image : null;
-                  imageStore =
-                    routeImage != null ?
-                      await uploadImages.uploadImagesStore(
-                        routeImage,
-                        crateFolder.path
-                      ) :
-                      null;
+                  imageStore = routeImage != null ? await uploadImages.uploadImagesStore(routeImage, crateFolder.path) : null;
                   urlImage = imageStore != null ? imageStore.secure_url : null;
                   idImage = imageStore != null ? imageStore.public_id : null;
+                  let emailStore = nameStore != null ? `${nameStore}${locationStore}@flash.com` : null;
+                  let passwordStore = password();
+                  let encryptPassword = await bcryptjs.encryptPassword(passwordStore);
+                  nodemailer.sendMail({
+                    from: '2022.flash.sale@gmail.com',
+                    to: emailEmployee,
+                    subject: "Registro exitoso",
+                    html: `<h1>
+                    <p></p>Se ha creado una cuenta para la tienda ${nameStore}</p><br>
+                    <p>Usuario: ${emailStore}</p><br>
+                    <p>Contraseña: ${passwordStore}</p><br>
+                    </h1>`
+                  }).then((res) => {
+                    console.log("Email send");
+                  }).catch((err) => {
+                    console.log(err);
+                  });
 
                   connectionDB.query(
                     "INSERT INTO store SET ?", {
@@ -78,6 +87,8 @@ controllerStore.postStore = async (req, res) => {
                     description_store: descriptionStore,
                     img_store: urlImage,
                     id_img_store: idImage,
+                    email_store: emailStore,
+                    passwod_store: encryptPassword
                   },
                     (err, rows) => {
                       if (!err) {
@@ -157,7 +168,7 @@ controllerStore.putStore = async (req, res) => {
   let idStore = req.body.code ? req.body.code : null;
 
   await connectionDB.query(
-    "SELECT password_employee FROM employee WHERE id_employee = ?",
+    "SELECT password_employee FROM employee WHERE email_employee = ?",
     [idEmployee],
     async (err, rows) => {
       if (!err) {
@@ -285,7 +296,7 @@ controllerStore.putStore = async (req, res) => {
             });
           }
         } else if (rows.length === 0) {
-          return res.status("202").send({
+          return res.status(404).send({
             mensaje: "El usuario no existe",
             rows
           });
@@ -311,7 +322,7 @@ controllerStore.deleteStore = async (req, res) => {
   let passwordAdministrator = req.body.password ? req.body.password : null;
 
   await connectionDB.query(
-    "SELECT password_admin FROM administrator WHERE id_admin = ?",
+    "SELECT password_admin FROM administrator WHERE email_admin = ?",
     [idUser],
     async (err, rows) => {
       if (rows.length == 0) {

@@ -1,0 +1,360 @@
+{
+  "log-in": {
+    "endpoint": "/authUser/signInUser",
+    "method": "POST",
+    "description": "autentificacion usuario y se genera el token",
+    "parameters": [
+      {
+        "name": "email",
+        "description": "Dirección de correo electrónico del usuario",
+        "type": "string",
+        "required": true
+      },
+      {
+        "name": "password",
+        "description": "Contraseña del usuario",
+        "type": "string",
+        "required": true
+      }
+    ],
+    "responses": {
+      "200": {
+        "description": "Autenticación exitosa",
+        "content": {
+          "type": "application/json",
+          "example": {
+            "mensaje": "Usuario logueado con exito",
+            "accessToken": "<jwt_token>",
+            "rol": "<user_role>"
+          }
+        }
+      },
+      "202": {
+        "description": "Credenciales no válidas o usuario no encontrado",
+        "content": {
+          "type": "application/json",
+          "example": {
+            "mensaje": "Contraseña incorrecta"
+          }
+        }
+      },
+      "500": {
+        "description": "Error Interno del Servidor",
+        "content": {
+          "type": "application/json",
+          "example": {
+            "mensaje": "Error al iniciar sesion",
+            "error": "<error_message>"
+          }
+        }
+      }
+    },
+    "examples": {
+      "application/json": {
+        "name": "John Doe",
+        "email": "john@doe.com"
+      }
+    }
+  },
+  "sing-up": [
+    {
+      "administrador": {
+        "endpoint": "/authUser/signUpAdmin",
+        "method": "POST",
+        "description": "Registra un nuevo administrador en la base de datos",
+        "parameters": [
+          {
+            "nameUser": {
+              "type": "string",
+              "description": "Nombre completo del nuevo administrador",
+              "required": true
+            },
+            "email": {
+              "type": "string",
+              "description": "Correo electrónico del nuevo administrador",
+              "required": true
+            },
+            "password": {
+              "type": "string",
+              "description": "Contraseña del nuevo administrador",
+              "required": true
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "El administrador fue registrado exitosamente",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "mensaje": {
+                      "type": "string",
+                      "description": "Mensaje de éxito"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Error en la solicitud",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "mensaje": {
+                      "type": "string",
+                      "description": "Mensaje de error"
+                    },
+                    "error": {
+                      "type": "string",
+                      "description": "Descripción del error"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error interno del servidor",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "mensaje": {
+                      "type": "string",
+                      "description": "Mensaje de error"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "empleado": {
+        "endpoint": "/authUser/signUpEmployee",
+        "method": "POST",
+        "description": "Endpoint para registrar un empleado",
+        "request": {
+          "body": [
+            {
+              "name": "name",
+              "type": "string",
+              "description": "Nombre del empleado"
+            },
+            {
+              "name": "email",
+              "type": "string",
+              "description": "Correo electrónico del empleado"
+            },
+            {
+              "name": "password",
+              "type": "string",
+              "description": "Contraseña del empleado"
+            },
+            {
+              "name": "idStore",
+              "type": "number",
+              "description": "ID de la tienda a la que está asignado el empleado"
+            }
+          ]
+        },
+        "response": {
+          "200": {
+            "description": "Respuesta exitosa",
+            "body": [
+              {
+                "name": "mensaje",
+                "type": "string",
+                "description": "Mensaje de confirmación"
+              }
+            ]
+          },
+          "202": {
+            "description": "Error en la solicitud",
+            "body": [
+              {
+                "name": "mensaje",
+                "type": "string",
+                "description": "Mensaje de error"
+              },
+              {
+                "name": "error",
+                "type": "string",
+                "description": "Descripción del error"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "cliente": {
+        "endpoint": "/authUser/signUpCustomer",
+        "method": "POST",
+        "description": "Registra un nuevo usuario cliente.",
+        "parameters": [
+          {
+            "name": "name",
+            "in": "body",
+            "description": "Nombre del cliente",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "email",
+            "in": "body",
+            "description": "Correo electrónico del cliente",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "email"
+            }
+          },
+          {
+            "name": "password",
+            "in": "body",
+            "description": "Contraseña del cliente",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "password"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Usuario registrado con éxito"
+          },
+          "202": {
+            "description": "El usuario ya existe",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error interno del servidor",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  ],
+  "category": [
+    {
+      "postCategory": {
+        "endpoint": "/category/addCategory",
+        "method": "POST",
+        "description": "Creates a new category.",
+        "request": {
+          "headers": {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer {token}"
+          },
+          "body": {
+            "data": {
+              "category": "string, required",
+              "image": "string",
+              "password": "string, required"
+            }
+          }
+        },
+        "response": {
+          "success": {
+            "status": 200,
+            "body": {
+              "mensaje": "Categoria insertada con exito."
+            }
+          },
+          "errors": [
+            {
+              "status": 202,
+              "body": {
+                "mensaje": "Error al registrar categoria: No se encontró el administrador."
+              }
+            },
+            {
+              "status": 202,
+              "body": {
+                "mensaje": "Contraseña incorrecta."
+              }
+            },
+            {
+              "status": 202,
+              "body": {
+                "mensaje": "Esta categoria ya existe."
+              }
+            },
+            {
+              "status": 500,
+              "body": {
+                "mensaje": "Error al registrar categoria.",
+                "error": "{error message}"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "getCategory": {
+        "endpoint": "/api/categories",
+        "method": "GET",
+        "description": "Retrieves a list of all categories.",
+        "request": {
+          "headers": {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer {token}"
+          }
+        },
+        "response": {
+          "success": {
+            "status": 200,
+            "body": {
+              "mensaje": "Mostrando categoria con exito",
+              "rows": [
+                {
+                  "id_category": "number",
+                  "name_category": "string",
+                  "img_category": "string",
+                  "id_img_category": "string"
+                }
+              ]
+            }
+          },
+          "errors": [
+            {
+              "status": 200,
+              "body": {
+                "mensaje": "Error al mostrar categoria",
+                "error": "{error message}"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "updateCategory": {}
+    }
+  ]
+}

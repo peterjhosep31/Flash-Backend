@@ -1,3 +1,4 @@
+//TODO:Ruta     http://localhost:3105/authUser/signInUser
 import dotenv from "dotenv";
 
 import encrypted from "../../config/bcryptjs/encryptPassword.js";
@@ -33,10 +34,11 @@ controllerAuth.singIn = async (req, res) => {
           });
         }
       } else if (rows.length === 0) {
-        await connectionDb.query("SELECT * FROM employee WHERE email_employee = ?", [emailUser], async (err, rows) => {
+        await connectionDb.query("SELECT * FROM store WHERE email_store = ?", [emailUser], async (err, rows) => {
           if (!err) {
             if (rows.length > 0) {
-              let passwordUserDB = rows[0].password_employee;
+              let passwordUserDB = rows[0].passwod_store;
+              console.log(passwordUserDB);
               let passwordCompare = await encrypted.matchPassword(passwordUser, passwordUserDB);
               if (passwordCompare) {
                 let user = {
