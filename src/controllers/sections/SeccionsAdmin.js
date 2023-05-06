@@ -1,7 +1,7 @@
 import bcryptjs from "bcryptjs";
 import dotenv from "dotenv";
 
-import connectionDb from "../../config/dataBase/dataBase.js";
+import connectionDb  from "../../config/dataBase/dataBase.js";
 import connectionEmail from "../../config/email/email.js";
 import generateAccessToken from "../../config/accessToken/generateToken.js";
 
