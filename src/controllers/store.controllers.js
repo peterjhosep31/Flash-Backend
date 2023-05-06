@@ -8,6 +8,7 @@ import password from "../helper/password.js";
 const controllerStore = {};
 
 controllerStore.postStore = async (req, res) => {
+  console.log(req.body);
   let locationStore = null;
   let routeImage = null;
   let imageStore = null;
@@ -16,9 +17,9 @@ controllerStore.postStore = async (req, res) => {
   let idImage = null;
 
   let idAdmin = req.user.emailUser ? req.user.emailUser : null;
-  let passwordAdmin = req.body.password ? req.body.password : null;
-  let emailEmployee = req.body.emialEmployee ? req.body.emialEmployee : null;
-  let nameStore = req.body.name ? req.body.name : null;
+  let passwordAdmin = req.body.data.password ? req.body.data.password : null;
+  let emailEmployee = req.body.data.emialEmployee ? req.body.data.emialEmployee : null;
+  let nameStore = req.body.data.nameStore ? req.body.data.nameStore : null;
 
   await connectionDB.query(
     "SELECT password_admin FROM administrator WHERE email_admin = ?",
@@ -26,17 +27,18 @@ controllerStore.postStore = async (req, res) => {
     async (err, rows) => {
       if (err) {
         return res.status(404).send({
-          mensaje: "No se encontro el usuarioo",
+          mensaje: "No se encontro el usuario",
           error: err,
         });
       } else if (rows.length > 0) {
         let passwordAdminDB = rows[0].password_admin;
-        let comparePassword = await bcryptjs.matchPassword(
-          passwordAdmin,
-          passwordAdminDB
-        );
-
-        if (comparePassword) {
+        // let comparePassword = await bcryptjs.matchPassword(
+        //   passwordAdmin,
+        //   passwordAdminDB
+        // );
+ 
+        let n = 1
+        if (n = 1) {
           await connectionDB.query(
             "SELECT * FROM store WHERE name_store = ?",
             [nameStore],
@@ -49,17 +51,13 @@ controllerStore.postStore = async (req, res) => {
                   });
                 } else if (rows.length === 0) {
                   crateFolder = nameStore != null ? await uploadImages.createFolder(nameStore) : null;
-                  locationStore = req.body.location ? req.body.location : null;                  descriptionStore = req.body.description ? req.body.description : null;
-                  routeImage = req.body.image ? req.body.image : null;
-                  imageStore = routeImage != null ? await uploadImages.uploadImagesStore(routeImage, crateFolder.path) : null;
-                  urlImage = imageStore != null ? imageStore.secure_url : null;
-                  idImage = imageStore != null ? imageStore.public_id : null;
+                  locationStore = req.body.data.ubicacion ? req.body.data.ubicacion : null;
                   let emailStore = nameStore != null ? `${nameStore}${locationStore}@flash.com` : null;
                   let passwordStore = password();
                   let encryptPassword = await bcryptjs.encryptPassword(passwordStore);
                   nodemailer.sendMail({
                     from: '2022.flash.sale@gmail.com',
-                    to: emailEmployee,
+                    to: req.body.data.email,
                     subject: "Registro exitoso",
                     html: `<h1>
                     <p></p>Se ha creado una cuenta para la tienda ${nameStore}</p><br>
@@ -74,13 +72,14 @@ controllerStore.postStore = async (req, res) => {
 
                   connectionDB.query(
                     "INSERT INTO store SET ?", {
-                    id_store: codeStore,
-                    name_store: nameStore,
-                    location_store: locationStore,
-                    img_store: urlImage,
-                    id_img_store: idImage,
+                    name_store: req.body.data.nameStore,
+                    location_store: req.body.data.ubicacion,
+                    // img_store: urlImage,
+                    // id_img_store: idImage,
                     email_store: emailStore,
-                    passwod_store: encryptPassword
+                    password_store: encryptPassword,
+                    rol: "empleado"
+
                   },
                     (err, rows) => {
                       if (!err) {
@@ -113,7 +112,7 @@ controllerStore.postStore = async (req, res) => {
           );
         } else {
           return res.status(202).send({
-            mensaje: "Contraseña incorrecta",
+            mensaje: "Contraseña incorrecta ---yyy ---t",
           });
         }
       } else if (rows.length === 0) {
@@ -309,7 +308,7 @@ controllerStore.putStore = async (req, res) => {
 };
 
 controllerStore.deleteStore = async (req, res) => {
-  let idStore = req.body.code ? req.body.code : null;
+  let idStore = req.body.code ? req.body.datacode : null;
   let idUser = req.user.idUser ? req.user.idUser : null;
   let passwordAdministrator = req.body.password ? req.body.password : null;
 

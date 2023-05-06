@@ -56,8 +56,10 @@ controllerCategory.getCategory = (req, res) => {
 
 controllerCategory.putCategory = async (req, res) => {
   try {
-    let nameCategory = req.body.name;
-    let imageCategory = req.body.image;
+    let nameCategory = req.body.data.name;
+    let imageCategory = req.body.data.image;
+    let ruteImage = req.body.data.image;
+    
     
   } catch (error) {
     
