@@ -10,8 +10,8 @@ dotenv.config();
 const controllerAuth = {};
 
 controllerAuth.singIn = async (req, res) => {
-  let emailUser = req.body.email;
-  let passwordUser = req.body.password;
+  let emailUser = req.body.data.email;
+  let passwordUser = req.body.data.password;
 
   connectionDb.query("SELECT * FROM administrator WHERE email_admin = ?", [emailUser], async (err, rows) => {
     if (!err) {
@@ -21,12 +21,13 @@ controllerAuth.singIn = async (req, res) => {
         if (passwordCompare) {
           let user = {
             email: rows[0].email_admin,
-            permission: rows[0].id_permissions_admin
+            permission: rows[0].rol
           };
           let accessToken = await jwt.generateAccessToken(user);
           return res.status("200").send({
             mensaje: "Usuario logueado con exito",
-            accessToken
+            accessToken,
+            rol: rows[0].rol
           });
         } else {
           return res.status("202").send({
@@ -38,17 +39,23 @@ controllerAuth.singIn = async (req, res) => {
           if (!err) {
             if (rows.length > 0) {
               let passwordUserDB = rows[0].passwod_store;
-              console.log(passwordUserDB);
               let passwordCompare = await encrypted.matchPassword(passwordUser, passwordUserDB);
               if (passwordCompare) {
-                let user = {
-                  email: rows[0].email_employee,
-                  permission: rows[0].id_permissions_employee
-                };
-                let accessToken = await jwt.generateAccessToken(user);
-                return res.status("200").send({
-                  mensaje: "Se logueo",
-                  accessToken
+                await connectionDb.query('SELECT * FROM employee WHERE id_store = ?', [rows[0].id_store], async (err, rows) => {
+                  if (!err) {
+                     if(rows.length > 0) {
+                      let user = {
+                        email: emailUser,
+                        permission: rows[0].rol
+                      };
+                      let accessToken = await jwt.generateAccessToken(user);
+                      return res.status("200").send({
+                        mensaje: "Usuario logueado con exito",
+                        accessToken,
+                        rol: rows[0].rol
+                      });
+                     }
+                  }
                 });
               } else {
                 return res.status("202").send({
@@ -64,12 +71,13 @@ controllerAuth.singIn = async (req, res) => {
                     if (passwordCompare) {
                       let user = {
                         email: rows[0].email_customer,
-                        permission: rows[0].id_permissions_customer
+                        permission: rows[0].rol
                       };
                       let accessToken = await jwt.generateAccessToken(user);
                       return res.status("200").send({
                         mensaje: "Usuario logueado",
-                        accessToken
+                        accessToken,
+                        rol: rows[0].rol
                       });
                     }
                   } else if (rows.length === 0) {
