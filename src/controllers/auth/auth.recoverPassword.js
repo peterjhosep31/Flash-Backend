@@ -2,94 +2,56 @@ import connectionDB from "../../config/dataBase/dataBase.js";
 import connectionEmail from "../../config/email/email.js";
 import password from "../../helper/password.js";
 import bcryptjs from "../../config/bcryptjs/encryptPassword.js";
+import { query } from "express";
 
 const controllerRecoverPassword = {};
-let bann = true;
 let typeUser = null;
-let email = null;
 
 controllerRecoverPassword.recoverPassword = async (req, res) => {
-  email = (req.body.data.email) ? req.body.data.email : null;
+  let email = (req.body.data.email) ? req.body.data.email : null;
   let newPassword = (req.body.data.password) ? req.body.data.password : null;
   try {
-    if (bann == true) {
-      await connectionDB.query("SELECT code_recover FROM administrator WHERE email_admin = ?", [email], async (err, rows) => {
-        if (rows.length > 0) {
-          let codePassword = req.body.data.code;
-          let codeRecover = rows[0].code_recover;
-          if (codePassword == codeRecover) {
-            bann = false;
-            typeUser = "administrator";
-            return res.status(200).send({
-              mensaje: "Codigo valido"
-            })
-          } else {
-            return res.status(402).send({
-              mensaje: "Codigo invalido"
-            })
-          }
-        } else if (rows.length == 0) {
-          await connectionDB.query("SELECT code_recover FROM customer WHERE email_customer = ?", [email], async (err, rows) => {
-            if (rows.length > 0) {
-              let codePassword = req.body.data.code;
-              let compareCode = await bcryptjs.matchPassword(rows[0].code_recover, codePassword);
-              if (compareCode) {
-                bann = false;
-                typeUser = "customer";
-                return res.status(200).send({
-                  mensaje: "Codigo valido"
-                })
-              } else {
-                return res.status(402).send({
-                  mensaje: "Codigo invalido"
-                })
-              }
-            } else {
-              return res.status(402).send({
-                mensaje: "El usuario no Existe"
-              })
-            }
+
+    await connectionDB.query("SELECT code_recover FROM administrator WHERE email_admin = ?", [email], async (err, rows) => {
+      if (rows.length > 0) {
+        let codePassword = req.body.data.code;
+        let codeRecover = rows[0].code_recover;
+        if (codePassword == codeRecover) {
+          return res.status(200).send({
+            mensaje: "Codigo valido"
           })
         } else {
           return res.status(402).send({
-            mensaje: "El usuario no Existe"
+            mensaje: "Codigo invalido"
           })
         }
-      })
-    } else if (bann == false) {
-      bann = true
-      if (typeUser === "administrator") {
-        typeUser = null;
-        let codeHast = await bcryptjs.encryptPassword(newPassword);
-        await connectionDB.query("UPDATE administrator SET password_admin = ? WHERE email_admin = ?", [codeHast, email], async (err, rows) => {
-          if (rows) {
-            return res.status(200).send({
-              mensaje: "Contraseña actualizada"
-            })
-          } else if (err) {
-            return res.status(402).send({
-              mensaje: "Ocurrio un error",
-              err
-            })
-          }
-        })
-      } else if (typeUser === "customer") {
-        typeUser = null;
-        let codeHast = await bcryptjs.encryptPassword(newPassword);
-        await connectionDB.query("UPDATE customer SET password_customer = ? WHERE email_customer = ?", [codeHast, email], async (err, rows) => {
-          if (!err) {
-            return res.status(200).send({
-              mensaje: "Contraseña actualizada"
-            })
+      } else if (rows.length == 0) {
+        await connectionDB.query("SELECT code_recover FROM customer WHERE email_customer = ?", [email], async (err, rows) => {
+          if (rows.length > 0) {
+            let codePassword = req.body.data.code;
+            let compareCode = await bcryptjs.matchPassword(rows[0].code_recover, codePassword);
+            if (compareCode) {
+              return res.status(200).send({
+                mensaje: "Codigo valido"
+              })
+            } else {
+              return res.status(402).send({
+                mensaje: "Codigo invalido"
+              })
+            }
           } else {
             return res.status(402).send({
-              mensaje: "Ocurrio un error",
-              err
+              mensaje: "El usuario no Existe"
             })
           }
         })
+      } else {
+        return res.status(402).send({
+          mensaje: "El usuario no Existe"
+        })
       }
-    }
+    })
+
   } catch (error) {
     res.status(500).send({
       mensaje: "Ocurrio un error"
@@ -97,10 +59,69 @@ controllerRecoverPassword.recoverPassword = async (req, res) => {
   }
 }
 
+controllerRecoverPassword.updatePassword = async (req, res) => {
+  try {
+
+    let email = (req.body.data.email) ? req.body.data.email : null;
+    let newPassword = (req.body.data.password) ? req.body.data.password : null;
+    await connectionDB.query("SELECT email_admin FROM administrator WHERE email_admin = ?", [email], async (err, rows) => {
+      if (rows.length > 0) {
+        let codeHast = await bcryptjs.encryptPassword(newPassword);
+        await connectionDB.query("UPDATE administrator SET password_admin = ?, code_recover = ? WHERE email_admin = ?", [codeHast, null, email], async (err, rows) => {
+          if (rows) {
+            return res.status(200).send({
+              mensaje: "Contraseña actualizada"
+            })
+          } else if (err) {
+            return res.status(403).send({
+              mensaje: "Ocurrio un errorr",
+            })
+          }
+        })
+      } else if (rows.length = 0) {
+        await connectionDB.query("SELECT email_customer FROM customer WHERE emal_customer = ?", [emial], async (err, rows) => {
+          if (rows.length > 0) {
+            let codeHast = await bcryptjs.encryptPassword(newPassword);
+            await connectionDB.query("UPDATE customer SET password_customer = ? WHERE email_customer = ?", [codeHast, email], async (err, rows) => {
+              if (!err) {
+                return res.status(200).send({
+                  mensaje: "Contraseña actualizada"
+                })
+              } else {
+                console.log(err);
+                return res.status(402).send({
+                  mensaje: "Ocurrio un error",
+                  err
+                }
+                )
+              }
+            })
+          } else if (rows.length == 0) {
+            return res.status(403).send({
+              mensaje: "El usuario no existe"
+            })
+          }
+        })
+      } else {
+        return res.status(403).send({
+          mensaje: "El usuario no existe",
+          err
+        })
+      }
+    })
+  } catch (error) {
+    return res.status(500).send({
+      mensaje: "Ocurrio un error"
+    })
+  }
+}
+
+
 controllerRecoverPassword.recoverPasswordUserCode = async (req, res) => {
   try {
+    console.log(req.body.data.email);
     let codeRecover = password.recoverUser();
-    email = (req.body.data.email) ? req.body.data.email : null;
+    let email = (req.body.data.email) ? req.body.data.email : null;
 
     await connectionDB.query("SELECT name_admin FROM administrator WHERE email_admin = ?", [email], async (err, rows) => {
       if (rows.length > 0) {

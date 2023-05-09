@@ -21,27 +21,24 @@ controllerCategory.postCategory = async (req, res) => {
     }
 
     // Insertar la nueva categoría en la base de datos
-    let idStore = null;
-
-    await connectionDb.query("SELECT id_store FROM store WHERE email_store = ?", [emailUser], async (err, rows) => {
+    const idStore = await connectionDb.query("SELECT id_store FROM store WHERE email_store = ?", [emailUser], async (err, rows) => {
       if (!err) {
-        idStore = rows[0].id_store;
+        if (rows.length > 0) {
+          await connectionDb.query("INSERT INTO category SET ?", {
+            name_category: nameCategory,
+            img_category: urlImage,
+            id_img_category: idImage,
+            id_store: rows[0].id_store
+          }, (err, rows) => {
+            if (!err) {
+              return res.status(200).send({
+                mensaje: "Categoria insertada con exito."
+              });
+            }
+          });
+        }
       }
     })
-
-    if (idStore != null) {
-
-      await connectionDb.query("INSERT INTO category SET ?", {
-        name_category: nameCategory,
-        img_category: urlImage,
-        id_img_category: idImage,
-        id_store: idStore
-      });
-
-      return res.status(200).send({
-        mensaje: "Categoria insertada con exito."
-      });
-    }
 
   } catch (error) {
     return res.status(500).send({
