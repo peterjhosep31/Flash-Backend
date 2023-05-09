@@ -6,16 +6,14 @@ import utilities from "../helper/productUseful.js"
 
 const controllerProduct = {};
 controllerProduct.postProduct = async (req, res) => {
-  let idProduct = (req.body.codeProduct) ? req.body.codeProduct : null;
   let nameProduct = (req.body.name) ? req.body.name : null;
   let descriptionProduct = (req.body.description) ? req.body.description : null;
   let availability = (req.body.availability) ? req.body.availability : null;
-  let availabilityProduct = await utilities.availability(availability);
   
   let amountProduct = (req.body.amount) ? req.body.amount : null;
   let priceProduct = (req.body.price) ? req.body.price : null;
   let imgProductRute = (req.body.image) ? req.body.image : null;
-  // let imgProduct = (imgProductRute == null || imgProductRute == "") ? null : await uploadImages.uploadImagesUser(imgProductRute);
+  let imgProduct = (imgProductRute == null || imgProductRute == "") ? null : await uploadImages.uploadImagesUser(imgProductRute);
   let urlImgProduct = (imgProduct != null) ? imgProduct.secure_url : null;
   let idImgProduct = (imgProduct != null) ? imgProduct.public_id : null;
 

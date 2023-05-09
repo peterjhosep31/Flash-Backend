@@ -9,6 +9,7 @@ controllerCategory.postCategory = async (req, res) => {
   try {
     const nameCategory = (req.body.data.category) ? req.body.data.category : null;
     const routeImage = (req.body.data.image) ? req.body.data.image : null;
+    let emailUser = req.user.emailUser;
     let photoCategory = null;
     let urlImage = null;
     let idImage = null;
@@ -20,14 +21,27 @@ controllerCategory.postCategory = async (req, res) => {
     }
 
     // Insertar la nueva categoría en la base de datos
-    await connectionDb.query("INSERT INTO category SET ?", {
-      name_category: nameCategory,
-      img_category: urlImage,
-      id_img_category: idImage
-    });
-    return res.status(200).send({
-      mensaje: "Categoria insertada con exito."
-    });
+    let idStore = null;
+
+    await connectionDb.query("SELECT id_store FROM store WHERE email_store = ?", [emailUser], async (err, rows) => {
+      if (!err) {
+        idStore = rows[0].id_store;
+      }
+    })
+
+    if (idStore != null) {
+
+      await connectionDb.query("INSERT INTO category SET ?", {
+        name_category: nameCategory,
+        img_category: urlImage,
+        id_img_category: idImage,
+        id_store: idStore
+      });
+
+      return res.status(200).send({
+        mensaje: "Categoria insertada con exito."
+      });
+    }
 
   } catch (error) {
     return res.status(500).send({
@@ -59,62 +73,72 @@ controllerCategory.putCategory = async (req, res) => {
     let nameCategory = req.body.data.name;
     let imageCategory = req.body.data.image;
     let ruteImage = req.body.data.image;
-    
-    
+
+
   } catch (error) {
-    
+
   }
 };
 
 
 controllerCategory.deleteCategory = (req, res) => {
-  let idCategory = (req.body.idCategory) ? req.body.idCategory : null;
-  let passwordAdmin = (req.body.password) ? req.body.password : null;
-  let emailAdmin = req.user.emailUser;
+  try {
+    let emailStore = req.user.emailUser;
+    console.log(emailStore);
+    let nameCategory = req.body.data.name;
+    let passwordUser = req.body.data.password;
 
-  connectionDb.query("SELECT password_admin FROM administrator WHERE email_admin = ?", [emailAdmin], async (err, rows) => {
-    if (!err) {
-      if (rows.length > 0) {
-        let passwordAdminDB = rows[0].password_admin;
-        let comparePassword = await bcryptjs.matchPassword(passwordAdmin, passwordAdminDB);
-        if (comparePassword) {
-          connectionDb.query("SELECT * FROM category WHERE id_category = ?", [idCategory], async (err, rows) => {
-            if (err) {
-              return res.status(500).send({
-                mensaje: "Error al buscar categoria"
-              });
-            } else if (rows.length == 0) {
-              return res.status(202).send({
-                mensaje: "Esta categoria no existe"
-              });
-            } else if (rows.length > 0) {
-              let deleteImage = await cloudinaryDelete.deleteImage(rows[0].id_img_category);
-              connectionDb.query("DELETE FROM category WHERE id_category = ?", [idCategory], async (err, rows) => {
-                if (err) {
-                  return res.status(500).send({
-                    mensaje: "Error al eliminar categoria",
-                  });
-                } else {
-                  return res.status(200).send({
-                    mensaje: "Categoria eliminada con exito",
-                    rows: rows
-                  });
-                };
-              });
-            };
-          });
-        };
-      } else if (rows.length == 0) {
-        return res.status(202).send({
-          mensaje: "No se encontro el usuario"
-        });
-      };
-    } else {
-      return res.status(500).send({
-        mensaje: "Error al eliminar categoria"
-      });
-    };
-  });
+
+  } catch (error) {
+    return res.status(500).send({
+      mensaje: "Error en el servidor"
+    })
+  }
+
+
+  // connectionDb.query("SELECT password_admin FROM administrator WHERE email_admin = ?", [emailAdmin], async (err, rows) => {
+  //   if (!err) {
+  //     if (rows.length > 0) {
+  //       let passwordAdminDB = rows[0].password_admin;
+  //       let comparePassword = await bcryptjs.matchPassword(passwordAdmin, passwordAdminDB);
+  //       if (comparePassword) {
+  //         connectionDb.query("SELECT * FROM category WHERE id_category = ?", [idCategory], async (err, rows) => {
+  //           if (err) {
+  //             return res.status(500).send({
+  //               mensaje: "Error al buscar categoria"
+  //             });
+  //           } else if (rows.length == 0) {
+  //             return res.status(202).send({
+  //               mensaje: "Esta categoria no existe"
+  //             });
+  //           } else if (rows.length > 0) {
+  //             let deleteImage = await cloudinaryDelete.deleteImage(rows[0].id_img_category);
+  //             connectionDb.query("DELETE FROM category WHERE id_category = ?", [idCategory], async (err, rows) => {
+  //               if (err) {
+  //                 return res.status(500).send({
+  //                   mensaje: "Error al eliminar categoria",
+  //                 });
+  //               } else {
+  //                 return res.status(200).send({
+  //                   mensaje: "Categoria eliminada con exito",
+  //                   rows: rows
+  //                 });
+  //               };
+  //             });
+  //           };
+  //         });
+  //       };
+  //     } else if (rows.length == 0) {
+  //       return res.status(202).send({
+  //         mensaje: "No se encontro el usuario"
+  //       });
+  //     };
+  //   } else {
+  //     return res.status(500).send({
+  //       mensaje: "Error al eliminar categoria"
+  //     });
+  //   };
+  // });
 };
 
 export default controllerCategory;

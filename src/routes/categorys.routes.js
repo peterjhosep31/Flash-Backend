@@ -9,7 +9,7 @@ const routes = Router();
 
 routes.get('/getCategories', categorys.getCategory);
 routes.post('/addCategory', jwtConfiguration.validateToken, categorys.postCategory)
-routes.put('/updateCategory', jwtConfiguration.validateToken, categorys.putCategory)
+// routes.put('/updateCategory', jwtConfiguration.validateToken, categorys.putCategory)
 routes.delete('/deleteCategory', jwtConfiguration.validateToken, categorys.deleteCategory)
 
 export default routes;

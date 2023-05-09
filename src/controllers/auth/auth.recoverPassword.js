@@ -6,10 +6,10 @@ import bcryptjs from "../../config/bcryptjs/encryptPassword.js";
 const controllerRecoverPassword = {};
 let bann = true;
 let typeUser = null;
+let email = null;
 
 controllerRecoverPassword.recoverPassword = async (req, res) => {
-  console.log(bann);
-  let email = (req.body.data.email) ? req.body.data.email : null;
+  email = (req.body.data.email) ? req.body.data.email : null;
   let newPassword = (req.body.data.password) ? req.body.data.password : null;
   try {
     if (bann == true) {
@@ -17,10 +17,7 @@ controllerRecoverPassword.recoverPassword = async (req, res) => {
         if (rows.length > 0) {
           let codePassword = req.body.data.code;
           let codeRecover = rows[0].code_recover;
-
-          let compareCode = await bcryptjs.matchPassword(codePassword, codeRecover);
-          console.log(compareCode);
-          if (compareCode) {
+          if (codePassword == codeRecover) {
             bann = false;
             typeUser = "administrator";
             return res.status(200).send({
@@ -61,22 +58,23 @@ controllerRecoverPassword.recoverPassword = async (req, res) => {
       })
     } else if (bann == false) {
       bann = true
-      typeUser = null;
-      if (typeUser == "administrator") {
+      if (typeUser === "administrator") {
+        typeUser = null;
         let codeHast = await bcryptjs.encryptPassword(newPassword);
         await connectionDB.query("UPDATE administrator SET password_admin = ? WHERE email_admin = ?", [codeHast, email], async (err, rows) => {
-          if (!err) {
+          if (rows) {
             return res.status(200).send({
               mensaje: "Contraseña actualizada"
             })
-          } else {
+          } else if (err) {
             return res.status(402).send({
               mensaje: "Ocurrio un error",
               err
             })
           }
         })
-      } else if (typeUser == "customer") {
+      } else if (typeUser === "customer") {
+        typeUser = null;
         let codeHast = await bcryptjs.encryptPassword(newPassword);
         await connectionDB.query("UPDATE customer SET password_customer = ? WHERE email_customer = ?", [codeHast, email], async (err, rows) => {
           if (!err) {
@@ -102,16 +100,13 @@ controllerRecoverPassword.recoverPassword = async (req, res) => {
 controllerRecoverPassword.recoverPasswordUserCode = async (req, res) => {
   try {
     let codeRecover = password.recoverUser();
-    let codeHast = await bcryptjs.encryptPassword(codeRecover);
-    console.log(codeHast);
-    let email = (req.body.data.email) ? req.body.data.email : null;
+    email = (req.body.data.email) ? req.body.data.email : null;
 
     await connectionDB.query("SELECT name_admin FROM administrator WHERE email_admin = ?", [email], async (err, rows) => {
       if (rows.length > 0) {
         let nameAdmin = rows[0].name_admin
-        await connectionDB.query("UPDATE administrator SET code_recover = ? WHERE email_admin = ?", [codeHast, email], async (err, rows) => {
+        await connectionDB.query("UPDATE administrator SET code_recover = ? WHERE email_admin = ?", [codeRecover, email], async (err, rows) => {
           if (!err) {
-            console.log(rows);
             await connectionEmail.sendMail({
               from: "2022.flash.sale@gmail.com",
               to: email,
@@ -142,7 +137,7 @@ controllerRecoverPassword.recoverPasswordUserCode = async (req, res) => {
         await connectionDB.query("SELECT name_customer FROM customer WHERE email_customer = ?", [email], async (err, rows) => {
           if (rows.length > 0) {
             let nameCustomer = rows[0].name_customer
-            await connectionDB.query("UPDATE customer SET code_recover = ? WHERE email_customer = ?", [codeHast, email], async (err, rows) => {
+            await connectionDB.query("UPDATE customer SET code_recover = ? WHERE email_customer = ?", [codeRecover, email], async (err, rows) => {
               if (!err) {
                 await connectionEmail.sendMail({
                   from: "2022.flash.sale@gmail.com",
@@ -161,6 +156,9 @@ controllerRecoverPassword.recoverPasswordUserCode = async (req, res) => {
                   console.log(err);
                 })
               }
+              return res.status(200).send({
+                mensaje: "Se envio un correo electronico"
+              })
             })
           } else {
             return res.status(402).send({
@@ -178,6 +176,46 @@ controllerRecoverPassword.recoverPasswordUserCode = async (req, res) => {
   } catch (error) {
     res.status(500).send({
       mensaje: "Ocurrio un error"
+    })
+  }
+}
+
+controllerRecoverPassword.recoverPasswordStore = () => {
+  try {
+    let newPassword = req.body.data.password;
+    let passwordHast = bcryptjs.encryptPassword(newPassword);
+    let emailEmployee = req.body.data.email;
+    let nameStore = req.body.data.store;
+
+    connectionDB.query("UPDATE store SET password_store = ? WHERE name_store = ? ", [nameStore], async (err, rows) => {
+      if (!err) {
+        await connectionEmail.sendMail({
+          from: "2022.flash.sale@gmail.com",
+          to: emailEmployee,
+          subject: "Recuperar contraseña",
+          html: `<h1>
+          <p>Hola ${nameEmployee}</p>
+          <p>La nueva contraseña de la tienda es ${newPassword}</p>
+          <p>Para iniciar sesion nuevamente debe de hacerlo con esta contraseña otorgada</p>
+          </h1>`
+        }).then((res) => {
+          console.log("Send email")
+        }).catch((err) => {
+          console.log(err);
+        })
+        return res.status(200).send({
+          mensaje: "Se envio un correo electronico"
+        })
+      } else {
+        return res.status(402).send({
+          mensaje: "error",
+          err
+        })
+      }
+    })
+  } catch (error) {
+    return res.status(500).send({
+      mensaje: "Error en el servidor"
     })
   }
 }

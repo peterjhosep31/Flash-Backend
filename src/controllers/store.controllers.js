@@ -8,121 +8,96 @@ import password from "../helper/password.js";
 const controllerStore = {};
 
 controllerStore.postStore = async (req, res) => {
-  console.log(req.body);
-  let locationStore = null;
-  let routeImage = null;
-  let imageStore = null;
-  let crateFolder = null;
-  let urlImage = null;
-  let idImage = null;
+  try {
+    let locationStore = null;
+    let crateFolder = null;
+    let idAdmin = null;
+    let emailEmployee = req.user.emailUser ? req.user.emailUser : null;
+    let nameStore = req.body.data.nameStore ? req.body.data.nameStore : null;
 
-  let idAdmin = req.user.emailUser ? req.user.emailUser : null;
-  let passwordAdmin = req.body.data.password ? req.body.data.password : null;
-  let emailEmployee = req.body.data.emialEmployee ? req.body.data.emialEmployee : null;
-  let nameStore = req.body.data.nameStore ? req.body.data.nameStore : null;
+    await connectionDB.query("SELECT id_admin FROM administrator WHERE email_admin = ?", [req.user.emailUser], (err, rows) => {
+      if (!err) {
+        return idAdmin = rows[0].id_admin;
+      }
+    });
 
-  await connectionDB.query(
-    "SELECT password_admin FROM administrator WHERE email_admin = ?",
-    [idAdmin],
-    async (err, rows) => {
-      if (err) {
-        return res.status(404).send({
-          mensaje: "No se encontro el usuario",
-          error: err,
-        });
-      } else if (rows.length > 0) {
-        let passwordAdminDB = rows[0].password_admin;
-        // let comparePassword = await bcryptjs.matchPassword(
-        //   passwordAdmin,
-        //   passwordAdminDB
-        // );
- 
-        let n = 1
-        if (n = 1) {
-          await connectionDB.query(
-            "SELECT * FROM store WHERE name_store = ?",
-            [nameStore],
-            async (err, rows) => {
-              if (!err) {
-                if (rows.length > 0) {
-                  return res.status("202").send({
-                    mensaje: "La tienda ya existe",
-                    storeName: rows[0].name_store,
-                  });
-                } else if (rows.length === 0) {
-                  crateFolder = nameStore != null ? await uploadImages.createFolder(nameStore) : null;
-                  locationStore = req.body.data.ubicacion ? req.body.data.ubicacion : null;
-                  let emailStore = nameStore != null ? `${nameStore}${locationStore}@flash.com` : null;
-                  let passwordStore = password();
-                  let encryptPassword = await bcryptjs.encryptPassword(passwordStore);
-                  nodemailer.sendMail({
-                    from: '2022.flash.sale@gmail.com',
-                    to: req.body.data.email,
-                    subject: "Registro exitoso",
-                    html: `<h1>
+    await connectionDB.query(
+      "SELECT * FROM store WHERE name_store = ?",
+      [nameStore],
+      async (err, rows) => {
+        if (!err) {
+          if (rows.length > 0) {
+            return res.status("202").send({
+              mensaje: "La tienda ya existe",
+              storeName: rows[0].name_store,
+            });
+          } else if (rows.length === 0) {
+            crateFolder = nameStore != null ? await uploadImages.createFolder(nameStore) : null;
+            locationStore = req.body.data.ubicacion ? req.body.data.ubicacion : null;
+            let emailStore = nameStore != null ? `${nameStore}${locationStore}@flash.com` : null;
+            let passwordStore = password.storePassword();
+            let encryptPassword = await bcryptjs.encryptPassword(passwordStore);
+            nodemailer.sendMail({
+              from: '2022.flash.sale@gmail.com',
+              to: emailEmployee,
+              subject: "Registro exitoso",
+              html: `<h1>
                     <p></p>Se ha creado una cuenta para la tienda ${nameStore}</p><br>
                     <p>Usuario: ${emailStore}</p><br>
                     <p>Contraseña: ${passwordStore}</p><br>
                     </h1>`
-                  }).then((res) => {
-                    console.log("Email send");
-                  }).catch((err) => {
-                    console.log(err);
+            }).then((res) => {
+              console.log("Email send");
+            }).catch((err) => {
+              console.log(err);
+            });
+
+            connectionDB.query(
+              "INSERT INTO store SET ?", {
+              name_store: req.body.data.nameStore,
+              location_store: req.body.data.ubicacion,
+              email_store: emailStore,
+              password_store: encryptPassword,
+              rol: "empleado",
+              id_admin: idAdmin
+            },
+              (err, rows) => {
+                if (!err) {
+                  return res.status("200").send({
+                    mensaje: "Tienda creada",
                   });
-
-                  connectionDB.query(
-                    "INSERT INTO store SET ?", {
-                    name_store: req.body.data.nameStore,
-                    location_store: req.body.data.ubicacion,
-                    // img_store: urlImage,
-                    // id_img_store: idImage,
-                    email_store: emailStore,
-                    password_store: encryptPassword,
-                    rol: "empleado"
-
-                  },
-                    (err, rows) => {
-                      if (!err) {
-                        return res.status("200").send({
-                          mensaje: "Tienda creada",
-                        });
-                      } else if (err.code == "ER_DUP_ENTRY") {
-                        return res.status("202").send({
-                          mensaje: "El codigo de la tienda ya existe",
-                        });
-                      } else if (err) {
-                        return res.status("201").send({
-                          mensaje: "Error al crear la tienda",
-                          err,
-                        });
-                      } else {
-                        return res.status("200").send({
-                          mensaje: "Error",
-                        });
-                      }
-                    }
-                  );
+                } else if (err.code == "ER_DUP_ENTRY") {
+                  return res.status("202").send({
+                    mensaje: "El codigo de la tienda ya existe",
+                  });
+                } else if (err) {
+                  return res.status("201").send({
+                    mensaje: "Error al crear la tienda",
+                    err,
+                  });
                 } else {
-                  return res.status(202).send({
-                    mensaje: "Ocurrio un error",
+                  return res.status("200").send({
+                    mensaje: "Error",
                   });
                 }
               }
-            }
-          );
-        } else {
-          return res.status(202).send({
-            mensaje: "Contraseña incorrecta ---yyy ---t",
-          });
+            );
+          } else {
+            return res.status(403).send({
+              mensaje: "Ocurrio un error",
+            });
+          }
         }
-      } else if (rows.length === 0) {
-        return res.status(202).send({
-          mensaje: "El usuario no exite",
-        });
       }
-    }
-  );
-};
+    );
+
+  } catch (error) {
+    return res.status("500").send({
+      mensaje: "Ocurrio un error",
+      error,
+    });
+  }
+}
 
 controllerStore.getStore = async (req, res) => {
   await connectionDB.query("SELECT * FROM store", (err, rows) => {

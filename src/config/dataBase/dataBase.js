@@ -7,7 +7,7 @@ const myConnectionDataBase = mysql.createConnection({
     host: process.env.HOST_DB,
     user: process.env.USER_DB,
     password: process.env.PASSWORD_USERS,
-    database: process.env.DATA_BASE,
+    database: 'flash',
     charset: process.env.CHARSET_DB,
     port: 3306,
 });
