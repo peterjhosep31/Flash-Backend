@@ -16,19 +16,21 @@ jsonWebToken.generateAccessToken = async (user) => {
 
 jsonWebToken.validateToken = (req, res, next) => {
   const accessToken = req.headers["token"] || req.query.accessToken;
+  console.log(accessToken);
 
-  if (!accessToken)
-    return res.status("403").send("No cuenta con una verificacion");
+  if (!accessToken) return res.status("403").send("No cuenta con una verificacion");
 
   let decoded = jwt.verify(
     accessToken,
     process.env.SECRECT_KEY_JWT,
     (err, result) => {
+      console.log("resulatdo:", result);
       if (err) {
         res
           .status(202)
           .send("Acceso denagado, el token expiro o puede ser incorrecto");
       } else {
+
         req.user = {
           emailUser: result.user.email
         };
@@ -36,6 +38,7 @@ jsonWebToken.validateToken = (req, res, next) => {
       }
     }
   );
+  console.log(decoded);
 };
 
 jsonWebToken.validateRole = async (req, res, next) => {};

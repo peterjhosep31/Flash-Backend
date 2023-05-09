@@ -9,7 +9,7 @@ const routes = Router();
 
 routes.get("/productsConsultation", products.getProduct);
 routes.post("/addProducts", jwtConfiguration.validateToken, products.postProduct);
-// routes.put("/updateProducts", jwtConfiguration.validateToken, products.putProduct);
+routes.put("/updateProducts", jwtConfiguration.validateToken, products.putProduct);
 // routes.delete("/deleteProducts", jwtConfiguration.validateToken, products.deleteProduct);
 
 

@@ -9,7 +9,6 @@ const routes = Router();
 routes.post("/signInUser", authSingIn.singIn);
 routes.put("/recoverPassword", recover.recoverPasswordUserCode);
 routes.put("/newPassword", recover.recoverPassword);
-routes.put("/updatePassword", recover.updatePassword);
 
 routes.post("/signUpCustomer", authSingUp.signUpCustomer);
 routes.post("/signUpEmployee", authSingUp.signUpEmployee);

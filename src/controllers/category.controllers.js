@@ -7,9 +7,10 @@ const controllerCategory = {};
 
 controllerCategory.postCategory = async (req, res) => {
   try {
-    const nameCategory = (req.body.data.category) ? req.body.data.category : null;
+    const nameCategory = (req.body.data.nameCategory) ? req.body.data.nameCategory : null;
     const routeImage = (req.body.data.image) ? req.body.data.image : null;
     let emailUser = req.user.emailUser;
+    console.log(emailUser);
     let photoCategory = null;
     let urlImage = null;
     let idImage = null;
@@ -36,10 +37,18 @@ controllerCategory.postCategory = async (req, res) => {
               });
             }
           });
+        } else {
+          return res.status(404).send({
+            mensaje: "No hay ningun usuario registrado en la base de datos."
+            });
         }
-      }
-    })
-
+      }else{
+        return res.status(500).send({
+          mensaje: "error",
+          err
+      })
+    }
+  })
   } catch (error) {
     return res.status(500).send({
       mensaje: "Error al registrar categoria.",
@@ -69,7 +78,18 @@ controllerCategory.getCategoryStore = async (req, res) => {
   try {
     connectionDb.query("SELECT id_store FROM category WHERE email_store = ?", [req.user.emailUser], (err, rows) => {
       if (rows.length > 0) {
-        connectionDb.query("SELECT * ")
+        connectionDb.query("SELECT * FROM category WHERE id_store = ?", (err, rows) => {
+          if (rows.length > 0) {
+            return res.status(200).send({
+              mensaje: "Mostrando categorias con exito",
+              rows: rows
+            });
+          } else if (err) {
+            return res.status(500).send({
+              mensaje: "Error al mostrar las categorias"
+            });
+          }
+        })
       } else {
         return res.status(202).send({
           mensaje: "Error al mostrar las categorias"
@@ -88,6 +108,19 @@ controllerCategory.putCategory = async (req, res) => {
     let nameCategory = req.body.data.name;
     let imageCategory = req.body.data.image;
     let ruteImage = req.body.data.image;
+    let uploadImage = (ruteImage != null) ? await cloudinaryUpload.uploadImagesCategories(ruteImage) : null;
+    let idImage;
+    let urlImage;
+    if (uploadImage != null) {
+      idImage = uploadImage.public_id;
+      urlImage = uploadImage.secure_url;
+    }
+    let emailUser = req.user.emailUser;
+    await connectionDb.query("SELECT id_store FROM store WHERE email_store = ?", [emailUser], (err, rows) => {
+      if (condition) {
+        
+      }
+    })
 
 
   } catch (error) {
