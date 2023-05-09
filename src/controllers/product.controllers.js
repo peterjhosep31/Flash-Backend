@@ -6,21 +6,43 @@ import utilities from "../helper/productUseful.js"
 
 const controllerProduct = {};
 controllerProduct.postProduct = async (req, res) => {
-  let nameProduct = (req.body.name) ? req.body.name : null;
-  let descriptionProduct = (req.body.description) ? req.body.description : null;
-  let availability = (req.body.availability) ? req.body.availability : null;
-  
-  let amountProduct = (req.body.amount) ? req.body.amount : null;
-  let priceProduct = (req.body.price) ? req.body.price : null;
-  let imgProductRute = (req.body.image) ? req.body.image : null;
-  let imgProduct = (imgProductRute == null || imgProductRute == "") ? null : await uploadImages.uploadImagesUser(imgProductRute);
-  let urlImgProduct = (imgProduct != null) ? imgProduct.secure_url : null;
-  let idImgProduct = (imgProduct != null) ? imgProduct.public_id : null;
+  try {
 
-  let categoryProduct = (req.body.category) ? req.body.category : null;
-  let offerProduct = (req.body.offer) ? req.body.offer : null;
-  let storeProduct = (req.body.store) ? req.body.store : null;
+    let nameProduct = (req.body.name) ? req.body.name : null;
+    let descriptionProduct = (req.body.description) ? req.body.description : null;
+    let availability = (req.body.availability) ? req.body.availability : null;
 
+    let amountProduct = (req.body.amount) ? req.body.amount : null;
+    let priceProduct = (req.body.price) ? req.body.price : null;
+    let imgProductRute = (req.body.image) ? req.body.image : null;
+    let imgProduct = (imgProductRute == null || imgProductRute == "") ? null : await uploadImages.uploadImagesUser(imgProductRute);
+    let urlImgProduct = (imgProduct != null) ? imgProduct.secure_url : null;
+    let idImgProduct = (imgProduct != null) ? imgProduct.public_id : null;
+
+    let categoryProduct = (req.body.category) ? req.body.category : null;
+    let offerProduct = (req.body.offer) ? req.body.offer : null;
+    let storeProduct = req.user.emailUser;
+    let idStore = null;
+
+    await connectionDB.query("SELECT id_store FROM store WHERE emial_store = ?", [storeProduct], async (err, rows) => {
+      if (!err) {
+        if (rows.length > 0) {
+          idStore = rows[0].id_store;
+          await connectionDB.query("INSERT INTO product SET ?", {
+            name_product: nameProduct,
+            description_product: descriptionProduct,
+            availability_product: availability,
+            amount_product: amountProduct,
+            price_product: priceProduct,
+            img_product: urlImgProduct,
+            id_img_product: idImgProduct,
+            id_store_product: idStore,
+            id_category_category: categoryProduct,
+            id_offer_product: 0
+          }, )
+        }
+      }
+    })
   // await connectionDB.query("INSER INTO product SET ?", {
   //   id_product: idProduct,
   //   name_product: nameProduct,
@@ -44,6 +66,11 @@ controllerProduct.postProduct = async (req, res) => {
   //     rows: rows
   //   })
   // })
+  } catch (error) {
+    return res.status(500).send({
+      mensaje: "Error en el servidor",
+    })
+  }
 
 };
 

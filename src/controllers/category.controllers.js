@@ -65,6 +65,24 @@ controllerCategory.getCategory = (req, res) => {
   });
 };
 
+controllerCategory.getCategoryStore = async (req, res) => {
+  try {
+    connectionDb.query("SELECT id_store FROM category WHERE email_store = ?", [req.user.emailUser], (err, rows) => {
+      if (rows.length > 0) {
+        connectionDb.query("SELECT * ")
+      } else {
+        return res.status(202).send({
+          mensaje: "Error al mostrar las categorias"
+        });
+      }
+    })
+  } catch (error) {
+    return res.status(500).send({
+      mensaje: "Error en el servidor",
+    })
+  }
+}
+
 controllerCategory.putCategory = async (req, res) => {
   try {
     let nameCategory = req.body.data.name;
@@ -85,6 +103,28 @@ controllerCategory.deleteCategory = (req, res) => {
     let nameCategory = req.body.data.name;
     let passwordUser = req.body.data.password;
 
+    let id_store = null;
+    connectionDb.query("SELECT password_store, id_store FROM store WHERE email_store = ?", [emailStore], async (err, rows) => {
+      if (!err) {
+        if (rows.length > 0) {
+          id_store = rows[0].id_store;
+          let passwordUserDB = rows[0].password_store;
+          let comparePassword = await bcryptjs.matchPassword(passwordUser, passwordUserDB);
+          if (comparePassword) {
+            connectionDb.query("SELECT * FROM category WHERE name_category = ?", [nameCategory], async (err, rows) => {
+
+
+
+
+            });
+          };
+        } else {
+          return res.status(202).send({
+            mensaje: "Este usuario no existe"
+          });
+        };
+      };
+    })
 
   } catch (error) {
     return res.status(500).send({
