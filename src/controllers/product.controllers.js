@@ -6,47 +6,65 @@ import utilities from "../helper/productUseful.js"
 
 const controllerProduct = {};
 controllerProduct.postProduct = async (req, res) => {
-  let idProduct = (req.body.codeProduct) ? req.body.codeProduct : null;
-  let nameProduct = (req.body.name) ? req.body.name : null;
-  let descriptionProduct = (req.body.description) ? req.body.description : null;
-  let availability = (req.body.availability) ? req.body.availability : null;
-  let availabilityProduct = await utilities.availability(availability);
-  
-  let amountProduct = (req.body.amount) ? req.body.amount : null;
-  let priceProduct = (req.body.price) ? req.body.price : null;
-  let imgProductRute = (req.body.image) ? req.body.image : null;
-  // let imgProduct = (imgProductRute == null || imgProductRute == "") ? null : await uploadImages.uploadImagesUser(imgProductRute);
-  let urlImgProduct = (imgProduct != null) ? imgProduct.secure_url : null;
-  let idImgProduct = (imgProduct != null) ? imgProduct.public_id : null;
+  console.log(req.body);
+  try {
 
-  let categoryProduct = (req.body.category) ? req.body.category : null;
-  let offerProduct = (req.body.offer) ? req.body.offer : null;
-  let storeProduct = (req.body.store) ? req.body.store : null;
+    let nameProduct = (req.body.data.name) ? req.body.data.name : null;
+    let descriptionProduct = (req.body.data.description) ? req.body.data.description : null;
+    let availability = (req.body.data.availability) ? req.body.data.availability : null;
 
-  // await connectionDB.query("INSER INTO product SET ?", {
-  //   id_product: idProduct,
-  //   name_product: nameProduct,
-  //   description_product: descriptionProduct,
-  //   availability_product: availabilityProduct,
-  //   amount_product: amountProduct,
-  //   price_product: priceProduct,
-  //   img_product: urlImgProduct,
-  //   id_img_product: idImgProduct,
-  //   id_store_product: storeProduct,
-  //   id_product_category: categoryProduct,
-  //   id_offer_product: offerProduct
-  // }, async (err, rows) => {
-  //   if (err) return res.status(500).send({
-  //     mensaje: "Error al insertar producto",
-  //     error: err
-  //   })
+    let amountProduct = (req.body.data.amount) ? req.body.data.amount : null;
+    let priceProduct = (req.body.data.price) ? req.body.data.price : null;
+    let imgProductRute = (req.body.data.image) ? req.body.data.image : null;
+    let imgProduct = (imgProductRute == null || imgProductRute == "") ? null : await uploadImages.uploadImagesUser(imgProductRute);
+    let urlImgProduct = (imgProduct != null) ? imgProduct.secure_url : null;
+    let idImgProduct = (imgProduct != null) ? imgProduct.public_id : null;
 
-  //   return res.status(200).send({
-  //     mensaje: "Producto insertado con exito",
-  //     rows: rows
-  //   })
-  // })
+    let categoryProduct = (req.body.data.category) ? req.body.data.category : null;
+    let storeProduct = req.user.emailUser;
+    let idStore = null;
+    
+    await connectionDB.query("SELECT id_store FROM store WHERE email_store = ?", [storeProduct], async (err, rows) => {
+      if (!err) {
+        if (rows.length > 0) {
+          idStore = rows[0].id_store;
+          console.log(nameProduct, '\n',
+          descriptionProduct, '\n',
+          amountProduct, '\n',
+          priceProduct, '\n',
+          urlImgProduct, '\n',
+          idImgProduct, '\n',
+          idStore, '\n', 
+          categoryProduct
+          );
+          await connectionDB.query("INSERT INTO product SET ?", {
+            name_product: nameProduct,
+            description_product: descriptionProduct,
+            availability_product: 'available',
+            amount_poduct: parseInt(amountProduct),
+            price_product: parseInt(priceProduct),
+            id_store_product : idStore,
+            id_product_category : categoryProduct,
+            id_offer_product : 1
+          }, (err, rows) => {
+            if (err) return res.status(500).send({
+              mensaje: "Error al insertar producto",
+              error: err
+            })
 
+            return res.status(200).send({
+              mensaje: "Producto insertado con exito",
+              rows: rows
+            })
+          })
+        }
+      }
+    })
+  } catch (error) {
+    return res.status(500).send({
+      mensaje: "Error en el servidor",
+    })
+  }
 };
 
 controllerProduct.getProduct = async (req, res) => {

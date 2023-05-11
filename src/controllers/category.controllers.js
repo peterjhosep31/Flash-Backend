@@ -75,14 +75,16 @@ controllerCategory.getCategory = (req, res) => {
 };
 
 controllerCategory.getCategoryStore = async (req, res) => {
+  console.log('sdjvbh');
   try {
-    connectionDb.query("SELECT id_store FROM category WHERE email_store = ?", [req.user.emailUser], (err, rows) => {
+    connectionDb.query("SELECT id_store FROM store WHERE email_store = ?", [req.user.emailUser], (err, rows) => {
       if (rows.length > 0) {
-        connectionDb.query("SELECT * FROM category WHERE id_store = ?", (err, rows) => {
+        connectionDb.query("SELECT * FROM category WHERE id_store = ?",[rows[0].id_store], (err, rows) => {
           if (rows.length > 0) {
+           
             return res.status(200).send({
               mensaje: "Mostrando categorias con exito",
-              rows: rows
+              data: rows
             });
           } else if (err) {
             return res.status(500).send({
