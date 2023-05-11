@@ -1,6 +1,7 @@
 import { v2 as cloudinary } from "cloudinary";
 
 import confiCloudinary from "./confiCloudinary.js"
+import { format } from "mysql";
 
 const cloudinaryUploadImages = {}
 
@@ -48,6 +49,22 @@ cloudinaryUploadImages.uploadImagesCategories = (image) => {
       console.log(err);
       console.log("________________________________");
 
+    }
+  })
+}
+
+
+cloudinaryUploadImages.uploadImagesProducts = async (image, folder) => {
+  return await cloudinary.uploader.upload(image, {
+    folder: `Flash/Stores/${folder}/products/`,
+    format: "png",
+    width: 500,
+    height: 600,
+    density: 1080,
+    crop: "fill"
+    }, async (result, error) => {
+    if (err){
+      console.log(error);
     }
   })
 }

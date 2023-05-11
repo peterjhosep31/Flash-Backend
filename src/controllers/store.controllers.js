@@ -2,7 +2,7 @@ import connectionDB from "../config/dataBase/dataBase.js";
 import uploadImages from "../config/cloudinary/uploadImages.js";
 import deleteImages from "../config/cloudinary/deleteImages.js";
 import bcryptjs from "../config/bcryptjs/encryptPassword.js";
-import nodemailer from "../config/email/email.js";
+import emialSend from "../config/email/emailCreateUsers.js"
 import password from "../helper/password.js";
 
 const controllerStore = {};
@@ -12,10 +12,13 @@ controllerStore.postStore = async (req, res) => {
     let locationStore = null;
     let crateFolder = null;
     let idAdmin = null;
-    let emailEmployee = req.user.emailUser ? req.user.emailUser : null;
+    let emialAdmin = req.user.emailUser ? req.user.emailUser : null;
     let nameStore = req.body.data.nameStore ? req.body.data.nameStore : null;
+    let emailEmployee = req.body.data.email ? req.body.data.email : null;
+    let nameEmployee = req.body.data.nombreEmpleado ? req.body.data.nombreEmpleado : null;
+    let idEmployee = req.body.data.idEmpleado ? req.body.data.idEmpleado : null;
 
-    await connectionDB.query("SELECT id_admin FROM administrator WHERE email_admin = ?", [req.user.emailUser], (err, rows) => {
+    await connectionDB.query("SELECT id_admin FROM administrator WHERE email_admin = ?", [emialAdmin], (err, rows) => {
       if (!err) {
         return idAdmin = rows[0].id_admin;
       }
@@ -34,24 +37,12 @@ controllerStore.postStore = async (req, res) => {
           } else if (rows.length === 0) {
             crateFolder = nameStore != null ? await uploadImages.createFolder(nameStore) : null;
             locationStore = req.body.data.ubicacion ? req.body.data.ubicacion : null;
-            let emailStore = nameStore != null ? `${nameStore}${locationStore}@flash.com` : null;
+            let nameStoreNotSpaces = nameStore.replace(/\s+/g, '_');
+            let ubicacionNotSpaces = locationStore.replace(/\s+/g, '_')
+            let emailStore = nameStore != null ? `${nameStoreNotSpaces}_${ubicacionNotSpaces}@flash.com` : null;
             let passwordStore = password.storePassword();
             let encryptPassword = await bcryptjs.encryptPassword(passwordStore);
-            nodemailer.sendMail({
-              from: '2022.flash.sale@gmail.com',
-              to: emailEmployee,
-              subject: "Registro exitoso",
-              html: `<h1>
-                    <p></p>Se ha creado una cuenta para la tienda ${nameStore}</p><br>
-                    <p>Usuario: ${emailStore}</p><br>
-                    <p>Contraseña: ${passwordStore}</p><br>
-                    </h1>`
-            }).then((res) => {
-              console.log("Email send");
-            }).catch((err) => {
-              console.log(err);
-            });
-
+            // TODO: hacer el insert en employee y modificar la tabla de una vez
             connectionDB.query(
               "INSERT INTO store SET ?", {
               name_store: req.body.data.nameStore,
@@ -60,27 +51,32 @@ controllerStore.postStore = async (req, res) => {
               password_store: encryptPassword,
               rol: "empleado",
               id_admin: idAdmin
-            },
-              (err, rows) => {
-                if (!err) {
-                  return res.status("200").send({
-                    mensaje: "Tienda creada",
-                  });
-                } else if (err.code == "ER_DUP_ENTRY") {
-                  return res.status("202").send({
-                    mensaje: "El codigo de la tienda ya existe",
-                  });
-                } else if (err) {
-                  return res.status("201").send({
-                    mensaje: "Error al crear la tienda",
-                    err,
-                  });
-                } else {
-                  return res.status("200").send({
-                    mensaje: "Error",
-                  });
-                }
+            }, async (err, rows) => {
+              if (!err) {
+                // // await connectionDB.query("INSERT INTO employee SET ?" {
+                // //   name_employee: nameEmployee,
+                // //   email_employee: emailEmployee,
+
+                // })
+                await emialSend.createStore(emailEmployee, nameEmployee, nameStore, emailStore, passwordStore);
+                return res.status("200").send({
+                  mensaje: "Tienda creada",
+                });
+              } else if (err.code == "ER_DUP_ENTRY") {
+                return res.status("202").send({
+                  mensaje: "El codigo de la tienda ya existe",
+                });
+              } else if (err) {
+                return res.status("201").send({
+                  mensaje: "Error al crear la tienda",
+                  err,
+                });
+              } else {
+                return res.status("200").send({
+                  mensaje: "Error",
+                });
               }
+            }
             );
           } else {
             return res.status(403).send({

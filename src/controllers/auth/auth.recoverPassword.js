@@ -1,15 +1,12 @@
 import connectionDB from "../../config/dataBase/dataBase.js";
-import connectionEmail from "../../config/email/email.js";
 import password from "../../helper/password.js";
 import bcryptjs from "../../config/bcryptjs/encryptPassword.js";
-import { query } from "express";
+import emailSend from "../../config/email/emialRecoverPassword.js"
 
 const controllerRecoverPassword = {};
-let typeUser = null;
 
 controllerRecoverPassword.recoverPassword = async (req, res) => {
   let email = (req.body.data.email) ? req.body.data.email : null;
-  let newPassword = (req.body.data.password) ? req.body.data.password : null;
   try {
 
     await connectionDB.query("SELECT code_recover FROM administrator WHERE email_admin = ?", [email], async (err, rows) => {
@@ -31,7 +28,6 @@ controllerRecoverPassword.recoverPassword = async (req, res) => {
           console.log(rows, "\n", err);
           if (rows.length > 0) {
             let codePassword = req.body.data.code;
-            // let compareCode = await bcryptjs.matchPassword(rows[0].code_recover, codePassword);
             if (codePassword == rows[0].code_recover) {
               return res.status(200).send({
                 mensaje: "Codigo valido"
@@ -63,13 +59,10 @@ controllerRecoverPassword.recoverPassword = async (req, res) => {
 }
 
 controllerRecoverPassword.updatePassword = async (req, res) => {
-  console.log(req.body.data);
   try {
-    console.log("jhgfghjk");
     let email = (req.body.data.email) ? req.body.data.email : null;
     let newPassword = (req.body.data.password) ? req.body.data.password : null;
     await connectionDB.query("SELECT email_admin FROM administrator WHERE email_admin = ?", [email], async (err, rows) => {
-      console.log(err);
       if (rows.length > 0) {
         let codeHast = await bcryptjs.encryptPassword(newPassword);
         await connectionDB.query("UPDATE administrator SET password_admin = ?, code_recover = ? WHERE email_admin = ?", [codeHast, null, email], async (err, rows) => {
@@ -85,9 +78,7 @@ controllerRecoverPassword.updatePassword = async (req, res) => {
         })
       } else if (rows.length === 0) {
         await connectionDB.query("SELECT email_customer FROM customer WHERE email_customer = ?", [email], async (err, rows) => {
-          console.log(err);
           if (rows.length > 0) {
-            console.log('09876');
             let codeHast = await bcryptjs.encryptPassword(newPassword);
             await connectionDB.query("UPDATE customer SET password_customer = ? WHERE email_customer = ?", [codeHast, email], async (err, rows) => {
               if (!err) {
@@ -135,22 +126,7 @@ controllerRecoverPassword.recoverPasswordUserCode = async (req, res) => {
         let nameAdmin = rows[0].name_admin
         await connectionDB.query("UPDATE administrator SET code_recover = ? WHERE email_admin = ?", [codeRecover, email], async (err, rows) => {
           if (!err) {
-            await connectionEmail.sendMail({
-              from: "2022.flash.sale@gmail.com",
-              to: email,
-              subject: "Recuperar contraseña",
-              html: `<h1>
-            <p>Hola ${nameAdmin}</p>
-            <p>Para recuperar tu contraseña ingresa al siguiente codigo</p>
-            <p>Codigo:  ${codeRecover}</p>
-            <p>Si no solicitaste una recuperación de contraseña ignora este correo</p>
-            <p>Gracias</p>
-          </h1>`
-            }).then((res) => {
-              console.log("Send email")
-            }).catch((err) => {
-              console.log(err);
-            })
+            await emailSend.recoverPassword(codeRecover);
             return res.status(200).send({
               mensaje: "Se envio un correo electronico"
             })
@@ -167,22 +143,7 @@ controllerRecoverPassword.recoverPasswordUserCode = async (req, res) => {
             let nameCustomer = rows[0].name_customer
             await connectionDB.query("UPDATE customer SET code_recover = ? WHERE email_customer = ?", [codeRecover, email], async (err, rows) => {
               if (!err) {
-                await connectionEmail.sendMail({
-                  from: "2022.flash.sale@gmail.com",
-                  to: email,
-                  subject: "Recuperar contraseña",
-                  html: `<h1>
-                <p></p>Hola ${nameCustomer}</p>
-                <p>Para recuperar tu contraseña ingresa al siguiente codigo</p>
-                <p>Codigo:  ${codeRecover}</p>
-                <p>Si no solicitaste una recuperación de contraseña ignora este correo</p>
-                <p>Gracias</p>
-              </h1>`
-                }).then((res) => {
-                  console.log("Send email")
-                }).catch((err) => {
-                  console.log(err);
-                })
+                await emailSend.recoverPassword(codeRecover);
               }
               return res.status(200).send({
                 mensaje: "Se envio un correo electronico"

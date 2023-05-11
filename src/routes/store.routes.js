@@ -8,8 +8,7 @@ const router = Router();
 
 router.get("/consultationStore", stores.getStore);
 router.post("/addStore", jwtConfiguration.validateToken, stores.postStore);
-
-// routesExpress.put("/putStore", store.putStore);
-// routesExpress.delete("/deleteStore", store.deleteStore);
+router.put("/updateStore", jwtConfiguration.validateToken, stores.putStore);
+router.delete("/deleteStore", jwtConfiguration.validateToken, stores.deleteStore);
 
 export default router;

@@ -23,11 +23,11 @@ controllerAuth.singIn = async (req, res) => {
             email: rows[0].email_admin,
             permission: rows[0].rol
           };
-          let rolUser = rows[0].rol
+          let rolAdmin = rows[0].rol
           let accessToken = await jwt.generateAccessToken(user);
           return res.status("200").send({
             mensaje: "Usuario logueado con exito",
-            accessToken, rolUser
+            accessToken, rolAdmin
           });
         } else {
           return res.status("402").send({
@@ -45,12 +45,12 @@ controllerAuth.singIn = async (req, res) => {
                   email: rows[0].email_store,
                   permission: rows[0].rol
                 };
-                let rolUser = rows[0].rol
+                let rolAdmin = rows[0].rol
                 let accessToken = await jwt.generateAccessToken(user);
                 return res.status("200").send({
                   mensaje: "Se logueo",
                   accessToken,
-                  rolUser
+                  rolAdmin
                 });
               } else {
                 return res.status("402").send({
@@ -64,7 +64,7 @@ controllerAuth.singIn = async (req, res) => {
                     let passwordUserDB = rows[0].password_customer;
                     let passwordCompare = await encrypted.matchPassword(passwordUser, passwordUserDB);
                     if (passwordCompare) {
-                      let rolUser = rows[0].rol;
+                      let rolAdmin = rows[0].rol;
                       let user = {
                         email: rows[0].email_customer,
                         permission: rows[0].rol
@@ -73,7 +73,7 @@ controllerAuth.singIn = async (req, res) => {
                       return res.status("200").send({
                         mensaje: "Usuario logueado",
                         accessToken,
-                        rolUser
+                        rolAdmin
                       });
                     }
                   } else if (rows.length === 0) {

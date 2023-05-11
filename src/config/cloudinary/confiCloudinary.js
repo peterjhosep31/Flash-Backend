@@ -5,9 +5,9 @@ dotenv.config();
 
 export default function connectCloudinary() {
   cloudinary.config({
-    cloud_name: process.env.CLOUDINARY_NAME,
-    api_key: process.env.CLOUDINARY_APY_KEY,
-    api_secret: process.env.CLOUDINARY_APY_KEY_SECRET,
+    cloud_name: 'djaejhxwz',
+    api_key: '849518477251571',
+    api_secret: 'mEYQ6SPWRwH4GPG9MBX1ObELlwc',
     secure: true,
   });
 }

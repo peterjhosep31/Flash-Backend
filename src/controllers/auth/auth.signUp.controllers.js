@@ -2,6 +2,7 @@
 
 import connectionDb from "../../config/dataBase/dataBase.js";
 import encrypted from "../../config/bcryptjs/encryptPassword.js";
+import emailSend from "../../config/email/emailCreateUsers.js";
 
 const controllerAuth = {};
 
@@ -25,13 +26,14 @@ controllerAuth.signUpAdmin = async (req, res) => {
             email_admin: emailuser,
             password_admin: passwordHash,
             rol: codePermission,
-          }, (err, rows) => {
+          }, async (err, rows) => {
             if (err) {
               return res.status(400).send({
                 mensaje: "Error al registrar el usuario",
                 error: err
               });
             } else {
+              await emailSend.confirmUser(emailuser, nameuser)
               return res.status(200).send({
                 mensaje: "Usuario registrado con éxito"
               });
@@ -56,10 +58,7 @@ controllerAuth.signUpEmployee = async (req, res) => {
   try {
     let nameUser = (req.body.name) ? req.body.name : null;
     let emailUser = (req.body.email) ? req.body.email : null;
-    let passwordUser = (req.body.password) ? req.body.password : null
-    let passwordHash = (passwordUser != null) ? await encrypted.encryptPassword(passwordUser) : null;
     let store = (req.body.idStore) ? req.body.idStore : null;
-    let codePermission = "empleado";
 
     await connectionDb.query("SELECT * FROM employee WHERE email_employee = ?", [emailUser], async (err, rows) => {
       if (!err) {
@@ -72,10 +71,7 @@ controllerAuth.signUpEmployee = async (req, res) => {
           await connectionDb.query("INSERT INTO employee SET ?", {
             name_employee: nameUser,
             email_employee: emailUser,
-            password_employee: passwordHash,
-            state_employee: 'asset',
-            id_store: store,
-            rol: codePermission
+            id_store: store
           }, (err, rows) => {
             if (err) {
               return res.status("202").send({
@@ -129,6 +125,7 @@ controllerAuth.signUpCustomer = async (req, res) => {
                 error: err
               });
             } else {
+              emailSend.confirmUser(emailUser, nameUser)
               return res.status("200").send({
                 mensaje: "Usuario registrado con exito"
               });
