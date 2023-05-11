@@ -7,9 +7,9 @@ import category from "./categorys.routes.js";
 
 const routesExpress = express.Router();
 
+routesExpress.use('/products', productsRoutes);
 routesExpress.use('/authUser', authUserRoutes);
 routesExpress.use('/stores', storeRoutes);
 routesExpress.use('/category', category);
-routesExpress.use('/products', productsRoutes);
 
 export default routesExpress;

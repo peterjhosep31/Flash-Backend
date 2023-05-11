@@ -7,17 +7,29 @@ import bcryptjs from "../config/bcryptjs/encryptPassword.js";
 const controllerProduct = {};
 
 controllerProduct.postProduct = async (req, res) => {
+  console.log(req.body);
   try {
     let nameProduct = (req.body.data.name) ? req.body.data.name : null;
     let descriptionProduct = (req.body.data.description) ? req.body.data.description : null;
     let availability = (req.body.data.availability) ? req.body.data.availability : null;
 
+    let nameProduct = (req.body.data.name) ? req.body.data.name : null;
+    let descriptionProduct = (req.body.data.description) ? req.body.data.description : null;
+    let availability = (req.body.data.availability) ? req.body.data.availability : null;
     let amountProduct = (req.body.data.amount) ? req.body.data.amount : null;
     let priceProduct = (req.body.data.price) ? req.body.data.price : null;
     let imgProductRute = (req.body.data.image) ? req.body.data.image : null;
 
     let categoryProduct = (req.body.data.category) ? req.body.data.category : null;
     let offerProduct = (req.body.data.offer) ? req.body.data.offer : null;
+    let amountProduct = (req.body.data.amount) ? req.body.data.amount : null;
+    let priceProduct = (req.body.data.price) ? req.body.data.price : null;
+    let imgProductRute = (req.body.data.image) ? req.body.data.image : null;
+    let imgProduct = (imgProductRute == null || imgProductRute == "") ? null : await uploadImages.uploadImagesUser(imgProductRute);
+    let urlImgProduct = (imgProduct != null) ? imgProduct.secure_url : null;
+    let idImgProduct = (imgProduct != null) ? imgProduct.public_id : null;
+
+    let categoryProduct = (req.body.data.category) ? req.body.data.category : null;
     let storeProduct = req.user.emailUser;
 
     await connectionDB.query("SELECT id_store, name_store FROM store WHERE email_store = ?", [storeProduct], async (err, rows) => {
@@ -44,6 +56,23 @@ controllerProduct.postProduct = async (req, res) => {
           }, (err, rows) => {
             console.log(err);
             if (err) return res.status(403).send({
+              mensaje: "Error al insertar producto",
+              error: err
+            })
+
+            return res.status(200).send({
+              mensaje: "Producto insertado con exito",
+              rows: rows
+            })
+          })
+            availability_product: 'available',
+            amount_poduct: parseInt(amountProduct),
+            price_product: parseInt(priceProduct),
+            id_store_product : idStore,
+            id_product_category : categoryProduct,
+            id_offer_product : 1
+          }, (err, rows) => {
+            if (err) return res.status(500).send({
               mensaje: "Error al insertar producto",
               error: err
             })

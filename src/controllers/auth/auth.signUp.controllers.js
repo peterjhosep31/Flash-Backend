@@ -7,6 +7,8 @@ import emailSend from "../../config/email/emailCreateUsers.js";
 const controllerAuth = {};
 
 controllerAuth.signUpAdmin = async (req, res) => {
+  console.log("tatiana");
+  console.log(req.body);
   try {
     let emailuser = (req.body.data.email) ? req.body.data.email : null;
     let nameuser = (req.body.data.nameUser) ? req.body.data.nameUser : null;

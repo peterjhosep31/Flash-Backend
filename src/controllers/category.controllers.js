@@ -74,6 +74,7 @@ controllerCategory.getCategory = (req, res) => {
 };
 
 controllerCategory.getCategoryStore = async (req, res) => {
+  console.log('sdjvbh');
   try {
     connectionDb.query("SELECT id_store FROM store WHERE email_store = ?", [req.user.emailUser], (err, rows) => {
       if (rows.length > 0) {
