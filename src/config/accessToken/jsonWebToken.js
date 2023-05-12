@@ -6,7 +6,6 @@ dotenv.config();
 const jsonWebToken = {};
 
 jsonWebToken.generateAccessToken = async (user) => {
-  console.log(user);
   return jwt.sign({
     user
   }, process.env.SECRECT_KEY_JWT, {
@@ -16,7 +15,6 @@ jsonWebToken.generateAccessToken = async (user) => {
 
 jsonWebToken.validateToken = (req, res, next) => {
   const accessToken = req.headers["token"] || req.query.accessToken;
-  console.log(accessToken);
 
   if (!accessToken) return res.status("403").send("No cuenta con una verificacion");
 
@@ -24,7 +22,6 @@ jsonWebToken.validateToken = (req, res, next) => {
     accessToken,
     process.env.SECRECT_KEY_JWT,
     (err, result) => {
-      console.log("resulatdo:", result);
       if (err) {
         res
           .status(202)
@@ -38,7 +35,6 @@ jsonWebToken.validateToken = (req, res, next) => {
       }
     }
   );
-  console.log(decoded);
 };
 
 jsonWebToken.validateRole = async (req, res, next) => {};

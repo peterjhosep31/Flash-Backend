@@ -2,7 +2,7 @@ import configEmail from "./emailConfig.js";
 
 const emailRecoverPassword = {};
 
-emailRecoverPassword.recoverPassword = async (code) => {
+emailRecoverPassword.recoverPassword = async (email,code, name) => {
   configEmail.sendMail({
     from: process.env.userEmail,
     to: email,
@@ -29,7 +29,7 @@ emailRecoverPassword.recoverPassword = async (code) => {
             </div>
             <div class="box-primary">
               <div class="welcome">
-                ¡Hola Zharick!
+                ¡Hola ${name}!
               </div>
               <div class="textFlash"><p>Hemos Recibido tu solicitud para restablecer la contraseña de Flash </p>
                 <p>Codigo:${code}</p>
