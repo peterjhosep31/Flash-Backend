@@ -6,7 +6,6 @@ import emailSend from "../../config/email/emialRecoverPassword.js"
 const controllerRecoverPassword = {};
 
 controllerRecoverPassword.recoverPassword = async (req, res) => {
-  console.log(bann);
   let email = (req.body.data.email) ? req.body.data.email : null;
   try {
 
@@ -24,9 +23,7 @@ controllerRecoverPassword.recoverPassword = async (req, res) => {
           })
         }
       } else if (rows.length == 0) {
-        console.log(email);
         await connectionDB.query("SELECT code_recover FROM customer WHERE email_customer = ?", [email], async (err, rows) => {
-          console.log(rows, "\n", err);
           if (rows.length > 0) {
             let codePassword = req.body.data.code;
             if (codePassword == rows[0].code_recover) {
@@ -88,7 +85,6 @@ controllerRecoverPassword.updatePassword = async (req, res) => {
                   mensaje: "Contraseña actualizada"
                 })
               } else {
-                console.log(err);
                 return res.status(402).send({
                   mensaje: "Ocurrio un error",
                   err,
@@ -103,7 +99,7 @@ controllerRecoverPassword.updatePassword = async (req, res) => {
           }
         })
       }
-    }
+    })
   } catch (error) {
     res.status(500).send({
       mensaje: "Ocurrio un error"
@@ -112,51 +108,48 @@ controllerRecoverPassword.updatePassword = async (req, res) => {
 }
 
 controllerRecoverPassword.recoverPasswordUserCode = async (req, res) => {
-  console.log(req.body);
-    let codeRecover = password.recoverUser();
-    let codeHast = await bcryptjs.encryptPassword(codeRecover);
-    console.log(codeHast);
-    let email = (req.body.data.email) ? req.body.data.email : null;
+  let codeRecover = password.codePassword();
+  let email = (req.body.data.email) ? req.body.data.email : null;
 
-    await connectionDB.query("SELECT name_admin FROM administrator WHERE email_admin = ?", [email], async (err, rows) => {
-      if (rows.length > 0) {
-        let nameAdmin = rows[0].name_admin
-        await connectionDB.query("UPDATE administrator SET code_recover = ? WHERE email_admin = ?", [codeHast, email], async (err, rows) => {
-          if (!err) {
-            await emailSend.recoverPassword(codeRecover);
-            return res.status(200).send({
-              mensaje: "Se envio un correo electronico"
-            })
-          } else {
-            return res.status(402).send({
-              mensaje: "error",
-              err
-            })
-          }
-        })
-      } else if (rows.length == 0) {
-        await connectionDB.query("SELECT name_customer FROM customer WHERE email_customer = ?", [email], async (err, rows) => {
-          if (rows.length > 0) {
-            let nameCustomer = rows[0].name_customer
-            await connectionDB.query("UPDATE customer SET code_recover = ? WHERE email_customer = ?", [codeHast, email], async (err, rows) => {
-              if (!err) {
-                await emailSend.recoverPassword(codeRecover);
-              }
-            })
-          } else {
-            return res.status(402).send({
-              mensaje: "El usuario no Existe"
-            })
-          }
-        })
+  await connectionDB.query("SELECT name_admin FROM administrator WHERE email_admin = ?", [email], async (err, rows) => {
+    if (rows.length > 0) {
+      let nameAdmin = rows[0].name_admin
+      await connectionDB.query("UPDATE administrator SET code_recover = ? WHERE email_admin = ?", [codeRecover, email], async (err, rows) => {
+        if (!err) {
+          await emailSend.recoverPassword(email, codeRecover, nameAdmin);
+          return res.status(200).send({
+            mensaje: "Se envio un correo electronico"
+          })
+        } else {
+          return res.status(402).send({
+            mensaje: "error",
+            err
+          })
+        }
+      })
+    } else if (rows.length == 0) {
+      await connectionDB.query("SELECT name_customer FROM customer WHERE email_customer = ?", [email], async (err, rows) => {
+        if (rows.length > 0) {
+          let nameCustomer = rows[0].name_customer
+          await connectionDB.query("UPDATE customer SET code_recover = ? WHERE email_customer = ?", [codeHast, email], async (err, rows) => {
+            if (!err) {
+              await emailSend.recoverPassword(email, codeRecover, nameCustomer);
+            }
+          })
+        } else {
+          return res.status(402).send({
+            mensaje: "El usuario no Existe"
+          })
+        }
+      })
 
-      } else {
-        return res.status(402).send({
-          mensaje: "El usuario no Existe",
-          err
-        })
-      }
-    })
+    } else {
+      return res.status(402).send({
+        mensaje: "El usuario no Existe",
+        err
+      })
+    }
+  })
 }
 
 controllerRecoverPassword.recoverPasswordStore = () => {
@@ -167,7 +160,7 @@ controllerRecoverPassword.recoverPasswordStore = () => {
 
     let email = req.body.data.email;
     connectionDB.query("UPDATE store SET password_store = ? WHERE id_store = ? ", [], async (err, rows) => {
-      if(!err) {
+      if (!err) {
 
       }
     })

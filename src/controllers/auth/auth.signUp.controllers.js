@@ -1,14 +1,12 @@
 // TODO: Ruta     http//:localhost:3105/authUser/signUpAdmin
 
-import connectionDb from "../../config/dataBase/dataBase.js";
 import encrypted from "../../config/bcryptjs/encryptPassword.js";
 import emailSend from "../../config/email/emailCreateUsers.js";
+import connectionDb from "../../config/dataBase/dataBase.js";
 
 const controllerAuth = {};
 
 controllerAuth.signUpAdmin = async (req, res) => {
-  console.log("tatiana");
-  console.log(req.body);
   try {
     let emailuser = (req.body.data.email) ? req.body.data.email : null;
     let nameuser = (req.body.data.nameUser) ? req.body.data.nameUser : null;
@@ -54,49 +52,6 @@ controllerAuth.signUpAdmin = async (req, res) => {
       mensaje: "Error interno del servidor"
     });
   }
-};
-
-controllerAuth.signUpEmployee = async (req, res) => {
-  try {
-    let nameUser = (req.body.name) ? req.body.name : null;
-    let emailUser = (req.body.email) ? req.body.email : null;
-    let store = (req.body.idStore) ? req.body.idStore : null;
-
-    await connectionDb.query("SELECT * FROM employee WHERE email_employee = ?", [emailUser], async (err, rows) => {
-      if (!err) {
-        if (rows.length > 0) {
-          return res.status("202").send({
-            mensaje: "El usuario ya existe",
-            userName: rows[0].name_employee
-          });
-        } else if (rows.length === 0) {
-          await connectionDb.query("INSERT INTO employee SET ?", {
-            name_employee: nameUser,
-            email_employee: emailUser,
-            id_store: store
-          }, (err, rows) => {
-            if (err) {
-              return res.status("202").send({
-                mensaje: "Error al registrar el usuario",
-                error: err
-              });
-            } else {
-              return res.status("200").send({
-                mensaje: "Usuario registrado con exito"
-              });
-            }
-          }
-          );
-        }
-      }
-    });
-  } catch (error) {
-    console.error(error);
-    return res.status(500).send({
-      mensaje: 'Error al registrar el usuario',
-      error: error.message,
-    });
-  };
 };
 
 controllerAuth.signUpCustomer = async (req, res) => {

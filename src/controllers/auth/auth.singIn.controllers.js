@@ -10,15 +10,12 @@ dotenv.config();
 const controllerAuth = {};
 
 controllerAuth.singIn = async (req, res) => {
-  console.log(req.body);
-  console.log("Hola Zharick");
   let emailUser = req.body.data.email;
   let passwordUser = req.body.data.password;
 
   connectionDb.query("SELECT * FROM administrator WHERE email_admin = ?", [emailUser], async (err, rows) => {
     if (!err) {
       if (rows.length > 0) {
-        console.log(rows);
         let passwordUserDB = rows[0].password_admin;
         let passwordCompare = await encrypted.matchPassword(passwordUser, passwordUserDB);
         if (passwordCompare) {
@@ -43,7 +40,6 @@ controllerAuth.singIn = async (req, res) => {
             if (rows.length > 0) {
               let passwordUserDB = rows[0].password_store;
               let passwordCompare = await encrypted.matchPassword(passwordUser, passwordUserDB);
-              console.log(passwordCompare);
               if (passwordCompare) {
                 let user = {
                   email: rows[0].email_store,
