@@ -6,7 +6,7 @@ const configEmail = nodemailer.createTransport({
   port: 587,
   auth: {
     user: "2022.flash.sale@gmail.com",
-    pass: process.env.keyEmail,
+    pass: 'hgrhllbhrxposmso',
   },
 });
 

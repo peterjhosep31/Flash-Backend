@@ -3,8 +3,8 @@ import configEmail from "./emailConfig.js";
 const emailCreateUsers = {};
 
 emailCreateUsers.createStore = async (email, name, store, emailStore, passwordStore) => {
-  configEmail.sendMail({
-    from: process.env.userEmail,
+  await configEmail.sendMail({
+    from: '2022.flash.sale@gmail.com',
     to: email,
     subject: "Tienda Creada",
     html: `
@@ -43,6 +43,7 @@ emailCreateUsers.createStore = async (email, name, store, emailStore, passwordSt
       </body>
     `
   }).then((res) => {
+    console.log(res);
     return console.log("Send email")
   }).catch((err) => {
     return console.log(err);
@@ -51,7 +52,7 @@ emailCreateUsers.createStore = async (email, name, store, emailStore, passwordSt
 
 emailCreateUsers.confirmUser = async (email, name) => {
   await configEmail.sendMail({
-    from: process.env.userEmail,
+    from: '2022.flash.sale@gmail.com',
     to: email,
     subject: "Usuario Registrado",
     html: `
