@@ -1,16 +1,13 @@
-import {
-  Router
-} from "express";
-
+import {Router} from "express";
+import jwtConfiguration from "../config/accessToken/jsonWebToken.js";
 import products from "../controllers/product.controllers.js";
-import jwtConfiguration from "../config/accessToken/jsonWebToken.js"
 
 const routes = Router();
 
-routes.get("/productsConsultation", products.getProduct);
+routes.delete("/deleteProducts/:code", jwtConfiguration.validateToken, products.deleteProduct);
 routes.get("/getProductsStore", jwtConfiguration.validateToken, products.getProductStore);
-routes.post("/addProducts", jwtConfiguration.validateToken, products.postProduct);
 routes.put("/updateProducts", jwtConfiguration.validateToken, products.putProduct);
-routes.delete("/deleteProducts", jwtConfiguration.validateToken, products.deleteProduct);
+routes.post("/addProducts", jwtConfiguration.validateToken, products.postProduct);
+routes.get("/productsConsultation", products.getProduct);
 
 export default routes;

@@ -1,15 +1,14 @@
 import { Router } from "express";
 
-import stores from "../controllers/store.controllers.js";
 import jwtConfiguration from "../config/accessToken/jsonWebToken.js";
-
+import stores from "../controllers/store.controllers.js";
 
 const router = Router();
 
-router.get("/consultationStore", stores.getStore);
-router.get("/getStoreAdmin", jwtConfiguration.validateToken, stores.getStoreAdmin)
-router.post("/addStore", jwtConfiguration.validateToken, stores.postStore);
+router.delete("/deleteStore/:code", jwtConfiguration.validateToken, stores.deleteStore);
+router.get("/getStoreAdmin", jwtConfiguration.validateToken, stores.getStoreAdmin);
 router.put("/updateStore", jwtConfiguration.validateToken, stores.putStore);
-router.delete("/deleteStore", jwtConfiguration.validateToken, stores.deleteStore);
+router.post("/addStore", jwtConfiguration.validateToken, stores.postStore);
+router.get("/consultationStore", stores.getStore);
 
 export default router;

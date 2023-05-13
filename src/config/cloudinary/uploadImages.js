@@ -27,7 +27,7 @@ cloudinaryUploadImages.createFolder = name => {
 
 cloudinaryUploadImages.uploadImagesStore = (image, folder) => {
   return cloudinary.uploader.upload(image, {
-    folder: folder,
+    folder: "Flash/Stores/",folder,
     format: "jpg"
   }, (err, result) => {
     if (err) {

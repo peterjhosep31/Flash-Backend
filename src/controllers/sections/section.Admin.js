@@ -111,5 +111,9 @@ adminEdit.updateProfile = async (req, res) => {
   }
 }
 
+adminEdit.getData = async (req, res) => {
+
+};
+
 
 export default adminEdit;

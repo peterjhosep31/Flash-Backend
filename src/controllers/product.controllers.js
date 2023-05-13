@@ -1,5 +1,3 @@
-// import { object, number, string } from "yup";
-
 import connectionDB from "../config/dataBase/dataBase.js";
 import uploadImages from "../config/cloudinary/uploadImages.js";
 import bcryptjs from "../config/bcryptjs/encryptPassword.js";
@@ -7,7 +5,6 @@ import bcryptjs from "../config/bcryptjs/encryptPassword.js";
 const controllerProduct = {};
 
 controllerProduct.postProduct = async (req, res) => {
-  console.log(req.body);
   try {
     let nameProduct = (req.body.data.name) ? req.body.data.name : null;
     let descriptionProduct = (req.body.data.description) ? req.body.data.description : null;
@@ -16,68 +13,49 @@ controllerProduct.postProduct = async (req, res) => {
     let amountProduct = (req.body.data.amount) ? req.body.data.amount : null;
     let priceProduct = (req.body.data.price) ? req.body.data.price : null;
     let imgProductRute = (req.body.data.image) ? req.body.data.image : null;
-    let imgProduct = (imgProductRute == null || imgProductRute == "") ? null : await uploadImages.uploadImagesUser(imgProductRute);
-    let urlImgProduct = (imgProduct != null) ? imgProduct.secure_url : null;
-    let idImgProduct = (imgProduct != null) ? imgProduct.public_id : null;
-
     let categoryProduct = (req.body.data.category) ? req.body.data.category : null;
     let storeProduct = req.user.emailUser;
 
-    await connectionDB.query("SELECT id_store, name_store FROM store WHERE email_store = ?", [storeProduct], async (err, rows) => {
-      console.log("entro");
-      console.log(err);
-      if (!err) {
-        if (rows.length > 0) {
-          let idStore = rows[0].id_store;
-          let nameStore = rows[0].name_store;
-          let imgProduct = (imgProductRute == null || imgProductRute == "") ? null : await uploadImages.uploadImagesProducts(imgProductRute, nameStore);
-          let urlImgProduct = (imgProduct != null) ? imgProduct.secure_url : null;
-          let idImgProduct = (imgProduct != null) ? imgProduct.public_id : null;
-          await connectionDB.query("INSERT INTO product SET ?", {
-            name_product: nameProduct,
-            description_product: descriptionProduct,
-            availability_product: 'available',
-            amount_poduct: amountProduct,
-            price_product: priceProduct,
-            img_product: urlImgProduct,
-            id_img_product: idImgProduct,
-            id_store_product: idStore,
-            id_product_category: categoryProduct,
-            id_offer_product: 1
-          }, (err, rows) => {
-            console.log(err);
-            if (err) return res.status(403).send({
-              mensaje: "Error al insertar producto",
-              error: err
-            })
-
-            return res.status(200).send({
-              mensaje: "Producto insertado con exito",
-              rows: rows
-            })
-          }, (err, rows) => {
-            if (err) return res.status(500).send({
-              mensaje: "Error al insertar producto",
-              error: err
-            })
-
-            return res.status(200).send({
-              mensaje: "Producto insertado con exito",
-              rows: rows
-            })
-          })
-        }
+    connectionDB.query("SELECT id_store, name_store FROM store WHERE email_store = ?", [storeProduct], async (err, rows) => {
+      if (!err && rows.length > 0) {
+        let idStore = rows[0].id_store;
+        let nameStore = rows[0].name_store;
+        let imgProduct = (imgProductRute == null || imgProductRute == "") ? null : await uploadImages.uploadImagesProducts(imgProductRute, nameStore);
+        let urlImgProduct = (imgProduct != null) ? imgProduct.secure_url : null;
+        let idImgProduct = (imgProduct != null) ? imgProduct.public_id : null;
+        connectionDB.query("INSERT INTO product SET ?", {
+          name_product: nameProduct,
+          description_product: descriptionProduct,
+          availability_product: 'available',
+          amount_poduct: amountProduct,
+          price_product: priceProduct,
+          img_product: urlImgProduct,
+          id_img_product: idImgProduct,
+          id_store_product: idStore,
+          id_product_category: categoryProduct,
+          id_offer_product: 1
+        }, (err, rows) => {
+          console.log(err);
+          if (err) return res.status(403).send({
+            mensaje: "Error al insertar producto",
+            error: err
+          });
+          return res.status(200).send({
+            mensaje: "Producto insertado con exito",
+            rows: rows
+          });
+        })
       } else {
         return res.status(403).send({
           mensaje: "Error al insertar producto",
           error: err
-        })
+        });
       }
-    })
+    });
   } catch (error) {
     return res.status(500).send({
-      mensaje: "Error en el servidor",
-    })
+      mensaje: "Error en el servidor"
+    });
   }
 };
 
@@ -92,21 +70,20 @@ controllerProduct.getProductStore = async (req, res) => {
           if (err) return res.status(403).send({
             mensaje: "Error al consultar productos",
             error: err
-          })
-
+          });
           return res.status(200).send({
             mensaje: "Productos consultados con exito",
             rows: rows
-          })
-        })
+          });
+        });
       }
-    })
+    });
   } catch (error) {
     return res.status(500).send({
-      mensaje: "Error en el servidor",
-    })
+      mensaje: "Error en el servidor"
+    });
   }
-}
+};
 
 controllerProduct.getProduct = async (req, res) => {
   try {
@@ -114,18 +91,18 @@ controllerProduct.getProduct = async (req, res) => {
       if (err) {
         return res.status(404).send({
           mensaje: "Error al consultar productos",
-          error: err,
+          error: err
         });
       } else {
         return res.status("200").send({
           mensaje: "Productos consultados con exito",
-          rows: rows,
+          rows: rows
         });
       }
     });
   } catch (error) {
     return res.status(500).send({
-      mensaje: "Error en el servidor",
+      mensaje: "Error en el servidor"
     });
   }
 };
@@ -140,7 +117,7 @@ controllerProduct.putProduct = async (req, res) => {
     let priceProduct = (req.body.data.price) ? req.body.data.price : null;
     let imageProductRoute = (req.body.data.image) ? req.body.data.image : null;
 
-    await connectionDB.query("SELECT * FROM product WHERE id_product = ?", [idProduct], async (err, rows) => {
+    connectionDB.query("SELECT * FROM product WHERE id_product = ?", [idProduct], async (err, rows) => {
       if (!err) {
         if (rows.length > 0) {
           let nameProductDB = (nameProduct != null) ? nameProduct : rows[0].name_product;
@@ -152,7 +129,7 @@ controllerProduct.putProduct = async (req, res) => {
           let urlImgProduct = (imageProductDB != null) ? imageProductDB.secure_url : null;
           let idImgProduct = (imageProductDB != null) ? imageProductDB.public_id : null;
 
-          await connectionDB.query("UPDATE product SET ? WHERE id_product = ?", [{
+          connectionDB.query("UPDATE product SET ? WHERE id_product = ?", [{
             name_product: nameProductDB,
             description_product: descriptionProductDB,
             availability_product: 'available',
@@ -165,34 +142,32 @@ controllerProduct.putProduct = async (req, res) => {
               return res.status(200).send({
                 mensaje: "Producto actualizado con exito",
                 rows: rows
-              })
+              });
             }
-          })
-
+          });
         } else {
           return res.status(403).send({
             mensaje: "Error al consultar producto",
             error: err
-          })
+          });
         }
       } else {
         return res.status(403).send({
           mensaje: "Error al consultar producto",
           error: err
-        })
+        });
       }
-    })
+    });
   } catch (error) {
     return res.status(500).send({
-      mensaje: "Error en el servidor",
-    })
+      mensaje: "Error en el servidor"
+    });
   }
-
 };
 
 controllerProduct.deleteProduct = async (req, res) => {
   try {
-    let idProduct = req.body.data.idProduct;
+    let idProduct = req.params.code;
     let password = req.body.data.password;
     let emailUser = req.user.emailUser;
 
@@ -207,38 +182,37 @@ controllerProduct.deleteProduct = async (req, res) => {
                 return res.status(200).send({
                   mensaje: "Producto eliminado con exito",
                   rows: rows
-                })
+                });
               } else {
                 return res.status(403).send({
                   mensaje: "Error al eliminar producto",
                   error: err
-                })
+                });
               }
-            })
+            });
           } else {
             return res.status(403).send({
               mensaje: "Contraseña incorrecta",
               error: err
-            })
+            });
           }
         } else {
           return res.status(403).send({
             mensaje: "Error al consultar contraseña",
             error: err
-          })
+          });
         }
       } else {
         return res.status(403).send({
           mensaje: "Error al consultar contraseña",
           error: err
-        })
+        });
       }
-    })
-
+    });
   } catch (error) {
     return res.status(500).send({
-      mensaje: "Error en el servidor",
-    })
+      mensaje: "Error en el servidor"
+    });
   }
 };
 

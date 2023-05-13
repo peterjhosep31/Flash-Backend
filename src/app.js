@@ -2,22 +2,15 @@ import express from "express";
 import morgan from "morgan";
 import cors from "cors";
 
-import './config/dataBase/dataBase.js'
 import routes from './routes/routes.js'
-// import 
-
-
+import './config/dataBase/dataBase.js'
 
 const app = express();
 
 app.use(morgan("dev"));
 app.use(express.json());
-app.use(express.urlencoded({
-  extended: false
-}));
-app.use(cors({
-  origin: "*"
-}))
+app.use(express.urlencoded({ extended: false }));
+app.use(cors({ origin: "*" }))
 
 app.get("/", (req, res) => {
   return res.json({
