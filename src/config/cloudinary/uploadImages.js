@@ -27,7 +27,7 @@ cloudinaryUploadImages.createFolder = name => {
 
 cloudinaryUploadImages.uploadImagesStore = (image, folder) => {
   return cloudinary.uploader.upload(image, {
-    folder: "Flash/Stores/",folder,
+    folder: "Flash/Stores/", folder,
     format: "jpg"
   }, (err, result) => {
     if (err) {
@@ -54,19 +54,15 @@ cloudinaryUploadImages.uploadImagesCategories = (image) => {
 }
 
 
-cloudinaryUploadImages.uploadImagesProducts = async (image, folder) => {
+cloudinaryUploadImages.uploadImagesProducts = async (image) => {
   return await cloudinary.uploader.upload(image, {
-    folder: `Flash/Stores/${folder}/products/`,
+    folder: `Flash/`,
     format: "png",
     width: 500,
     height: 600,
     density: 1080,
     crop: "fill"
-    }, async (result, error) => {
-    if (err){
-      console.log(error);
-    }
-  })
+  });
 }
 
 cloudinaryUploadImages.uploadImagesUserAdmin = image => {

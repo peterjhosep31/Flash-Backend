@@ -174,9 +174,9 @@ controllerStore.deleteStore = async (req, res) => {
   try {
     let code = req.params.id ? req.params.id : null;
     let idUser = req.user.idUser ? req.user.idUser : null;
-    let passwordAdministrator = req.body.password ? req.body.password : null;
+    let passwordAdministrator = req.body.data.password ? req.body.data.password : null;
     connectionDB.query("SELECT password_admin FROM administrator WHERE email_admin = ?", [idUser], async (err, rows) => {
-      if (!err && rows.length > 0) {
+      if (!err) {
         let passwordAdminBD = rows[0].password_admin;
         let comparePassword = await bcryptjs.matchPassword(passwordAdministrator, passwordAdminBD);
         if (comparePassword) {
@@ -195,14 +195,15 @@ controllerStore.deleteStore = async (req, res) => {
                           });
                         } else {
                           return res.status(500).send({
-                            mensaje: "Ocurrio un error",
+                            mensaje: "Ocurrio unor",
                             err
                           });
                         }
                       });
                     } else {
+                      console.log(err);
                       return res.status(500).send({
-                        mensaje: "Ocurrio un error",
+                        mensaje: "Ocurri",
                         err
                       })
                     }
@@ -215,7 +216,7 @@ controllerStore.deleteStore = async (req, res) => {
               });
             } else {
               return res.status(403).send({
-                mensaje: "Ocurrio un error",
+                mensaje: "jhgf",
                 err
               });
             }

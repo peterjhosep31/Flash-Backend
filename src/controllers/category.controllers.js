@@ -6,16 +6,18 @@ import bcryptjs from "../config/bcryptjs/encryptPassword.js";
 const controllerCategory = {};
 
 controllerCategory.postCategory = async (req, res) => {
-  try {
-    const nameCategory = (req.body.data.nameCategory) ? req.body.data.nameCategory : null;
-    const routeImage = (req.body.data.image) ? req.body.data.image : null;
+  
+    const nameCategory = (req.body['data[name]']) ? req.body['data[name]'] : null;
+    const routeImage = (req.files['data[image]'].tempFilePath) ? req.files['data[image]'].tempFilePath : null;
     let emailUser = (req.user.emailUser) ? req.user.emailUser : null;
-    let photoCategory = (routeImage != null) ? await cloudinaryUpload.uploadImagesCategories(routeImage, nameCategory) : null;
+    let photoCategory = (routeImage != null) ? await cloudinaryUpload.uploadImagesCategories(routeImage) : null;
     let urlImage = (photoCategory != null) ? photoCategory.secure_url : null;
     let idImage = (photoCategory != null) ? photoCategory.public_id : null;
-
+    console.log(nameCategory);
+    console.log(routeImage);
     // Insertar la nueva categoría en la base de datos
     connectionDb.query("SELECT id_store FROM store WHERE email_store = ?", [emailUser], (err, rows) => {
+      console.log(err);
       if (!err) {
         if (rows.length > 0) {
           connectionDb.query("INSERT INTO category SET ?", {
@@ -42,12 +44,7 @@ controllerCategory.postCategory = async (req, res) => {
         });
       }
     });
-  } catch (error) {
-    return res.status(500).send({
-      mensaje: "Error al registrar categoria.",
-      error: error
-    });
-  }
+
 };
 
 controllerCategory.getCategory = (req, res) => {
@@ -182,38 +179,23 @@ controllerCategory.putCategory = async (req, res) => {
 
 
 controllerCategory.deleteCategory = (req, res) => {
+  console.log(req.body);
+  console.log(req.params);
   try {
-    let emailStore = req.user.emailUser;
-    let idCategory = req.params.idCategory;
-    let passwordUser = req.body.data.password;
-    connectionDb.query("SELECT password_store, id_store FROM store WHERE email_store = ?", [emailStore], async (err, rows) => {
+    let idCategory = req.params.code;
+    connectionDb.query('DELETE FROM category WHERE id_category  = ?', [idCategory], async (err, rows) => {
       if (!err) {
-        let passwordUserDB = rows[0].password_store;
-        let comparePassword = await bcryptjs.matchPassword(passwordUser, passwordUserDB);
-        if (comparePassword) {
-          await connectionDb.query('DELETE FROM category WHERE id_category  = ?', [idCategory], async (err, rows) => {
-            if (!err) {
-              return res.status(200).send({
-                mensaje: "Categoria eliminada con exito"
-              })
-            } else {
-              return res.status(500).send({
-                mensaje: "Error al eliminar la categoria",
-                err
-              })
-            }
-          })
-        } else {
-          return res.status(202).send({
-            mensaje: "Contraseña incorrecta"
-          });
-        }
+        return res.status(200).send({
+          mensaje: "Categoria eliminada con exito"
+        })
       } else {
-        return res.status(202).send({
-          mensaje: "Este usuario no existe"
-        });
+        return res.status(500).send({
+          mensaje: "Error al eliminar la categoria",
+          err
+        })
       }
-    });
+    })
+
   } catch (error) {
     return res.status(500).send({
       mensaje: "Error en el servidor"
