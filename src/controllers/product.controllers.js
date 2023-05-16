@@ -1,6 +1,7 @@
 import connectionDB from "../config/dataBase/dataBase.js";
 import uploadImages from "../config/cloudinary/uploadImages.js";
 import bcryptjs from "../config/bcryptjs/encryptPassword.js";
+import { query } from "express";
 
 const controllerProduct = {};
 
@@ -104,58 +105,59 @@ controllerProduct.getProduct = async (req, res) => {
     });
   }
 };
+controllerProduct.getProductOne = async (req, res) => {
+  try {
+    connectionDB.query("SELECT id_product FROM products WHERE id_product = ?", [req.params.code], (err, rows) => {
+      if (err) {
+        return res.status(404).send({
+          mensaje: "Error al consultar productos",
+          error: err
+        });
+      } else {
+        return res.status("200").send({
+          mensaje: "Productos consultados con exito",
+          rows: rows
+        });
+      }
+    });
+  } catch (error) {
+    return res.status(500).send({
+      mensaje: "Error en el servidor"
+    });
+  }
+};
 
 controllerProduct.putProduct = async (req, res) => {
   try {
-    let idProduct = (req.body.data.idProduct) ? req.body.data.idProduct : null;
+    let idProduct = req.params.code;
     let nameProduct = (req.body.data.name) ? req.body.data.name : null;
-    let descriptionProduct = (req.body.data.description) ? req.body.data.description : null;
+    let descriptionProduct = (req.body.data.descrption) ? req.body.data.descrption : null;
     let availability = (req.body.data.availability) ? req.body.data.availability : null;
     let amountProduct = (req.body.data.amount) ? req.body.data.amount : null;
     let priceProduct = (req.body.data.price) ? req.body.data.price : null;
-    let imageProductRoute = (req.body.data.image) ? req.body.data.image : null;
 
-    connectionDB.query("SELECT * FROM product WHERE id_product = ?", [idProduct], async (err, rows) => {
+    connectionDB.query("UPDATE product SET ? WHERE id_product = ?", [{
+      name_product: nameProduct,
+      description_product: descriptionProduct,
+      availability_product: 'available',
+      amount_poduct: amountProduct,
+      price_product: priceProduct,
+
+    }, idProduct], (err, rows) => {
       if (!err) {
-        if (rows.length > 0) {
-          let nameProductDB = (nameProduct != null) ? nameProduct : rows[0].name_product;
-          let descriptionProductDB = (descriptionProduct != null) ? descriptionProduct : rows[0].description_product;
-          let availabilityProductDB = (availability != null) ? availability : rows[0].availability_product;
-          let amountProductDB = (amountProduct != null) ? amountProduct : rows[0].amount_poduct;
-          let priceProductDB = (priceProduct != null) ? priceProduct : rows[0].price_product;
-          let imageProductDB = (imageProductRoute != null) ? await uploadImages.uploadImagesProducts(imageProductRoute, nameProductDB) : null;
-          let urlImgProduct = (imageProductDB != null) ? imageProductDB.secure_url : null;
-          let idImgProduct = (imageProductDB != null) ? imageProductDB.public_id : null;
+        return res.status(200).send({
+          mensaje: "Producto actualizado con exito",
+          rows: rows
+        });
+      }
 
-          connectionDB.query("UPDATE product SET ? WHERE id_product = ?", [{
-            name_product: nameProductDB,
-            description_product: descriptionProductDB,
-            availability_product: 'available',
-            amount_poduct: amountProductDB,
-            price_product: priceProductDB,
-            img_product: urlImgProduct,
-            id_img_product: idImgProduct
-          }, idProduct], (err, rows) => {
-            if (!err) {
-              return res.status(200).send({
-                mensaje: "Producto actualizado con exito",
-                rows: rows
-              });
-            }
-          });
-        } else {
-          return res.status(403).send({
-            mensaje: "Error al consultar producto",
-            error: err
-          });
-        }
-      } else {
+      else {
         return res.status(403).send({
           mensaje: "Error al consultar producto",
           error: err
         });
       }
-    });
+    })
   } catch (error) {
     return res.status(500).send({
       mensaje: "Error en el servidor"
