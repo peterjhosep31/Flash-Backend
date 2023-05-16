@@ -175,65 +175,48 @@ controllerStore.deleteStore = async (req, res) => {
     let code = req.params.id ? req.params.id : null;
     let idUser = req.user.idUser ? req.user.idUser : null;
     let passwordAdministrator = req.body.data.password ? req.body.data.password : null;
-    connectionDB.query("SELECT password_admin FROM administrator WHERE email_admin = ?", [idUser], async (err, rows) => {
-      if (!err) {
-        let passwordAdminBD = rows[0].password_admin;
-        let comparePassword = await bcryptjs.matchPassword(passwordAdministrator, passwordAdminBD);
-        if (comparePassword) {
-          connectionDB.query("SELECT id_store FROM store WHERE id_store = ?", [code], (err, rows) => {
-            if (rows.length > 0) {
-              let idStore = rows[0].id_store
-              connectionDB.query("SELECT email_employee FROM employee WHERE id_store = ?", [idStore], (err, rows) => {
-                if (!err && rows.length > 0) {
-                  let email = rows[0].email_employee;
-                  connectionDB.query("DELETE FROM employee WHERE email_employee = ?", [email], (err, rows) => {
-                    if (!err) {
-                      connectionDB.query("DELETE FROM store WHERE id_store = ?", [idStore], (err, rows) => {
-                        if (!err) {
-                          return res.status(200).send({
-                            mensaje: "Local eliminado junto con el empleado."
-                          });
-                        } else {
-                          return res.status(500).send({
-                            mensaje: "Ocurrio unor",
-                            err
-                          });
-                        }
-                      });
-                    } else {
-                      console.log(err);
-                      return res.status(500).send({
-                        mensaje: "Ocurri",
-                        err
-                      })
-                    }
-                  });
-                } else {
-                  return res.status(403).send({
-                    mensaje: "No se puede eliminar el local porque tiene empleados"
-                  });
-                }
-              });
-            } else {
-              return res.status(403).send({
-                mensaje: "jhgf",
-                err
-              });
-            }
+
+    connectionDB.query("SELECT id_store FROM store WHERE id_store = ?", [code], (err, rows) => {
+      if (rows.length > 0) {
+        let idStore = rows[0].id_store
+        connectionDB.query("SELECT email_employee FROM employee WHERE id_store = ?", [idStore], (err, rows) => {
+          if (!err && rows.length > 0) {
+            let email = rows[0].email_employee;
+            connectionDB.query("DELETE FROM employee WHERE email_employee = ?", [email], (err, rows) => {
+              if (!err) {
+                connectionDB.query("DELETE FROM store WHERE id_store = ?", [idStore], (err, rows) => {
+                  if (!err) {
+                    return res.status(200).send({
+                      mensaje: "Local eliminado junto con el empleado."
+                    });
+                  } else {
+                    return res.status(500).send({
+                      mensaje: "Ocurrio unor",
+                      err
+                    });
+                  }
+                });
+              } else {
+                console.log(err);
+                return res.status(500).send({
+                  mensaje: "Ocurri",
+                  err
+                })
+              }
+            });
+          } else {
+            return res.status(403).send({
+              mensaje: "No se puede eliminar el local porque tiene empleados"
+            });
           }
-          );
-        } else {
-          return res.status(404).send({
-            mensaje: "Contraseña incorrecta"
-          });
-        }
+        });
       } else {
-        return res.status(404).send({
-          mensaje: "Ocurrio un error",
+        return res.status(403).send({
+          mensaje: "jhgf",
           err
         });
       }
-    });
+    })
   } catch (error) {
     return res.status(500).send({
       mensaje: "Ocurrio un error"

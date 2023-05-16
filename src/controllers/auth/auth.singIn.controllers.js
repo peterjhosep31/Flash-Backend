@@ -109,4 +109,9 @@ controllerAuth.singIn = async (req, res) => {
   );
 };
 
+controllerAuth.sigInAdmin = async (req, res) => {
+  let token = req.params.token;
+  console.log(token);
+}
+
 export default controllerAuth;

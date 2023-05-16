@@ -12,7 +12,7 @@ controllerAuth.signUpAdmin = async (req, res) => {
     let nameuser = (req.body.data.nameUser) ? req.body.data.nameUser : null;
     let passworduser = (req.body.data.password) ? req.body.data.password : null;
     let passwordHash = (passworduser != null) ? await encrypted.encryptPassword(passworduser) : null;
-    let codePermission = "administrador";
+    let codePermission = "superAdministrador>";
 
     connectionDb.query("SELECT * FROM administrator WHERE email_admin = ?", [emailuser], async (err, rows) => {
       if (!err) {
