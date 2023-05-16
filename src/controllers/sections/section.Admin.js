@@ -3,6 +3,7 @@ import bcryptjs from "../../config/bcryptjs/encryptPassword.js";
 import uploadImageUser from "../../config/cloudinary/uploadImagesUser.js";
 import deleteImage from "../../config/cloudinary/deleteImages.js";
 
+
 const adminEdit = {};
 
 adminEdit.updateProfile = async (req, res) => {
@@ -112,7 +113,20 @@ adminEdit.updateProfile = async (req, res) => {
 }
 
 adminEdit.getData = async (req, res) => {
-
+  connectionDB.query("SELECT * FROM administrator WHERE email_admin = ?", [req.user.emailUser], (err, rows) => {
+    console.log(rows);
+    if (rows.length > 0) {
+      return res.status(200).send({
+        mensaje: "Datos encontrados",
+        rows: rows
+      })
+    } else {
+      return res.status(404).send({
+        mensaje: "No se encontraron datos",
+        err
+      })
+    }
+  })
 };
 
 

@@ -111,10 +111,10 @@ controllerRecoverPassword.recoverPasswordUserCode = async (req, res) => {
   let codeRecover = password.codePassword();
   let email = (req.body.data.email) ? req.body.data.email : null;
 
-  await connectionDB.query("SELECT name_admin FROM administrator WHERE email_admin = ?", [email], async (err, rows) => {
+  connectionDB.query("SELECT name_admin FROM administrator WHERE email_admin = ?", [email], async (err, rows) => {
     if (rows.length > 0) {
       let nameAdmin = rows[0].name_admin
-      await connectionDB.query("UPDATE administrator SET code_recover = ? WHERE email_admin = ?", [codeRecover, email], async (err, rows) => {
+      connectionDB.query("UPDATE administrator SET code_recover = ? WHERE email_admin = ?", [codeRecover, email], async (err, rows) => {
         if (!err) {
           await emailSend.recoverPassword(email, codeRecover, nameAdmin);
           return res.status(200).send({
