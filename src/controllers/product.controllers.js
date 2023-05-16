@@ -141,8 +141,7 @@ controllerProduct.putProduct = async (req, res) => {
       description_product: descriptionProduct,
       availability_product: 'available',
       amount_poduct: amountProduct,
-      price_product: priceProduct,
-
+      price_product: priceProduct
     }, idProduct], (err, rows) => {
       if (!err) {
         return res.status(200).send({
