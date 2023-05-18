@@ -159,13 +159,17 @@ controllerStore.getStoreAdmin = async (req, res) => {
 
 controllerStore.putStore = async (req, res) => {
   console.log("file *asYup", req.files);
+  console.log("body", req.body);
 
   let emailStore = req.user.emailUser;
   let nameStore = (req.body['data[name]']) ? req.body['data[name]'] : null;
-  let phone = (req.body['data[phone])']) ? req.body['data[phone]'] : null;
+  let phone = (req.body['data[phone]']) ? req.body['data[phone]'] : null;
+  console.log(phone);
   let description = (req.body['data[description]']) ? req.body['data[description]'] : null;
-  let image = (req.files.data.tempFilePath) ? req.files.data.tempFilePath : null;
-  console.log(image);
+  let image = null;
+  if (req.files != null) {
+    image = (req.files.data.tempFilePath) ? req.files.data.tempFilePath : null;
+  }
   let photo = (image != null) ? await uploadImages.uploadImagesStore(image, nameStore) : null;
   let urlPhoto = (photo != null) ? photo.secure_url : null;
   let idPhoto = (photo != null) ? photo.public_id : null;
@@ -174,11 +178,12 @@ controllerStore.putStore = async (req, res) => {
     if (!err && rows.length > 0) {
       let nameDB = (nameStore != null) ? nameStore : rows[0].name_store;
       let phoneDB = (phone != null) ? phone : rows[0].phone_number_store;
+      console.log("phoneDB",phoneDB);
       let descriptionDB = (description != null) ? description : rows[0].description_store;
       let imageDB = (urlPhoto != null) ? urlPhoto : rows[0].img_store;
       let idPhotoDB = (idPhoto != null) ? idPhoto : rows[0].id_img_store;
       connectionDB.query("UPDATE store SET name_store = ?, phone_number_store = ?, description_store = ?, img_store = ?, id_img_store = ? WHERE email_store = ?", [nameDB, phoneDB, descriptionDB, imageDB, idPhotoDB, emailStore], (err, rows) => {
-        console.log(err);
+        console.log("erro",err);
         if (!err && rows.affectedRows) {
           return res.status(200).send({
             mensaje: "Local actualizado con exito",
@@ -200,7 +205,7 @@ controllerStore.deleteStore = async (req, res) => {
     let code = req.params.code ? req.params.code : null;
     console.log(code);
     connectionDB.query("SELECT email_employee FROM employee WHERE id_store = ?", [code], (err, rows) => {
-      console.log("Correo",rows);
+      console.log("Correo", rows);
       if (rows.length > 0) {
         let email = rows[0].email_employee;
         console.log(email);

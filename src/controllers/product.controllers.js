@@ -6,10 +6,6 @@ import { query } from "express";
 const controllerProduct = {};
 
 controllerProduct.postProduct = async (req, res) => {
-  var today = new Date();
-  var options = { day: '2-digit', month: '2-digit', year: 'numeric' };
-  var date = today.toLocaleDateString('es-CO', options);
-
   let nameProduct = (req.body['data[name]']) ? req.body['data[name]'] : null;
   let descriptionProduct = (req.body['data[description]']) ? req.body['data[description]'] : null;
   let availability = (req.body['data[availability]']) ? req.body['data[availability]'] : null;
@@ -38,7 +34,6 @@ controllerProduct.postProduct = async (req, res) => {
         id_store_product: idStore,
         id_product_category: categoryProduct,
         id_offer_product: 1,
-        data_product: date
       }, (err, rows) => {
         console.log(err);
         if (err) return res.status(403).send({
