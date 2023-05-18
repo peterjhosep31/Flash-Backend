@@ -6,6 +6,9 @@ import { query } from "express";
 const controllerProduct = {};
 
 controllerProduct.postProduct = async (req, res) => {
+  var today = new Date();
+  var options = { day: '2-digit', month: '2-digit', year: 'numeric' };
+  var date = today.toLocaleDateString('es-CO', options);
 
   let nameProduct = (req.body['data[name]']) ? req.body['data[name]'] : null;
   let descriptionProduct = (req.body['data[description]']) ? req.body['data[description]'] : null;
@@ -18,9 +21,7 @@ controllerProduct.postProduct = async (req, res) => {
   let storeProduct = req.user.emailUser;
   console.log("entro aca");
   connectionDB.query("SELECT id_store, name_store FROM store WHERE email_store = ?", [storeProduct], async (err, rows) => {
-    console.log(err);
     if (!err && rows.length > 0) {
-      console.log("entro aca");
       let idStore = rows[0].id_store;
       let nameStore = rows[0].name_store;
       let imgProduct = (imgProductRute == null || imgProductRute == "") ? null : await uploadImages.uploadImagesProducts(imgProductRute);
@@ -36,7 +37,8 @@ controllerProduct.postProduct = async (req, res) => {
         id_img_product: idImgProduct,
         id_store_product: idStore,
         id_product_category: categoryProduct,
-        id_offer_product: 1
+        id_offer_product: 1,
+        data_product: date
       }, (err, rows) => {
         console.log(err);
         if (err) return res.status(403).send({
@@ -61,10 +63,10 @@ controllerProduct.postProduct = async (req, res) => {
 controllerProduct.getProductStore = async (req, res) => {
   try {
     let email = req.user.emailUser;
-    await connectionDB.query("SELECT id_store FROM store WHERE email_store = ?", [email], async (err, rows) => {
+    connectionDB.query("SELECT id_store FROM store WHERE email_store = ?", [email], async (err, rows) => {
       if (!err) {
         let idStore = rows[0].id_store;
-        await connectionDB.query("SELECT * FROM product WHERE id_store_product  = ?", [idStore], (err, rows) => {
+        connectionDB.query("SELECT * FROM product WHERE id_store_product  = ?", [idStore], (err, rows) => {
           console.log(err);
           if (err) return res.status(403).send({
             mensaje: "Error al consultar productos",

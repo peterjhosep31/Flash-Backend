@@ -42,7 +42,11 @@ cloudinaryUploadImages.uploadImagesStore = (image, folder) => {
 cloudinaryUploadImages.uploadImagesCategories = (image) => {
   return cloudinary.uploader.upload(image, {
     folder: "Flash/Categories/",
-    format: "jpg"
+    format: "png",
+    width: 500,
+    height: 600,
+    density: 1080,
+    crop: "fill"
   }, (err, result) => {
     if (err) {
       console.log("________________________________");

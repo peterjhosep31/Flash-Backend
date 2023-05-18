@@ -3,11 +3,13 @@
 import encrypted from "../../config/bcryptjs/encryptPassword.js";
 import emailSend from "../../config/email/emailCreateUsers.js";
 import connectionDb from "../../config/dataBase/dataBase.js";
+import bcryptjs from "../../config/bcryptjs/encryptPassword.js";
 
 const controllerAuth = {};
 
 controllerAuth.signUpAdmin = async (req, res) => {
   try {
+    console.log(req.params.token)
     let emailuser = (req.body.data.email) ? req.body.data.email : null;
     let nameuser = (req.body.data.nameUser) ? req.body.data.nameUser : null;
     let passworduser = (req.body.data.password) ? req.body.data.password : null;
@@ -25,7 +27,7 @@ controllerAuth.signUpAdmin = async (req, res) => {
             name_admin: nameuser,
             email_admin: emailuser,
             password_admin: passwordHash,
-            rol: codePermission,
+            rol: codePermission
           }, async (err, rows) => {
             if (err) {
               return res.status(400).send({
@@ -53,6 +55,24 @@ controllerAuth.signUpAdmin = async (req, res) => {
     });
   }
 };
+
+controllerAuth.signUpAdminToken = async (req, res) => {
+  connectionDb.query("SELECT token FROM administrator WHERE email_admin = ?", [req.user.emailUser], async (err, rows) => {
+    if (!err && rows.length > 0) {
+      let compare = await bcryptjs.matchPassword(req.body.data, rows[0].token);
+      console.log(compare);
+      if (compare) {
+        return res.status(200).send({
+          mensaje: "Token correcto"
+        })
+      } else {
+        return res.status(400).send({
+          mensaje: "Token incorrecto"
+        })
+      }
+    }
+  })
+}
 
 controllerAuth.signUpCustomer = async (req, res) => {
   try {

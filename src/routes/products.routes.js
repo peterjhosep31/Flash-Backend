@@ -1,7 +1,7 @@
 import {Router} from "express";
-import fileUpload from "express-fileupload";
 import jwtConfiguration from "../config/accessToken/jsonWebToken.js";
 import products from "../controllers/product.controllers.js";
+import fileUpload from 'express-fileupload';
 
 const routes = Router();
 
