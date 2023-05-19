@@ -4,6 +4,7 @@ import encrypted from "../../config/bcryptjs/encryptPassword.js";
 import emailSend from "../../config/email/emailCreateUsers.js";
 import connectionDb from "../../config/dataBase/dataBase.js";
 import bcryptjs from "../../config/bcryptjs/encryptPassword.js";
+// import password from 
 
 const controllerAuth = {};
 
@@ -12,8 +13,7 @@ controllerAuth.signUpAdmin = async (req, res) => {
     console.log(req.params.token)
     let emailuser = (req.body.data.email) ? req.body.data.email : null;
     let nameuser = (req.body.data.nameUser) ? req.body.data.nameUser : null;
-    let passworduser = (req.body.data.password) ? req.body.data.password : null;
-    let passwordHash = (passworduser != null) ? await encrypted.encryptPassword(passworduser) : null;
+    // let passworduser = 
     let codePermission = "administrador";
 
     connectionDb.query("SELECT * FROM administrator WHERE email_admin = ?", [emailuser], async (err, rows) => {
@@ -26,7 +26,7 @@ controllerAuth.signUpAdmin = async (req, res) => {
           await connectionDb.query("INSERT INTO administrator SET ?", {
             name_admin: nameuser,
             email_admin: emailuser,
-            password_admin: passwordHash,
+            // password_admin: passworduser,
             rol: codePermission
           }, async (err, rows) => {
             if (err) {

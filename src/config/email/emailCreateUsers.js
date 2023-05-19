@@ -46,7 +46,7 @@ emailCreateUsers.createStore = async (email, name, store, emailStore, passwordSt
     console.log(res);
     return console.log("Send email")
   }).catch((err) => {
-    return console.log(err);
+    return console.log("Error correo: ", err);
   })
 };
 
