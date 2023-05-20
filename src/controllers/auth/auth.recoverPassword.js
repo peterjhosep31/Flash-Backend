@@ -8,8 +8,7 @@ const controllerRecoverPassword = {};
 controllerRecoverPassword.recoverPassword = async (req, res) => {
   let email = (req.body.data.email) ? req.body.data.email : null;
   try {
-
-    await connectionDB.query("SELECT code_recover FROM administrator WHERE email_admin = ?", [email], async (err, rows) => {
+    connectionDB.query("SELECT code_recover FROM administrator WHERE email_admin = ?", [email], (err, rows) => {
       if (rows.length > 0) {
         let codePassword = req.body.data.code;
         let codeRecover = rows[0].code_recover;
@@ -23,7 +22,7 @@ controllerRecoverPassword.recoverPassword = async (req, res) => {
           })
         }
       } else if (rows.length == 0) {
-        await connectionDB.query("SELECT code_recover FROM customer WHERE email_customer = ?", [email], async (err, rows) => {
+        connectionDB.query("SELECT code_recover FROM customer WHERE email_customer = ?", [email], (err, rows) => {
           if (rows.length > 0) {
             let codePassword = req.body.data.code;
             if (codePassword == rows[0].code_recover) {
@@ -56,14 +55,14 @@ controllerRecoverPassword.recoverPassword = async (req, res) => {
   }
 }
 
-controllerRecoverPassword.updatePassword = async (req, res) => {
+controllerRecoverPassword.updatePassword = (req, res) => {
   try {
     let email = (req.body.data.email) ? req.body.data.email : null;
     let newPassword = (req.body.data.password) ? req.body.data.password : null;
-    await connectionDB.query("SELECT email_admin FROM administrator WHERE email_admin = ?", [email], async (err, rows) => {
+    connectionDB.query("SELECT email_admin FROM administrator WHERE email_admin = ?", [email], async (err, rows) => {
       if (rows.length > 0) {
         let codeHast = await bcryptjs.encryptPassword(newPassword);
-        await connectionDB.query("UPDATE administrator SET password_admin = ? WHERE email_admin = ?", [codeHast, email], async (err, rows) => {
+        connectionDB.query("UPDATE administrator SET password_admin = ? WHERE email_admin = ?", [codeHast, email], (err, rows) => {
           if (!err) {
             return res.status(200).send({
               mensaje: "Contraseña actualizada"
@@ -76,10 +75,10 @@ controllerRecoverPassword.updatePassword = async (req, res) => {
           }
         })
       } else if (rows.length === 0) {
-        await connectionDB.query("SELECT email_customer FROM customer WHERE email_customer = ?", [email], async (err, rows) => {
+        connectionDB.query("SELECT email_customer FROM customer WHERE email_customer = ?", [email], async (err, rows) => {
           if (rows.length > 0) {
             let codeHast = await bcryptjs.encryptPassword(newPassword);
-            await connectionDB.query("UPDATE customer SET password_customer = ? WHERE email_customer = ?", [codeHast, email], async (err, rows) => {
+            connectionDB.query("UPDATE customer SET password_customer = ? WHERE email_customer = ?", [codeHast, email], (err, rows) => {
               if (!err) {
                 return res.status(200).send({
                   mensaje: "Contraseña actualizada"
@@ -111,7 +110,7 @@ controllerRecoverPassword.recoverPasswordUserCode = async (req, res) => {
   let codeRecover = password.codePassword();
   let email = (req.body.data.email) ? req.body.data.email : null;
 
-  connectionDB.query("SELECT name_admin FROM administrator WHERE email_admin = ?", [email], async (err, rows) => {
+  connectionDB.query("SELECT name_admin FROM administrator WHERE email_admin = ?", [email], (err, rows) => {
     if (rows.length > 0) {
       let nameAdmin = rows[0].name_admin
       connectionDB.query("UPDATE administrator SET code_recover = ? WHERE email_admin = ?", [codeRecover, email], async (err, rows) => {
@@ -128,10 +127,10 @@ controllerRecoverPassword.recoverPasswordUserCode = async (req, res) => {
         }
       })
     } else if (rows.length == 0) {
-      await connectionDB.query("SELECT name_customer FROM customer WHERE email_customer = ?", [email], async (err, rows) => {
+      connectionDB.query("SELECT name_customer FROM customer WHERE email_customer = ?", [email], async (err, rows) => {
         if (rows.length > 0) {
           let nameCustomer = rows[0].name_customer
-          await connectionDB.query("UPDATE customer SET code_recover = ? WHERE email_customer = ?", [codeHast, email], async (err, rows) => {
+          connectionDB.query("UPDATE customer SET code_recover = ? WHERE email_customer = ?", [codeHast, email], async (err, rows) => {
             if (!err) {
               await emailSend.recoverPassword(email, codeRecover, nameCustomer);
             }

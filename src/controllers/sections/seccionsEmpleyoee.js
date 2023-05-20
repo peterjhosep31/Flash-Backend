@@ -4,6 +4,7 @@ const controllerSesionEmpleyoee = {};
 
 controllerSesionEmpleyoee.updateData = (req, res) => {
   let emialUser = req.user.emialUser;
+  let data = req.body.data;
 
 
 }

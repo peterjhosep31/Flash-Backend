@@ -4,30 +4,33 @@ import encrypted from "../../config/bcryptjs/encryptPassword.js";
 import emailSend from "../../config/email/emailCreateUsers.js";
 import connectionDb from "../../config/dataBase/dataBase.js";
 import bcryptjs from "../../config/bcryptjs/encryptPassword.js";
-// import password from 
+import password from "../../helper/password.js"
 
 const controllerAuth = {};
 
 controllerAuth.signUpAdmin = async (req, res) => {
   try {
-    console.log(req.params.token)
     let emailuser = (req.body.data.email) ? req.body.data.email : null;
     let nameuser = (req.body.data.nameUser) ? req.body.data.nameUser : null;
-    // let passworduser = 
+    let adress = (req.body.data.direccion) ? req.body.data.direccion : null;
+    let passworduser = password.cretaePassword();
+    let passwordHast = await bcryptjs.encryptPassword(passworduser);
+
     let codePermission = "administrador";
 
-    connectionDb.query("SELECT * FROM administrator WHERE email_admin = ?", [emailuser], async (err, rows) => {
+    connectionDb.query("SELECT * FROM administrator WHERE email_admin = ?", [emailuser], (err, rows) => {
       if (!err) {
         if (rows.length > 0) {
           return res.status(400).send({
             mensaje: "El correo ya está registrado",
           });
         } else if (rows.length === 0) {
-          await connectionDb.query("INSERT INTO administrator SET ?", {
+          connectionDb.query("INSERT INTO administrator SET ?", {
             name_admin: nameuser,
             email_admin: emailuser,
-            // password_admin: passworduser,
-            rol: codePermission
+            password_admin: passwordHast,
+            rol: codePermission,
+            dirrecion_administrator: adress
           }, async (err, rows) => {
             if (err) {
               return res.status(400).send({
@@ -35,7 +38,7 @@ controllerAuth.signUpAdmin = async (req, res) => {
                 error: err
               });
             } else {
-              await emailSend.confirmUser(emailuser, nameuser)
+              await emailSend.createCenter(emailuser, nameuser, passworduser);
               return res.status(200).send({
                 mensaje: "Usuario registrado con éxito"
               });
