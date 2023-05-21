@@ -83,7 +83,7 @@ controllerProduct.getProductStore = async (req, res) => {
 
 controllerProduct.getProduct = async (req, res) => {
   try {
-    connectionDB.query("SELECT * FROM product", (err, rows) => {
+    connectionDB.query("SELECT * FROM product order by id_product DESC", (err, rows) => {
       if (err) {
         return res.status(404).send({
           mensaje: "Error al consultar productos",
@@ -102,6 +102,29 @@ controllerProduct.getProduct = async (req, res) => {
     });
   }
 };
+
+controllerProduct.getProductDate = async (req, res) => {
+  try {
+    connectionDB.query("SELECT * FROM product order by data_product DESC limit 7", (err, rows) => {
+      if (err) {
+        return res.status(404).send({
+          mensaje: "Error al consultar productos",
+          error: err
+        });
+      } else {
+        return res.status("200").send({
+          mensaje: "Productos consultados con exito",
+          rows: rows
+        });
+      }
+    });
+  } catch (error) {
+    return res.status(500).send({
+      mensaje: "Error en el servidor"
+    });
+  }
+};
+
 controllerProduct.getProductOne = async (req, res) => {
   try {
     connectionDB.query("SELECT id_product FROM products WHERE id_product = ?", [req.params.code], (err, rows) => {

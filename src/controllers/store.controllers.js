@@ -79,7 +79,7 @@ controllerStore.postStore = async (req, res) => {
 
 controllerStore.getStore = async (req, res) => {
   try {
-    connectionDB.query("SELECT * FROM store", (err, rows) => {
+    connectionDB.query("SELECT * FROM store order by id_store desc", (err, rows) => {
       if (rows.length > 0) {
         return res.status("200").send({
           mensaje: "Tiendas obtenidas",

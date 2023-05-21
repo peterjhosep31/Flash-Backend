@@ -15,7 +15,7 @@ routes.put("/recoverPassword", recover.recoverPasswordUserCode);
 routes.post("/signUpCustomer", authSingUp.signUpCustomer);
 routes.put("/updatePassword", recover.updatePassword);
 routes.put("/newPassword", recover.recoverPassword);
-routes.post("/signUpAdmin/:token", authSingUp.signUpAdmin);
+routes.post("/signUpAdmin", authSingUp.signUpAdmin);
 routes.post("/signInUser", authSingIn.singIn);
 
 routes.post("/validateToken", jsonWebToken.validateToken, authSingUp.signUpAdminToken);

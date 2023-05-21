@@ -13,5 +13,6 @@ routes.post("/addProducts", jwtConfiguration.validateToken, fileUpload({
   tempFileDir: "./uploads",
 }), products.postProduct);
 routes.get("/productsConsultation", products.getProduct);
+routes.get("/getProductDate", products.getProductDate);
 
 export default routes;
