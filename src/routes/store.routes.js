@@ -14,6 +14,6 @@ router.put("/updateStore", jwtConfiguration.validateToken, fileUpload({
 }), stores.putStore);
 router.post("/addStore", jwtConfiguration.validateToken, stores.postStore);
 router.get("/consultationStore", stores.getStore);
-router.get("/getDataStore", jwtConfiguration.validateToken, stores.getDataStore);
+router.get("/getDataStore", stores.getDataStore);
 
 export default router;

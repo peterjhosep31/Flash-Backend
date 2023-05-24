@@ -17,6 +17,10 @@ routes.post("/signUpAdmin/:token", authSingUp.signUpAdmin);
 routes.post("/signUpCustomer", authSingUp.signUpCustomer);
 routes.put("/updatePassword", recover.updatePassword);
 routes.put("/newPassword", recover.recoverPassword);
+<<<<<<< HEAD
+routes.post("/signUpAdmin", authSingUp.signUpAdmin);
+=======
+>>>>>>> c238501855e0b8d5fdc067ca98794b63dfa1f81b
 routes.post("/signInUser", authSingIn.singIn);
 
 export default routes;
