@@ -47,6 +47,8 @@ controllerCategory.postCategory = async (req, res) => {
 
 };
 
+// rutas pedra es gay
+
 controllerCategory.getCategory = (req, res) => {
   try {
     connectionDb.query("SELECT * FROM category", (err, rows) => {
