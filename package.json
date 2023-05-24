@@ -6,8 +6,9 @@
   "type": "module",
   "scripts": {
     "build": "babel src --out-dir build",
-    "dev": "nodemon src/index.js --exect babel-node",
-    "start": "node build/index.js"
+    "dev": "cross-env NODE_ENV=development nodemon src/index.js",
+    "start": "cross-env NODE_ENV=production node build/index.js",
+    "test": "cross-env NODE_ENV=test jest --watchAll --verbose --silent"
   },
   "author": "Team_Developer_Flash",
   "license": "ISC",
@@ -32,10 +33,14 @@
     "yup": "^1.0.2"
   },
   "devDependencies": {
+    "cross-env": "^7.0.3",
     "@babel/cli": "^7.21.0",
     "@babel/core": "^7.21.4",
     "@babel/node": "^7.20.7",
     "@babel/preset-env": "^7.21.4",
-    "nodemon": "^2.0.22"
+    "jest": "^29.5.0",
+    "nodemon": "^2.0.22",
+    "supertest": "^6.3.3",
+    "test": "^3.3.0"
   }
 }

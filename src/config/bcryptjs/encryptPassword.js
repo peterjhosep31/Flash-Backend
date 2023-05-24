@@ -12,7 +12,7 @@ encrypted.matchPassword = async (password, savedPassword) => {
     try {
         return await bcryptjs.compare(password, savedPassword);
     } catch (error) {
-        console.log(error);
+        console.log("Error con las contraseñas:  ",error);
     }
 }
 
