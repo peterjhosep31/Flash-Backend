@@ -6,11 +6,12 @@ import { query } from "express";
 const controllerProduct = {};
 
 controllerProduct.postProduct = async (req, res) => {
+  console.log(req.body);
   try {
     let nameProduct = (req.body['data[name]']) ? req.body['data[name]'] : null;
     let descriptionProduct = (req.body['data[description]']) ? req.body['data[description]'] : null;
     let availability = (req.body['data[availability]']) ? req.body['data[availability]'] : null;
-    let offerProduct = (req.body['data[offert]']) ? req.body['data[offert]'] : 0;
+    let offerProduct = (req.body['data[discount]']) ? req.body['data[discount]'] : 0;
     let amountProduct = (req.body['data[amount]']) ? req.body['data[amount]'] : null;
     let priceProduct = (req.body['data[price]']) ? req.body['data[price]'] : null;
     let imgProductRute = (req.files['data[image]'].tempFilePath) ? req.files['data[image]'].tempFilePath : null;
@@ -92,6 +93,7 @@ controllerProduct.getProductStore = async (req, res) => {
 };
 
 controllerProduct.getProduct = async (req, res) => {
+  let allProducts = null;
   try {
     connectionDB.query("SELECT * FROM product", (err, rows) => {
       if (err) {
@@ -143,6 +145,7 @@ controllerProduct.putProduct = async (req, res) => {
     let availability = (req.body.data.availability) ? req.body.data.availability : null;
     let amountProduct = (req.body.data.amount) ? req.body.data.amount : null;
     let priceProduct = (req.body.data.price) ? req.body.data.price : null;
+    
 
     connectionDB.query("UPDATE product SET ? WHERE id_product = ?", [{
       name_product: nameProduct,

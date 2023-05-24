@@ -33,13 +33,12 @@ describe("Product Controller Test", () => {
 
   describe("POST request", () => {
     describe("POST /addProducts", () => {
-      let data = 
-        {
-           'data[name]': "Testing",
-          'data[description]': "Testing",
-          'data[price]': 1,
-        }
-      
+      let data =
+      {
+        'data[name]': "Testing",
+        'data[description]': ""
+      }
+
 
       test("should reply with status 500", async () => {
         const response = await request.post('/addProducts')
@@ -48,8 +47,8 @@ describe("Product Controller Test", () => {
       });
       test("should reply with status 403", async () => {
         const response = await request.post('/addProducts')
-          .set('token', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImVtYWlsIjoiYmVybXVkZXpsb3BlenBlZHJvam9zZUBnbWFpbC5jb20iLCJwZXJtaXNzaW9uIjoiYWRtaW5pc3RyYWRvciJ9LCJpYXQiOjE2ODQ4NTI1MDMsImV4cCI6MTY4NDkzODkwM30.XMjawHoKlpfVHC_TmxHyy5uk_1nQvpfQEgkKYiyyHAM',data);
-          expect(response.statusCode).toBe(403)
+          .set('token', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImVtYWlsIjoiYmVybXVkZXpsb3BlenBlZHJvam9zZUBnbWFpbC5jb20iLCJwZXJtaXNzaW9uIjoiYWRtaW5pc3RyYWRvciJ9LCJpYXQiOjE2ODQ4NTI1MDMsImV4cCI6MTY4NDkzODkwM30.XMjawHoKlpfVHC_TmxHyy5uk_1nQvpfQEgkKYiyyHAM', data);
+        expect(response.statusCode).toBe(403)
       })
     })
   });

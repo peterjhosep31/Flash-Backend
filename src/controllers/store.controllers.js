@@ -80,14 +80,10 @@ controllerStore.postStore = async (req, res) => {
 controllerStore.getStore = async (req, res) => {
   try {
     connectionDB.query("SELECT * FROM store", (err, rows) => {
-      if (rows.length > 0) {
+      if (rows.length > 0 && !err) {
         return res.status("200").send({
           mensaje: "Tiendas obtenidas",
-          error: rows
-        });
-      } else if (rows.length === 0) {
-        return res.status("202").send({
-          mensaje: "No hay locales"
+          error: rows,
         });
       } else {
         return res.status("202").send({
