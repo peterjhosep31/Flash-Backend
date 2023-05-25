@@ -115,7 +115,6 @@ controllerProduct.getProduct = async (req, res) => {
   }
 };
 
-<<<<<<< HEAD
 controllerProduct.getProductDate = async (req, res) => {
   try {
     connectionDB.query("SELECT * FROM product order by data_product DESC limit 7", (err, rows) => {
@@ -138,8 +137,6 @@ controllerProduct.getProductDate = async (req, res) => {
   }
 };
 
-=======
->>>>>>> c238501855e0b8d5fdc067ca98794b63dfa1f81b
 controllerProduct.getProductOne = async (req, res) => {
   try {
     connectionDB.query("SELECT id_product FROM products WHERE id_product = ?", [req.params.code], (err, rows) => {
