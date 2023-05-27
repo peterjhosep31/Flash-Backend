@@ -13,7 +13,7 @@ controllerAuth.singIn = async (req, res) => {
   let emailUser = req.body.data.email;
   let passwordUser = req.body.data.password;
 
-  connectionDb.query("SELECT * FROM administrator WHERE email_admin = ?", [emailUser], async (err, rows) => {
+  connectionDb.query("SELECT * FROM administrator WHERE email_center = ?", [emailUser], async (err, rows) => {
     if (!err) {
       if (rows.length > 0) {
         let passwordUserDB = rows[0].password_admin;

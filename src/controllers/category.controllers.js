@@ -6,7 +6,7 @@ import bcryptjs from "../config/bcryptjs/encryptPassword.js";
 const controllerCategory = {};
 
 controllerCategory.postCategory = async (req, res) => {
-
+  try {
   const nameCategory = (req.body['data[name]']) ? req.body['data[name]'] : null;
   const routeImage = (req.files['data[image]'].tempFilePath) ? req.files['data[image]'].tempFilePath : null;
   let emailUser = (req.user.emailUser) ? req.user.emailUser : null;
@@ -44,6 +44,11 @@ controllerCategory.postCategory = async (req, res) => {
       });
     }
   });
+  } catch (error) {
+    return res.status(500).send({
+      mensaje: "Error en el servidor"
+    })
+  }
 
 };
 

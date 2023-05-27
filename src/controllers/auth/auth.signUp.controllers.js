@@ -4,59 +4,66 @@ import encrypted from "../../config/bcryptjs/encryptPassword.js";
 import emailSend from "../../config/email/emailCreateUsers.js";
 import connectionDb from "../../config/dataBase/dataBase.js";
 import bcryptjs from "../../config/bcryptjs/encryptPassword.js";
-import password from "../../helper/password.js"
+import password from "../../helper/password.js";
+import uploadImage from "../../config/cloudinary/uploadImages.js";
 
 const controllerAuth = {};
 
 controllerAuth.signUpAdmin = async (req, res) => {
-  try {
-    let emailuser = (req.body.data.email) ? req.body.data.email : null;
-    let nameuser = (req.body.data.nameUser) ? req.body.data.nameUser : null;
-    let adress = (req.body.data.direccion) ? req.body.data.direccion : null;
-    let passworduser = password.cretaePassword();
-    let passwordHast = await bcryptjs.encryptPassword(passworduser);
+  let emailuser = (req.body['data[email]']) ? req.body['data[email]'] : null;
+  let nameuser = (req.body['data[nameUser]']) ? req.body['data[nameUser]'] : null;
+  let image = (req.files['data[image]'].tempFilePath) ? req.files['data[image]'].tempFilePath : null;
 
-    let codePermission = "administrador";
+  let photo = await uploadImage.uploadImagesStore(image);
+  let urlImage = (photo != null) ? photo.secure_url : null;
+  let idImage = (photo != null) ? photo.public_id : null;
+  let passworduser = password.cretaePassword();
+  let passwordHast = await bcryptjs.encryptPassword(passworduser);
+  let emailCenter = nameuser.replace(/\s+/g, '_') + '@flash.com'
 
-    connectionDb.query("SELECT * FROM administrator WHERE email_admin = ?", [emailuser], (err, rows) => {
-      if (!err) {
-        if (rows.length > 0) {
-          return res.status(400).send({
-            mensaje: "El correo ya está registrado",
-          });
-        } else if (rows.length === 0) {
-          connectionDb.query("INSERT INTO administrator SET ?", {
-            name_admin: nameuser,
-            email_admin: emailuser,
-            password_admin: passwordHast,
-            rol: codePermission,
-            dirrecion_administrator: adress
-          }, async (err, rows) => {
-            if (err) {
-              return res.status(400).send({
-                mensaje: "Error al registrar el usuario",
-                error: err
-              });
-            } else {
-              await emailSend.createCenter(emailuser, nameuser, passworduser);
-              return res.status(200).send({
-                mensaje: "Usuario registrado con éxito"
-              });
-            }
-          });
-        }
-      } else if (err) {
+  let codePermission = "administrador";
+
+  connectionDb.query("SELECT * FROM administrator WHERE email_admin = ?", [emailuser], (err, rows) => {
+    if (!err) {
+      if (rows.length > 0) {
         return res.status(400).send({
-          mensaje: "Error al registrar el usuario",
-          error: err
+          mensaje: "El correo ya está registrado"
+        });
+      } else if (rows.length === 0) {
+        connectionDb.query("INSERT INTO administrator SET ?", {
+          name_admin: nameuser,
+          email_admin: emailuser,
+          img_admin: urlImage,
+          id_img_admin: idImage,
+          password_admin: passwordHast,
+          rol: codePermission,
+          email_center: emailCenter
+        }, async (err, rows) => {
+          if (err) {
+            return res.status(400).send({
+              mensaje: "Error al registrar el usuario",
+              error: err
+            });
+          } else {
+            await emailSend.createCenter(emailuser, nameuser, passworduser, emailCenter); 
+            return res.status(200).send({
+              mensaje: "Usuario registrado con éxito"
+            });
+          }
         });
       }
-    });
-  } catch (error) {
-    return res.status(500).send({
-      mensaje: "Error interno del servidor"
-    });
-  }
+    } else if (err) {
+      return res.status(400).send({
+        mensaje: "Error al registrar el usuario",
+        error: err
+      });
+    }
+  });
+  // } catch (error) {
+  //   return res.status(500).send({
+  //     mensaje: "Error interno del servidor"
+  //   });
+  // }
 };
 
 controllerAuth.signUpAdminToken = async (req, res) => {

@@ -93,21 +93,40 @@ controllerProduct.getProductStore = async (req, res) => {
 };
 
 controllerProduct.getProduct = async (req, res) => {
-  let allProducts = null;
   try {
-    connectionDB.query("SELECT * FROM product order by id_product DESC", (err, rows) => {
-      if (err) {
-        return res.status(404).send({
-          mensaje: "Error al consultar productos",
-          error: err
-        });
-      } else {
-        return res.status("200").send({
-          mensaje: "Productos consultados con exito",
-          rows: rows
-        });
-      }
-    });
+    let limit = req.params.limit;
+
+    if (limit == 0) {
+      connectionDB.query("SELECT * FROM product order by id_product DESC", (err, rows) => {
+        if (err) {
+          return res.status(404).send({
+            mensaje: "Error al consultar productos",
+            error: err
+          });
+        } else {
+          return res.status("200").send({
+            mensaje: "Productos consultados con exito",
+            rows: rows
+          });
+        }
+      });
+    } else {
+      connectionDB.query(`SELECT * FROM product limit ${limit}`, (err, rows) => {
+        if (err) {
+          return res.status(404).send({
+            mensaje: "Error al consultar productos",
+            error: err
+          });
+        } else {
+          return res.status("200").send({
+            mensaje: "Productos consultados con exito",
+            rows: rows
+          });
+        }
+      });
+    }
+
+
   } catch (error) {
     return res.status(500).send({
       mensaje: "Error en el servidor"
@@ -115,7 +134,6 @@ controllerProduct.getProduct = async (req, res) => {
   }
 };
 
-<<<<<<< HEAD
 controllerProduct.getProductDate = async (req, res) => {
   try {
     connectionDB.query("SELECT * FROM product order by data_product DESC limit 7", (err, rows) => {
@@ -138,8 +156,6 @@ controllerProduct.getProductDate = async (req, res) => {
   }
 };
 
-=======
->>>>>>> c238501855e0b8d5fdc067ca98794b63dfa1f81b
 controllerProduct.getProductOne = async (req, res) => {
   try {
     connectionDB.query("SELECT id_product FROM products WHERE id_product = ?", [req.params.code], (err, rows) => {

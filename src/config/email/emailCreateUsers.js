@@ -94,7 +94,7 @@ emailCreateUsers.confirmUser = async (email, name) => {
   })
 };
 
-emailCreateUsers.createCenter = async (email, name, passwordCenter) => {
+emailCreateUsers.createCenter = async (email, name, passwordCenter, emailCenter) => {
   await configEmail.sendMail({
     from: '2022.flash.sale@gmail.com',
     to: email,
@@ -126,6 +126,7 @@ emailCreateUsers.createCenter = async (email, name, passwordCenter) => {
               </div>
               <div class="textFlash"><p>Le informamos que ha sido creada su centro comercial. Sus datos de acceso son los siguientes: </p>
                 <p>Nombre de Usuario: <span>${email}</span></p>
+                <p>Usuario:${emailCenter}</p>
                 <p>Contaseña:${passwordCenter}</p>
                 <p>Saludos, </br> Equipo de Flash</p>
               </div>
@@ -135,7 +136,6 @@ emailCreateUsers.createCenter = async (email, name, passwordCenter) => {
       </body>
     `
   }).then((res) => {
-    console.log(res);
     return console.log("Send email")
   }).catch((err) => {
     return console.log(err);

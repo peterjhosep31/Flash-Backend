@@ -4,25 +4,36 @@ const card = {};
 
 card.postShopping = async (req, res) => {
   let codeProduct = req.params.idProduct;
-  let idUser = req.user.idUser;
+  let idUser = req.user.emailUser;
   let codeStore = req.body.data.code;
+  console.log(req.body);
   let priceProduct = req.body.data.price;
-  let amountProduct = req.bady.data.amount;
+  let amountProduct = req.body.data.amount;
 
-  connectionDB.query("INSERT INTO cardshopping SET ?", {
-    id_product: codeProduct,
-    price_product: priceProduct,
-    amount_Product: amountProduct,
-    id_customer: idUser,
-    id_store : codeStore
-  }, (err, rows) => {
+  connectionDB.query("SELECT id_customer FROM customer WHERE email_customer = ?", [idUser], (err, rows) => {
+    let id = rows[0].id_customer
     if (!err){
-      res.status(200).send({
-        message: "Producto agregado al carrito"
+      connectionDB.query("INSERT INTO cardshopping SET ?", {
+        id_product: codeProduct,
+        price_product: priceProduct,
+        amount_Product: amountProduct,
+        id_customer: id,
+        id_store: codeStore
+      }, (err, rows) => {
+        if (!err) {
+          connectionDB.query
+          res.status(200).send({
+            message: "Producto agregado al carrito"
+          })
+        } else {
+          res.status(500).send({
+            message: "Error al agregar el producto al carrito"
+          })
+        }
       })
     } else {
       res.status(500).send({
-        message: "Error al agregar el producto al carrito"
+        message: "Error al obtener el id del usuario"
       })
     }
   })

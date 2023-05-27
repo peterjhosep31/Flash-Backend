@@ -30,7 +30,7 @@ cloudinaryUploadImages.uploadImagesStore = (image, folder) => {
     folder: "Flash/Stores/", folder,
     format: "png",
     width: 300,
-    height: x,
+    height: 300,
     density: 1080,
     crop: "fill"
   }, (err, result) => {

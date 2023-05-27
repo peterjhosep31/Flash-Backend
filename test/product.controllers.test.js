@@ -33,12 +33,62 @@ describe("Product Controller Test", () => {
 
   describe("POST request", () => {
     describe("POST /addProducts", () => {
-      let data =
-      {
-        'data[name]': "Testing",
-        'data[description]': ""
-      }
-
+      let data = [
+        {
+          'data[name]': "",
+          'data[description]': "",
+          'data[discount]': "",
+          'data[amount]': "",
+          'data[price]': "",
+          'data[image]': "",
+          'data[category]': "",
+        },
+        {
+          'data[name]': "name",
+          'data[description]': "Es un producto",
+          'data[discount]': "",
+          'data[amount]': "",
+          'data[price]': "",
+          'data[image]': "",
+          'data[category]': "",
+        },
+        {
+          'data[name]': "name",
+          'data[description]': "Es un producto",
+          'data[discount]': "",
+          'data[amount]': "",
+          'data[price]': "",
+          'data[image]': "",
+          'data[category]': "",
+        },
+        {
+          'data[name]': "name",
+          'data[description]': "Es un producto",
+          'data[discount]': "",
+          'data[amount]': "",
+          'data[price]': "",
+          'data[image]': "",
+          'data[category]': "",
+        },
+        {
+          'data[name]': "name",
+          'data[description]': "Es un producto",
+          'data[discount]': "",
+          'data[amount]': "",
+          'data[price]': "",
+          'data[image]': "",
+          'data[category]': "",
+        },
+        {
+          'data[name]': "name",
+          'data[description]': "Es un producto",
+          'data[discount]': "",
+          'data[amount]': "",
+          'data[price]': "",
+          'data[image]': "",
+          'data[category]': "",
+        },
+      ]
 
       test("should reply with status 500", async () => {
         const response = await request.post('/addProducts')
