@@ -29,7 +29,8 @@ jsonWebToken.validateToken = (req, res, next) => {
       } else {
 
         req.user = {
-          emailUser: result.user.email
+          emailUser: result.user.email,
+          idUser : result.user.idUser
         };
         next();
       }

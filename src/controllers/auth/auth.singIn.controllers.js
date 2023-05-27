@@ -64,12 +64,14 @@ controllerAuth.singIn = async (req, res) => {
               await connectionDb.query("SELECT * FROM customer WHERE email_customer = ?", [emailUser], async (err, rows) => {
                 if (!err) {
                   if (rows.length > 0) {
+              
                     let passwordUserDB = rows[0].password_customer;
                     let passwordCompare = await encrypted.matchPassword(passwordUser, passwordUserDB);
                     if (passwordCompare) {
                       let rolAdmin = rows[0].rol;
                       let user = {
                         email: rows[0].email_customer,
+                        idUser: rows[0].id_customer,
                         permission: rows[0].rol
                       };
                       let accessToken = await jwt.generateAccessToken(user);

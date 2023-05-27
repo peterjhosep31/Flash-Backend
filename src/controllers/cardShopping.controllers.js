@@ -1,3 +1,4 @@
+
 import connectionDB from "../config/dataBase/dataBase.js";
 
 const card = {};
@@ -22,7 +23,9 @@ card.postShopping = async (req, res) => {
         amount_Product: amountProduct,
         id_customer: id,
         id_store: codeStore,
-        name_product: name
+        name_product: name,
+        img_producto:req.body.data.img,
+        description_product: req.body.data.description
       }, (err, rows) => {
         if (!err) {
           connectionDB.query("SELECT * FROM cardshopping WHERE id_customer = ?", [id], (err, rows) => {
@@ -38,6 +41,7 @@ card.postShopping = async (req, res) => {
             }
           })
         } else {
+          console.log(err);
           res.status(500).send({
             message: "Error al agregar el producto al carrito"
           })
@@ -53,10 +57,13 @@ card.postShopping = async (req, res) => {
 
 card.getShopping = async (req, res) => {
   let idUser = req.user.idUser;
-  connectionDB.query("SELECT id_customer FROM customer WHERE email_customer = ?", [idUser], (err, rows) => {
-    let id = rows[0].id_customer
+  console.log('l--lll-llll-lll',req.user);
+  connectionDB.query("SELECT id_customer FROM customer WHERE email_customer = ?", [req.user.emailUser], (err, rows) => {
+   
+    
     if (!err) {
-      connectionDB.query("SELECT * FROM cardshopping WHERE id_customer = ?", [id], (err, rows) => {
+      connectionDB.query("SELECT * FROM cardshopping WHERE id_customer = ?", [rows[0].id_customer], (err, rows) => {
+        console.log(rows);
         if (!err) {
           res.status(200).send({
             message: "Productos encontrados",
@@ -90,11 +97,12 @@ card.deleteShopping = async (req, res) => {
 }
 
 card.updateShopping = async (req, res) => {
+  console.log(req.body.data.code)
   let codeProduct = req.params.idProduct;
   let idUser = req.user.idUser;
   let codeStore = req.body.data.code;
-  let amountProduct = req.bady.data.amount;
-  connectionDB.query("UPDATE cardshopping SET amount_Product = ? WHERE id_product = ? AND id_customer = ? AND id_store = ?", [amountProduct, codeProduct, idUser, codeStore], (err, rows) => {
+
+  connectionDB.query(`UPDATE cardshopping SET amount_Product = amount_product + ${req.body.data.amount} WHERE id_product = ? AND id_customer = ? AND id_store = ?`, [ codeProduct, idUser, req.body.data.code], (err, rows) => {
     if (!err) {
       res.status(200).send({
         message: "Producto actualizado del carrito"
