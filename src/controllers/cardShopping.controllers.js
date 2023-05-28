@@ -24,7 +24,7 @@ card.postShopping = async (req, res) => {
         id_customer: id,
         id_store: codeStore,
         name_product: name,
-        img_producto:req.body.data.img,
+        img_producto: req.body.data.img,
         description_product: req.body.data.description
       }, (err, rows) => {
         if (!err) {
@@ -57,13 +57,16 @@ card.postShopping = async (req, res) => {
 
 card.getShopping = async (req, res) => {
   let idUser = req.user.idUser;
-  console.log('l--lll-llll-lll',req.user);
-  connectionDB.query("SELECT id_customer FROM customer WHERE email_customer = ?", [req.user.emailUser], (err, rows) => {
-   
-    
+  if (!idUser) {
+    return res.status(500).send({
+      message: "Error al obtener el id del usuario"
+    })
+  }
+  console.log('l--lll-llll-lll', req.user.idUser)
+  connectionDB.query("SELECT id_customer FROM customer WHERE email_customer = ?", [req.user.idUser], (err, rows) => {
     if (!err) {
       connectionDB.query("SELECT * FROM cardshopping WHERE id_customer = ?", [rows[0].id_customer], (err, rows) => {
-        console.log(rows);
+        console.log(rows)
         if (!err) {
           res.status(200).send({
             message: "Productos encontrados",
@@ -102,17 +105,34 @@ card.updateShopping = async (req, res) => {
   let idUser = req.user.idUser;
   let codeStore = req.body.data.code;
 
-  connectionDB.query(`UPDATE cardshopping SET amount_Product = amount_product + ${req.body.data.amount} WHERE id_product = ? AND id_customer = ? AND id_store = ?`, [ codeProduct, idUser, req.body.data.code], (err, rows) => {
-    if (!err) {
-      res.status(200).send({
-        message: "Producto actualizado del carrito"
-      })
-    } else {
-      res.status(500).send({
-        message: "Error al actualizar el producto del carrito"
-      })
-    }
-  })
+
+
+  if (req.body.data.type == "add") {
+    connectionDB.query(`UPDATE cardshopping SET amount_Product = amount_product + ${req.body.data.amount} WHERE id_product = ? AND id_customer = ? AND id_store = ?`, [codeProduct, idUser, req.body.data.code], (err, rows) => {
+      if (!err) {
+        res.status(200).send({
+          message: "Producto actualizado del carrito"
+        })
+      } else {
+        res.status(500).send({
+          message: "Error al actualizar el producto del carrito"
+        })
+      }
+    })
+  } else {
+    connectionDB.query(`UPDATE cardshopping SET amount_Product = amount_product - ${req.body.data.amount} WHERE id_product = ? AND id_customer = ? AND id_store = ?`, [codeProduct, idUser, req.body.data.code], (err, rows) => {
+      if (!err) {
+        res.status(200).send({
+          message: "Producto actualizado del carrito"
+        })
+      } else {
+        res.status(500).send({
+          message: "Error al actualizar el producto del carrito"
+        })
+      }
+    })
+  }
+
 }
 
 

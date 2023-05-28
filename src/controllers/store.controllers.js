@@ -78,9 +78,11 @@ controllerStore.postStore = async (req, res) => {
 };
 
 controllerStore.getStore = async (req, res) => {
-  try {
-    connectionDB.query("SELECT * FROM store", (err, rows) => {
-      if (rows.length > 0 && !err) {
+  let code = req.params.code;
+  let idStore = req.params.idStore;
+  if (idStore == 0) {
+    connectionDB.query("SELECT * FROM store where id_admin = ? ", [code], (err, rows) => {
+      if (rows) {
         return res.status("200").send({
           mensaje: "Tiendas obtenidas",
           data: rows
@@ -92,29 +94,69 @@ controllerStore.getStore = async (req, res) => {
         });
       }
     });
-  } catch (error) {
-    return res.status("500").send({
-      mensaje: "Ocurrio un error"
+  } else {
+    connectionDB.query("SELECT * FROM store where id_admin = ? ", [code], (err, rows) => {
+      if (rows) {
+        let data = rows;
+        connectionDB.query("SELECT * FROM product WHERE id_store = ?", [idStore], (err, rows) => {
+          if (rows) {
+            return res.status("200").send({
+              mensaje: "Tiendas obtenidas",
+              data: data,
+              product: rows
+            });
+          } else {
+            return res.status("202").send({
+              mensaje: "Error al mostrar local",
+              err: err
+            });
+          }
+
+        })
+
+
+      } else {
+        return res.status("202").send({
+          mensaje: "Error al mostrar local",
+          err: err
+        });
+      }
     });
   }
+
 };
 
+controllerStore.getStores = async (req, res) => {
+  connectionDB.query("SELECT * FROM store", (err, rows) => {
+    if (rows) {
+      return res.status("200").send({
+        mensaje: "Tiendas obtenidas",
+        data: rows
+      });
+    } else {
+      return res.status("202").send({
+        mensaje: "Error al mostrar local",
+        err: err
+      });
+    }
+  });
+}
+
 controllerStore.getDataStore = async (req, res) => {
-  
   connectionDB.query("SELECT * FROM store WHERE email_store = ?", [req.user.emailUser], (err, rows) => {
-      if (rows.length > 0) {
-        console.log(rows);
-        return res.status("200").send({
-          mensaje: "Tiendas obtenidas",
-          data: rows
-        });
-      } else {
-        return res.status("202").send({
-          mensaje: "Error al mostrar local",
-          err: err
-        });
-      }
-    });
+    if (rows.length > 0) {
+      console.log(rows);
+      return res.status("200").send({
+        mensaje: "Tiendas obtenidas",
+        data: rows
+      });
+    } else {
+      return res.status("202").send({
+        mensaje: "Error al mostrar local",
+        err: err
+      });
+    }
+  });
 }
 
 controllerStore.getStoreAdmin = async (req, res) => {
@@ -170,12 +212,12 @@ controllerStore.putStore = async (req, res) => {
     if (!err && rows.length > 0) {
       let nameDB = (nameStore != null) ? nameStore : rows[0].name_store;
       let phoneDB = (phone != null) ? phone : rows[0].phone_number_store;
-      console.log("phoneDB",phoneDB);
+      console.log("phoneDB", phoneDB);
       let descriptionDB = (description != null) ? description : rows[0].description_store;
       let imageDB = (urlPhoto != null) ? urlPhoto : rows[0].img_store;
       let idPhotoDB = (idPhoto != null) ? idPhoto : rows[0].id_img_store;
       connectionDB.query("UPDATE store SET name_store = ?, phone_number_store = ?, description_store = ?, img_store = ?, id_img_store = ? WHERE email_store = ?", [nameDB, phoneDB, descriptionDB, imageDB, idPhotoDB, emailStore], (err, rows) => {
-        console.log("erro",err);
+        console.log("erro", err);
         if (!err && rows.affectedRows) {
           return res.status(200).send({
             mensaje: "Local actualizado con exito",

@@ -6,7 +6,7 @@ import { query } from "express";
 const controllerProduct = {};
 
 controllerProduct.postProduct = async (req, res) => {
-  console.log(req.body);
+  console.log(req.files);
   try {
     let nameProduct = (req.body['data[name]']) ? req.body['data[name]'] : null;
     let descriptionProduct = (req.body['data[description]']) ? req.body['data[description]'] : null;
@@ -158,7 +158,7 @@ controllerProduct.getProductDate = async (req, res) => {
 
 controllerProduct.getProductOne = async (req, res) => {
   try {
-    connectionDB.query("SELECT id_product FROM products WHERE id_product = ?", [req.params.code], (err, rows) => {
+    connectionDB.query("SELECT * FROM product WHERE id_product = ?", [req.params.code], (err, rows) => {
       if (err) {
         return res.status(404).send({
           mensaje: "Error al consultar productos",
@@ -167,7 +167,7 @@ controllerProduct.getProductOne = async (req, res) => {
       } else {
         return res.status("200").send({
           mensaje: "Productos consultados con exito",
-          rows: rows
+          data: rows
         });
       }
     });
@@ -177,6 +177,62 @@ controllerProduct.getProductOne = async (req, res) => {
     });
   }
 };
+
+controllerProduct.getProductDescount = (req, res) => {
+  try {
+    connectionDB.query("SELECT * FROM product WHERE dicount > 0", (err, rows) => {
+      if (err) {
+        return res.status(404).send({
+          mensaje: "Error al consultar productos",
+          error: err
+        });
+      } else {
+        return res.status("200").send({
+          mensaje: "Productos consultados con exito",
+          data: rows
+        });
+      }
+    });
+  } catch (error) {
+    return res.status(500).send({
+      mensaje: "Error en el servidor"
+    });
+  }
+}
+
+controllerProduct.getProductMall = (req, res) => {
+  let code = req.params.code;
+  connectionDB.query(`SELECT p.id_product, p.name_product, p.description_product, p.availability_product, p.amount_poduct, p.price_product, p.img_product, p.id_img_product, p.id_store_product, p.id_product_category, p.data_product, p.dicount FROM administrator a JOIN store s ON a.id_admin = s.id_admin JOIN product p ON s.id_store = p.id_store_product WHERE a.id_admin = ${code}`, (err, rows) => {
+        if (err) {
+          return res.status(404).send({
+            mensaje: "Error al consultar productos",
+            error: err
+          });
+        } else {
+          return res.status("200").send({
+            mensaje: "Productos consultados con exito",
+            rows: rows
+          });
+        }
+      });
+}
+
+controllerProduct.getProductCustomer = (req, res) => {
+  let code = req.params.code;
+  connectionDB.query("SELECT * FROM product WHERE id_store_product = 59", [code], (err, rows) => {
+    if (err) {
+      return res.status(404).send({
+        mensaje: "Error al consultar productos",
+        error: err
+      });
+    } else {
+      return res.status("200").send({
+        mensaje: "Productos consultados con exito",
+        data: rows
+      });
+    }
+  })
+}
 
 controllerProduct.putProduct = async (req, res) => {
   try {

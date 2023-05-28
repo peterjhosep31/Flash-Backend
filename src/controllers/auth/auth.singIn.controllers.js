@@ -37,10 +37,11 @@ controllerAuth.singIn = async (req, res) => {
           });
         }
       } else if (rows.length === 0) {
-        await connectionDb.query("SELECT * FROM store WHERE email_store = ?", [emailUser], async (err, rows) => {
+        connectionDb.query("SELECT * FROM store WHERE email_store = ?", [emailUser], async (err, rows) => {
           if (!err) {
             if (rows.length > 0) {
               let passwordUserDB = rows[0].password_store;
+              console.log(passwordUserDB);
               let passwordCompare = await encrypted.matchPassword(passwordUser, passwordUserDB);
               console.log(passwordCompare);
               if (passwordCompare) {

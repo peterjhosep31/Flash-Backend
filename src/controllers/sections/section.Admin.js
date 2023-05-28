@@ -7,27 +7,27 @@ import deleteImage from "../../config/cloudinary/deleteImages.js";
 const adminEdit = {};
 
 adminEdit.updateProfile = async (req, res) => {
+  console.log(req.files);
+  // console.log(req.files.data.tempFilePath);
+
   let emailUserConcurrent = req.user.emailUser;
 
-  let nameUSer = (req.body.data.name) ? req.body.data.name : null;
-  let emailUser = (req.body.data.email) ? req.body.data.email : null;
-  let direccion = (req.body.data.addres) ? req.body.data.addres : null;
-
-  let imageUser = (req.body.data.image) ? req.body.data.image : null;
+  let nameUSer = (req.body['data[name]']) ? req.body['data[name]'] : null;
+  let emailUser = (req.body['data[email]']) ? req.body['data[email]'] : null;
+  // let direccion = (req.body.data.addres) ? req.body.data.addres : null;
+  let imageUser = (req.files) ? req.files.data.tempFilePath : null;
   let photoUSer = (imageUser != null) ? await uploadImageUser.uploadImagesUser(imageUser) : null;
   let urlPhoto = (photoUSer != null) ? photoUSer.url : null;
   let idPhoto = (photoUSer != null) ? photoUSer.id : null;
   
-  connectionDB.query("SELECT * FROM administrator WHERE email_admin = ?", [emailUserConcurrent], async (err, rows) => {
+  connectionDB.query("SELECT * FROM administrator WHERE email_center = ?", [emailUserConcurrent], async (err, rows) => {
     if (!err && rows.length > 0) {
 
       let nameAdmin = (nameUSer != null) ? nameUSer : rows[0].name_admin;
-      let direccionAdmin = (direccion != null) ? direccion : rows[0].dirrecion_administrator;
       let emialAdmin = (emailUser != null) ? emailUser : rows[0].email_admin;
       let imgAdmin = (urlPhoto != null) ? urlPhoto : rows[0].img_admin;
       let idImgAdmin = (idPhoto != null) ? idPhoto : rows[0].id_img_admin;
-      let deleteImge = (photoUSer != null) ? await deleteImage.deleteImage(rows[0].id_img_admin) : null;
-      connectionDB.query("UPDATE administrator SET name_admin  = ?, email_admin = ?, img_admin = ?, id_img_admin = ?, dirrecion_administrator = ? WHERE email_admin = ?", [nameAdmin, emialAdmin, imgAdmin, idImgAdmin, direccionAdmin, emailUserConcurrent], (err, rows) => {
+      connectionDB.query("UPDATE administrator SET name_admin  = ?, email_admin = ?, img_admin = ?, id_img_admin = ? WHERE email_admin = ?", [nameAdmin, emialAdmin, imgAdmin, idImgAdmin, emailUserConcurrent], (err, rows) => {
         if (!err) {
           console.log("entra");
           if (rows.affectedRows > 0) {

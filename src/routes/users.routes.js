@@ -8,7 +8,7 @@ import admin from "../controllers/sections/section.Admin.js";
 
 const routes = Router()
 
-routes.put("/updateData", jsonWebToken.validateToken, admin.updateProfile);
+routes.put("/updateData", fileUpload({ useTempFiles: true, tempFileDir: "./uploads", }), jsonWebToken.validateToken, admin.updateProfile);
 routes.get("/gatDataAccount", jsonWebToken.validateToken, admin.getData);
 routes.get("/getSmall", admin.getSmalls);
 

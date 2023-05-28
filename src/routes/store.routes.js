@@ -13,7 +13,8 @@ router.put("/updateStore", jwtConfiguration.validateToken, fileUpload({
   tempFileDir: "./uploads",
 }), stores.putStore);
 router.post("/addStore", jwtConfiguration.validateToken, stores.postStore);
-router.get("/consultationStore", stores.getStore);
+router.get("/consultationStore/:code/:idStore", stores.getStore);
+router.get("/consultationStore", stores.getStores);
 router.get("/getDataStore",jwtConfiguration.validateToken, stores.getDataStore);
 
 export default router;
