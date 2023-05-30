@@ -8,12 +8,12 @@ const routes = Router();
 routes.delete("/deleteProducts/:code", jwtConfiguration.validateToken, products.deleteProduct);
 routes.put("/updateProducts/:code", jwtConfiguration.validateToken, products.putProduct);
 routes.post("/addProducts", jwtConfiguration.validateToken, fileUpload({ useTempFiles: true, tempFileDir: "./uploads", }), products.postProduct);
-routes.get("/productsConsultation/:limit", products.getProduct);
+routes.get("/productsConsultation/:limit/:code", products.getProduct);
 routes.get("/getProductsStore", jwtConfiguration.validateToken, products.getProductStore);
 routes.get("/getProductStoreCustomer/:code", products.getProductCustomer)
 routes.get("/getProductDate", products.getProductDate);
 routes.get("/getProductOne/:code", products.getProductOne);
 routes.get("/getProductDiscount", products.getProductDescount);
-routes.get("/getProductMall/:code", products.getProductMall)
+routes.get("/getProductMall/:code/:idStore", products.getProductMall)
 
 export default routes;
