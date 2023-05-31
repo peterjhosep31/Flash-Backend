@@ -4,18 +4,16 @@ import connectionDB from "../config/dataBase/dataBase.js";
 const card = {};
 
 card.postShopping = async (req, res) => {
-  console.log(req.body);
   let codeProduct = req.body.data.idProduct;
   let name = req.body.data.nameProduct;
   let idUser = req.user.emailUser;
-  console.log(idUser);
   let codeStore = req.body.data.code;
-  console.log(req.body);
   let priceProduct = req.body.data.price;
   let amountProduct = req.body.data.amount;
 
   connectionDB.query("SELECT id_customer FROM customer WHERE email_customer = ?", [idUser], (err, rows) => {
     let id = rows[0].id_customer
+    console.log(id);
     if (!err) {
       connectionDB.query("INSERT INTO cardshopping SET ?", {
         id_product: codeProduct,

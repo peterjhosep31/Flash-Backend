@@ -6,7 +6,7 @@ import buys from "../controllers/buy.controllers.js"
 const routes = Router();
 
 routes.post("/buy/:idProduct", jsonWebToken.validateToken, buys.addBuy);
-routes.get("/buyCustomer", jsonWebToken.validateRole, buys.getBuys);
-routes.get("/buyStore", jsonWebToken.validateRole, buys.getBuysStore);
+routes.get("/buyStore", jsonWebToken.validateToken, buys.getBuysStore);
+routes.get("/buyCustomer", jsonWebToken.validateToken, buys.getBuys);
 
 export default routes;
