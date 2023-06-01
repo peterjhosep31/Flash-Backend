@@ -10,10 +10,10 @@ card.postShopping = async (req, res) => {
   let codeStore = req.body.data.code;
   let priceProduct = req.body.data.price;
   let amountProduct = req.body.data.amount;
+  let discount = req.body.data.discount;
 
   connectionDB.query("SELECT id_customer FROM customer WHERE email_customer = ?", [idUser], (err, rows) => {
     let id = rows[0].id_customer
-    console.log(id);
     if (!err) {
       connectionDB.query("INSERT INTO cardshopping SET ?", {
         id_product: codeProduct,
@@ -23,7 +23,8 @@ card.postShopping = async (req, res) => {
         id_store: codeStore,
         name_product: name,
         img_producto: req.body.data.img,
-        description_product: req.body.data.description
+        description_product: req.body.data.description,
+        discount
       }, (err, rows) => {
         if (!err) {
           connectionDB.query("SELECT * FROM cardshopping WHERE id_customer = ?", [id], (err, rows) => {
@@ -39,8 +40,7 @@ card.postShopping = async (req, res) => {
             }
           })
         } else {
-          console.log(err);
-          res.status(500).send({
+          return res.status(500).send({
             message: "Error al agregar el producto al carrito"
           })
         }
@@ -60,11 +60,9 @@ card.getShopping = async (req, res) => {
       message: "Error al obtener el id del usuario"
     })
   }
-  console.log('l--lll-llll-lll', req.user.idUser)
   connectionDB.query("SELECT id_customer FROM customer WHERE id_customer = ?", [req.user.idUser], (err, rows) => {
     if (!err) {
       connectionDB.query("SELECT * FROM cardshopping WHERE id_customer = ?", [rows[0].id_customer], (err, rows) => {
-        console.log(rows)
         if (!err) {
           res.status(200).send({
             message: "Productos encontrados",
@@ -98,12 +96,9 @@ card.deleteShopping = async (req, res) => {
 }
 
 card.updateShopping = async (req, res) => {
-  console.log(req.body.data.code)
   let codeProduct = req.params.idProduct;
   let idUser = req.user.idUser;
   let codeStore = req.body.data.code;
-
-
 
   if (req.body.data.type == "add") {
     connectionDB.query(`UPDATE cardshopping SET amount_Product = amount_product + ${req.body.data.amount} WHERE id_product = ? AND id_customer = ? AND id_store = ?`, [codeProduct, idUser, req.body.data.code], (err, rows) => {

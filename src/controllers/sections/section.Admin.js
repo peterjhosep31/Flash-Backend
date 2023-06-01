@@ -71,7 +71,7 @@ adminEdit.getData = async (req, res) => {
 };
 
 adminEdit.getSmalls =async (req, res) => {
-  connectionDB.query("SELECT * FROM administrator WHERE rol = 'administrador'", (err, rows) => {
+  connectionDB.query("SELECT * FROM administrator WHERE rol = 'administrador' LIMIT 9", (err, rows) => {
     if (rows) {
       return res.status(200).send({
         mensaje: "Datos encontrados",
