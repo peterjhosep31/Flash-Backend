@@ -81,7 +81,7 @@ controllerStore.getStore = async (req, res) => {
   let code = req.params.code;
   let idStore = req.params.idStore;
   if (idStore == 0) {
-    connectionDB.query("SELECT * FROM store where id_admin = ? ", [code], (err, rows) => {
+    connectionDB.query("SELECT * FROM store where id_admin = ? limit 10 ", [code], (err, rows) => {
       if (rows) {
         return res.status("200").send({
           mensaje: "Tiendas obtenidas",
