@@ -86,7 +86,7 @@ controllerAuth.signUpAdminToken = async (req, res) => {
 
 controllerAuth.signUpCustomer = async (req, res) => {
   try {
-    let nameUser = (req.body.data.name) ? req.body.data.name : null;
+    let nameUser = (req.body.data.nameUser) ? req.body.data.nameUser : null;
     let emailUser = (req.body.data.email) ? req.body.data.email : null;
     let passwordUser = (req.body.data.password) ? req.body.data.password : null;
     let passwordHash = (passwordUser != null) ? await encrypted.encryptPassword(passwordUser) : null;

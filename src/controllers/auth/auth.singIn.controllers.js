@@ -47,6 +47,7 @@ controllerAuth.singIn = async (req, res) => {
               if (passwordCompare) {
                 let user = {
                   email: rows[0].email_store,
+                  idUser: rows[0].id_store,
                   permission: rows[0].rol
                 };
                 let rolAdmin = rows[0].rol
