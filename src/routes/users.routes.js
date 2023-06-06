@@ -12,7 +12,7 @@ routes.put("/updateCustomer", jsonWebToken.validateToken, fileUpload({ useTempFi
 routes.put("/updateData", fileUpload({ useTempFiles: true, tempFileDir: "./uploads", }), jsonWebToken.validateToken, admin.updateProfile);
 routes.get("/gatDataCustomer", jsonWebToken.validateToken, customer.getData);
 routes.get("/gatDataAccount", jsonWebToken.validateToken, admin.getData);
-routes.get("/getSmall", admin.getSmalls);
+routes.get("/getSmall/:limit", admin.getSmalls);
 
 
 export default routes;

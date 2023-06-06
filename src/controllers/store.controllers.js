@@ -127,19 +127,38 @@ controllerStore.getStore = async (req, res) => {
 };
 
 controllerStore.getStores = async (req, res) => {
-  connectionDB.query("SELECT * FROM store", (err, rows) => {
-    if (rows) {
-      return res.status("200").send({
-        mensaje: "Tiendas obtenidas",
-        data: rows
-      });
-    } else {
-      return res.status("202").send({
-        mensaje: "Error al mostrar local",
-        err: err
-      });
-    }
-  });
+  let limit = req.params.limit;
+  console.log(limit);
+  if (limit == 0) {
+    connectionDB.query("SELECT * FROM store", (err, rows) => {
+      if (rows) {
+        return res.status("200").send({
+          mensaje: "Tiendas obtenidas",
+          data: rows
+        });
+      } else {
+        return res.status("202").send({
+          mensaje: "Error al mostrar local",
+          err: err
+        });
+      }
+    });
+  } else {
+    connectionDB.query(`SELECT * FROM store limit ${limit}`, (err, rows) => {
+      if (rows) {
+        return res.status("200").send({
+          mensaje: "Tiendas obtenidas",
+          data: rows
+        });
+      } else {
+        return res.status("202").send({
+          mensaje: "Error al mostrar local",
+          err: err
+        });
+      }
+    });
+  }
+
 }
 
 controllerStore.getDataStore = async (req, res) => {
@@ -192,8 +211,6 @@ controllerStore.getStoreAdmin = async (req, res) => {
 };
 
 controllerStore.putStore = async (req, res) => {
-  console.log("file *asYup", req.files);
-  console.log("body", req.body);
 
   let emailStore = req.user.emailUser;
   let nameStore = (req.body['data[name]']) ? req.body['data[name]'] : null;
