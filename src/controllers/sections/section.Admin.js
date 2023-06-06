@@ -71,19 +71,38 @@ adminEdit.getData = async (req, res) => {
 };
 
 adminEdit.getSmalls =async (req, res) => {
-  connectionDB.query("SELECT * FROM administrator WHERE rol = 'administrador' LIMIT 9", (err, rows) => {
-    if (rows) {
-      return res.status(200).send({
-        mensaje: "Datos encontrados",
-        rows: rows
-      })
-    } else {
-      return res.status(404).send({
-        mensaje: "No se encontraron datos",
-        err
-      })
-    }
-  })
+  let limit = req.params.limit;
+
+  if (limit == 0) {
+    connectionDB.query("SELECT * FROM administrator WHERE rol = 'administrador'", (err, rows) => {
+      if (rows) {
+        return res.status(200).send({
+          mensaje: "Datos encontrados",
+          rows: rows
+        })
+      } else {
+        return res.status(404).send({
+          mensaje: "No se encontraron datos",
+          err
+        })
+      }
+    })
+  } else {
+    connectionDB.query(`SELECT * FROM administrator WHERE rol = 'administrador' LIMIT ${limit}`, (err, rows) => {
+      if (rows) {
+        return res.status(200).send({
+          mensaje: "Datos encontrados",
+          rows: rows
+        })
+      } else {
+        return res.status(404).send({
+          mensaje: "No se encontraron datos",
+          err
+        })
+      }
+    })
+
+  }
 }
 
 

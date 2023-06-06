@@ -11,7 +11,7 @@ const myConnectionDataBase = mysql.createConnection({
     password: process.env.PASSWORD_USERS,
     database: process.env.DATA_BASE,
     charset: process.env.CHARSET_DB,
-    port: 3306,
+    port: 3308,
 });
 
 // Intentar establecer la conexión y manejar errores

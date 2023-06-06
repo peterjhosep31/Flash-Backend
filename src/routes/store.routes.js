@@ -12,6 +12,6 @@ router.get("/getStoreAdmin", jwtConfiguration.validateToken, stores.getStoreAdmi
 router.get("/getDataStore", jwtConfiguration.validateToken, stores.getDataStore);
 router.post("/addStore", jwtConfiguration.validateToken, stores.postStore);
 router.get("/consultationStore/:code/:idStore", stores.getStore);
-router.get("/consultationStore", stores.getStores);
+router.get("/consultationStore/:limit", stores.getStores);
 
 export default router;
