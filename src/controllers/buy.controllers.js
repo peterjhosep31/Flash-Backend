@@ -13,6 +13,7 @@ buys.addBuy = (req, res) => {
       let phoneCustomer = req.body.data.phone;
       let total = price * amountProduct;
       let idCustomer = req.body.data.id;
+      let typeBuy = req.body.venta;
 
       connectionDB.query("SELECT id_store_product, name_product FROM product WHERE id_product = ?", [product], (err, rows) => {
         if (!err && rows.length > 0) {
@@ -42,7 +43,8 @@ buys.addBuy = (req, res) => {
                         id_user: idCustomer,
                         nombre_tienda: nameStore,
                         nombre_empleado: nameEmployee,
-                        nombre_product: nameProduct
+                        nombre_product: nameProduct,
+                        tipo_venta: typeBuy
                       }, (err, rows) => {
                         if (!err) {
                           return res.status(200).send({
@@ -65,12 +67,13 @@ buys.addBuy = (req, res) => {
       })
     } else if (precio > 0) {
       let bann = false;
-      let total = req.params.price;
-      let emailCustomer = req.user.emailUser;
-      let adressCustomer = req.body.data.adress;
-      let phoneCustomer = req.body.data.phone;
-      let idCustomer = req.body.data.id;
-      let id = req.user.idUser;
+      let total = req.params.price
+      let emailCustomer = (req.user.emailUser) ? req.user.emailUser : null;
+      let adressCustomer = (req.body.data.adress) ? req.body.data.adress : null;
+      let phoneCustomer = (req.body.data.phone)? req.body.data.phone : null;
+      let idCustomer = (req.body.data.id) ? req.body.data.id : null;
+      let typeBuy = (req.body.venta) ? req.body.venta : null;
+      let id = (req.user.idUser) ? req.user.idUser : null;
 
       connectionDB.query("SELECT * FROM cardshopping WHERE id_customer = ?", [id], (err, rows) => {
         if (!err && rows.length > 0) {
@@ -111,7 +114,8 @@ buys.addBuy = (req, res) => {
                               id_user: idCustomer,
                               nombre_tienda: nameStore,
                               nombre_empleado: nameEmployee,
-                              nombre_product: nameProduct
+                              nombre_product: nameProduct,
+                              tipo_venta: typeBuy
                             }, (err, rows) => {
                               if (!err) {
                                 connectionDB.query("DELETE FROM `cardshopping` WHERE id_customer = ? AND id_product = ?", [id, product], (err, rows) => {
@@ -139,7 +143,6 @@ buys.addBuy = (req, res) => {
           }
         }
       })
-
       function sendResponse() {
         if (bann) {
           console.log('compra');
@@ -148,6 +151,17 @@ buys.addBuy = (req, res) => {
           });
         }
       }
+    } else if (precio == 0 && req.params.idProduct == 0) {
+      let total = req.body.data.total;
+      let emailCustomer = "CompraDirecta@flash.com";
+      let adressCustomer = req.body.data.adress;
+      let phoneCustomer = req.body.data.phone;
+      let idCustomer = req.body.data.id;
+      
+    console.log("entro");
+      console.log(req.body);
+      console.log(req.user);
+
     }
 
   } catch (error) {

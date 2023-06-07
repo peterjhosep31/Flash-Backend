@@ -25,9 +25,6 @@ emailCreateUsers.createStore = async (email, name, store, emailStore, passwordSt
       <body>
         <div class="containerEmail">
           <div class="boxBig">
-            <div class="box">
-              <img src="https://res.cloudinary.com/djaejhxwz/image/upload/v1683804734/Flash/Bienvenidoa_3_wutgdr.png" alt="">
-            </div>
             <div class="box-primary">
               <div class="welcome">
                 ¡Hola ${name}¡
@@ -54,38 +51,18 @@ emailCreateUsers.confirmUser = async (email, name) => {
     from: '2022.flash.sale@gmail.com',
     to: email,
     subject: "Usuario Registrado",
-    html: `
-      <head>
-        <style>
-          .containerEmail{ padding:20px; display: flex; align-items: center; justify-content: center; flex-direction: column}
-          .box{ width: 100%; height: 30%; background: linear-gradient(to left,#FF13CB,#F6761A) ; display: flex; flex-direction: column; align-items: center; justify-content: center }
-          .rol{ font-size: 20px; text-align: center }
-          span{ font-size: 17px; text-align: center; color: blue }
-          .welcome{ font-size: 30px; text-align: center }
-          .boxBig{ display: flex; flex-direction: column; align-items: center; width: 900px; box-shadow: 0 0 10px 0 rgb(206, 206, 206) }
-          .box-primary{ width: 80%; background: white; box-shadow: 0 0 5px rgb(124, 124, 124); padding: 10px; height: 30%; position: relative; top: -70px; padding: 20px }
-          .box img{ width: 900px }
-          .textFlash{ font-size: 20px;}
-        </style>
-      </head>
-      <body>
-        <div class="containerEmail">
-          <div class="boxBig">
-            <div class="box">
-              <img src="https://res.cloudinary.com/djaejhxwz/image/upload/v1683804733/Flash/Bienvenidoa_2_br3mag.png" alt="">
-            </div>
-            <div class="box-primary">
-              <div class="welcome">
-                ¡Hola ${name}!
-              </div>
-              <div class="textFlash"><p>Has ingresado con <span>${email}</span> como tu dirreccion de correo electronico de Flash. </p> 
-                <p>Disfuta desde ahora de todas las ofertas, productos y servicion que tenemos para ofrecerte </p>
-                <p>Saludos, </br> Equipo de Flash</p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </body>
+    html: `<div style="padding: 20px; display: flex; align-items: center; justify-content: center; flex-direction: column;">
+  <div style="display: flex; flex-direction: column; align-items: center; width: 900px; box-shadow: 0 0 10px 0 rgb(206, 206, 206);">
+    <div style="width: 80%; background: white; box-shadow: 0 0 5px rgb(124, 124, 124); padding: 10px; padding-top: 50px;">
+      <div style="font-size: 30px; text-align: center;">¡Hola ${name}!</div>
+      <div style="font-size: 20px;">
+        <p>Has ingresado con <span style="font-size: 17px; text-align: center; color: blue;">${email}</span> como tu dirección de correo electrónico de Flash.</p>
+        <p>Disfruta desde ahora de todas las ofertas, productos y servicios que tenemos para ofrecerte.</p>
+        <p>Saludos,</br>Equipo de Flash</p>
+      </div>
+    </div>
+  </div>
+</div>
     `
   }).then((res) => {
     return console.log("Send email")
@@ -117,9 +94,6 @@ emailCreateUsers.createCenter = async (email, name, passwordCenter, emailCenter)
       <body>
         <div class="containerEmail">
           <div class="boxBig">
-            <div class="box">
-              <img src="https://res.cloudinary.com/djaejhxwz/image/upload/v1683804734/Flash/Bienvenidoa_3_wutgdr.png" alt="">
-            </div>
             <div class="box-primary">
               <div class="welcome">
                 ¡Hola ${name}¡

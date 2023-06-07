@@ -7,6 +7,8 @@ const controllerProduct = {};
 
 controllerProduct.postProduct = async (req, res) => {
   console.log(req.files);
+  console.log(req.body);
+  console.log("____________________________");
   try {
     let nameProduct = (req.body['data[name]']) ? req.body['data[name]'] : null;
     let descriptionProduct = (req.body['data[description]']) ? req.body['data[description]'] : null;
@@ -17,7 +19,7 @@ controllerProduct.postProduct = async (req, res) => {
     let imgProductRute = (req.files['data[image]'].tempFilePath) ? req.files['data[image]'].tempFilePath : null;
     let categoryProduct = (req.body['data[category]']) ? req.body['data[category]'] : null;
     let storeProduct = req.user.emailUser;
-    console.log("entro aca");
+    
     connectionDB.query("SELECT id_store, name_store FROM store WHERE email_store = ?", [storeProduct], async (err, rows) => {
       if (!err && rows.length > 0) {
         let idStore = rows[0].id_store;
@@ -56,7 +58,7 @@ controllerProduct.postProduct = async (req, res) => {
     });
   } catch (error) {
     return res.status(500).send({
-      mensaje: "Error al insertar producto"
+      mensaje: "Error al insertar producto",
     })
   }
 };
@@ -112,7 +114,7 @@ controllerProduct.getProduct = async (req, res) => {
           });
         }
       });
-    } else if (code != 0){
+    } else if (code != 0) {
       connectionDB.query(`SELECT * FROM product WHERE id_store_product = ${code}`, (err, rows) => {
         if (err) {
           return res.status(404).send({
@@ -253,7 +255,7 @@ controllerProduct.getProductMall = (req, res) => {
 
 controllerProduct.getProductCustomer = (req, res) => {
   let code = req.params.code;
-  connectionDB.query("SELECT * FROM product WHERE id_store_product = 59", [code], (err, rows) => {
+  connectionDB.query("SELECT * FROM product WHERE id_store_product = ?", [code], (err, rows) => {
     if (err) {
       return res.status(404).send({
         mensaje: "Error al consultar productos",
@@ -322,5 +324,22 @@ controllerProduct.deleteProduct = async (req, res) => {
     }
   });
 };
+
+controllerProduct.getProductCategory = async (req, res) => {
+  let category = req.params.code;
+  connectionDB.query("SELECT * FROM product WHERE id_product_category = ?", [category], (err, rows) => {
+    if (!err) {
+      return res.status(200).send({
+        mensaje: "Productos consultados con exito",
+        rows: rows
+      });
+    } else {
+      return res.status(403).send({
+        mensaje: "Error al consultar productos",
+        error: err
+      });
+    }
+  })
+}
 
 export default controllerProduct;

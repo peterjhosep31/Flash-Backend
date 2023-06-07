@@ -54,7 +54,7 @@ controllerCategory.postCategory = async (req, res) => {
 
 controllerCategory.getCategory = (req, res) => {
   try {
-    connectionDb.query("SELECT DISTINCT name_category FROM category LIMIT 8", (err, rows) => {
+    connectionDb.query("SELECT DISTINCT name_category, id_category FROM category", (err, rows) => {
       if (err) {
         return res.status("200").send({
           mensaje: " Error al mostrar categoria",
