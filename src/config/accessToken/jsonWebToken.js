@@ -16,7 +16,7 @@ jsonWebToken.generateAccessToken = async (user) => {
 jsonWebToken.validateToken = (req, res, next) => {
   const accessToken = req.headers["token"] || req.query.accessToken;
 
-  if (!accessToken) return res.status("403").send("No cuenta con una verificacion");
+  if (!accessToken) return res.status("404").send("No cuenta con una verificacion");
 
   let decoded = jwt.verify(
     accessToken,
@@ -24,7 +24,7 @@ jsonWebToken.validateToken = (req, res, next) => {
     (err, result) => {
       if (err) {
         res
-          .status(202)
+          .status(404)
           .send("Acceso denagado, el token expiro o puede ser incorrecto");
       } else {
 

@@ -8,5 +8,6 @@ const routes = Router();
 routes.post("/buy/:idProduct/:price", jsonWebToken.validateToken, buys.addBuy);
 routes.get("/buyStore", jsonWebToken.validateToken, buys.getBuysStore);
 routes.get("/buyCustomer", jsonWebToken.validateToken, buys.getBuys);
+routes.get("/buyStoreGrafic", jsonWebToken.validateToken, buys.getStoreGrafic)
 
 export default routes;

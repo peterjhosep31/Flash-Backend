@@ -173,6 +173,22 @@ buys.getBuys = (req, res) => {
   })
 }
 
+buys.getStoreGrafic=(req,res)=>{
+  connectionDB.query("SELECT * FROM buys", (err,rows)=>{
+    if (!err) {
+      return res.status(200).send({
+        mensaje:"Mostrando tus tiendas con exito!",
+        rows
+      })
+      
+    } else {
+      return res.status(404).send({
+        mensaje:"Error en consultar tus tiendas"
+      })
+    }
+  })
+}
+
 buys.getBuysStore = (req, res) => {
   let emailStore = req.user.emailUser;
   connectionDB.query("SELECT id_store FROM store WHERE email_store = ?", [emailStore], (err, rows) => {
