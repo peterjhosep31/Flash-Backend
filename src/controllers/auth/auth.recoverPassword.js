@@ -130,9 +130,13 @@ controllerRecoverPassword.recoverPasswordUserCode = async (req, res) => {
       connectionDB.query("SELECT name_customer FROM customer WHERE email_customer = ?", [email], async (err, rows) => {
         if (rows.length > 0) {
           let nameCustomer = rows[0].name_customer
-          connectionDB.query("UPDATE customer SET code_recover = ? WHERE email_customer = ?", [codeHast, email], async (err, rows) => {
+          connectionDB.query("UPDATE customer SET code_recover = ? WHERE email_customer = ?", [codeRecover, email], async (err, rows) => {
             if (!err) {
+              console.log(rows);
               await emailSend.recoverPassword(email, codeRecover, nameCustomer);
+              return res.status(200).send({
+                mensaje: "correo enviado"
+              })
             }
           })
         } else {
