@@ -70,7 +70,7 @@ buys.addBuy = (req, res) => {
       let total = req.params.price
       let emailCustomer = (req.user.emailUser) ? req.user.emailUser : null;
       let adressCustomer = (req.body.data.adress) ? req.body.data.adress : null;
-      let phoneCustomer = (req.body.data.phone)? req.body.data.phone : null;
+      let phoneCustomer = (req.body.data.phone) ? req.body.data.phone : null;
       let idCustomer = (req.body.data.id) ? req.body.data.id : null;
       let typeBuy = (req.body.venta) ? req.body.venta : null;
       let id = (req.user.idUser) ? req.user.idUser : null;
@@ -152,13 +152,53 @@ buys.addBuy = (req, res) => {
         }
       }
     } else if (precio == 0 && req.params.idProduct == 0) {
-      let total = req.body.data.total;
-      let emailCustomer = "CompraDirecta@flash.com";
-      let adressCustomer = req.body.data.adress;
-      let phoneCustomer = req.body.data.phone;
-      let idCustomer = req.body.data.id;
-      
-    console.log("entro");
+      connectionDB.query("SELECT email_employee FROM employee WHERE id_store = ?", [req.body.emailEmployee], (err, rows) => {
+        if (rows.length > 0 && !err) {
+          let emailEmployee = rows[0].email_employee;
+          connectionDB.query("SELECT name_store FROM store WHERE id_store = ?", [idStore], (err, rows) => {
+            if (!err, rows.length > 0) {
+              let nameStore = rows[0].name_store;
+              connectionDB.query("INSERT INTO buys SET ?", {
+                email_customer: req.body.dataemailCustomer,
+                id_product: req.body.idProduct,
+                id_store: req.body.store,
+                email_employee: emailEmployee,
+                price_product: req.body.price,
+                amount_product: req.body.quantity,
+                direcion_cliente: req.body.data.adress,
+                telefono_cliente: req.body.data.phone,
+                total,
+                nombre_cliente: 'anonimo',
+                id_user: 1,
+                nombre_tienda: nameStore,
+                // nombre_tienda: nameStore,
+                // nombre_empleado: nameEmployee,
+                // nombre_product: nameProduct,
+                // tipo_venta: typeBuy
+              }, (err, rows) => {
+                if (!err) {
+                  connectionDB.query("DELETE FROM `cardshopping` WHERE id_customer = ? AND id_product = ?", [id, product], (err, rows) => {
+                    if (!err) {
+                      completedRows++;
+                      if (completedRows === totalRows) {
+                        bann = true;
+                        sendResponse();
+                      }
+                    }
+                  })
+                } else {
+                  console.log("no se borro del carrito");
+                  sendResponse();
+                }
+              })
+            }
+          })
+        } else {
+          return res.status(404).send({
+            mensaje: "Error al realizar la compra"
+          })
+        }
+      })
       console.log(req.body);
       console.log(req.user);
 

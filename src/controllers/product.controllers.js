@@ -64,7 +64,7 @@ controllerProduct.postProduct = async (req, res) => {
 };
 
 controllerProduct.getProductStore = async (req, res) => {
-  try {
+  
     let email = req.user.emailUser;
     connectionDB.query("SELECT id_store FROM store WHERE email_store = ?", [email], async (err, rows) => {
       if (!err && rows.length > 0) {
@@ -87,11 +87,7 @@ controllerProduct.getProductStore = async (req, res) => {
         });
       }
     });
-  } catch (error) {
-    return res.status(500).send({
-      mensaje: "Error en el servidor"
-    });
-  }
+
 };
 
 controllerProduct.getProduct = async (req, res) => {

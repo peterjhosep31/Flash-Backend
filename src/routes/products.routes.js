@@ -13,8 +13,8 @@ routes.get("/getProductStoreCustomer/:code", products.getProductCustomer);
 routes.get("/productsConsultation/:limit/:code", products.getProduct);
 routes.get("/getProductMall/:code/:idStore", products.getProductMall);
 routes.get("/getProductDiscount", products.getProductDescount);
-routes.get("/getProductCategory/:code", products.getProductCategory);
 routes.get("/getProductOne/:code", products.getProductOne);
+routes.get("/getProductCategory", products.getProductCategory)
 routes.get("/getProductDate", products.getProductDate);
 
 export default routes;
