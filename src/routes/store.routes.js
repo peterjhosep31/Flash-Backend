@@ -13,5 +13,7 @@ router.get("/getDataStore", jwtConfiguration.validateToken, stores.getDataStore)
 router.post("/addStore", jwtConfiguration.validateToken, stores.postStore);
 router.get("/consultationStore/:code/:idStore", stores.getStore);
 router.get("/consultationStore/:limit", stores.getStores);
+router.get("/getBuysStore/:code/:x", jwtConfiguration.validateToken, stores.getPedidos);
+router.put("/updateCheck/:code", stores.updateChech);
 
 export default router;

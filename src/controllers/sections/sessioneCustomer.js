@@ -1,15 +1,17 @@
 import connectionDB from "../../config/dataBase/dataBase.js";
+import uploadImageUser from "../../config/cloudinary/uploadImagesUser.js";
 
 const controllerSesionCustomer = {};
 
 controllerSesionCustomer.updateData = async (req, res) => {
+  console.log(req.files);
   let emailUser = req.user.emailUser;
-  let name = (req.body.data.name) ? req.body.data.name : 'anonymous';
-  let email = (req.body.data.email) ? req.body.data.email : null;
-  let phone = (req.body.data.phone) ? req.body.data.phone : null;
-  let address = (req.body.data.address) ? req.body.data.address : null;
-  let routeImg = (req.files['data[image]'].tempFilePath) ? req.files['data[image]'].tempFilePath : null;
-  let photoProfile = (routeImg != null) ? await cloudinaryUpload.uploadImagesProfile(routeImg) : null;
+  let name = (req.body['data[name]']) ? req.body['data[name]'] : 'anonymous';
+  let email = (req.body['data[email]']) ? req.body['data[email]'] : null;
+  let phone = (req.body['data[phone]']) ? req.body['data[phone]'] : null;
+  let address = (req.body['data[adress]']) ? req.body['data[adress]'] : null;
+  let routeImg = (req.files) ? req.files.data.tempFilePath : null;
+  let photoProfile = (routeImg != null) ? await uploadImageUser.uploadImagesUser(routeImg) : null;
   let urlImage = (photoProfile != null) ? photoProfile.secure_url : null;
   let idImage = (photoProfile != null) ? photoProfile.public_id : null;
 
@@ -21,7 +23,7 @@ controllerSesionCustomer.updateData = async (req, res) => {
       let addressDB = (address == null) ? rows[0].address_customer : address;
       let urlImageDB = (urlImage == null) ? rows[0].img_customer : urlImage;
       let idImageDB = (idImage == null) ? rows[0].id_img_customer : idImage;
-      connectionDB.query("UPDATE customer SET name_customer = ?, email_customer = ?, phone_customer = ?, address_customer = ?, img_customer = ?, id_img_customer = ? WHERE email_customer = ?", [nameDB, emailDB, phoneDB, addressDB, urlImageDB, idImageDB, emailUser], (err, rows) => {
+      connectionDB.query("UPDATE customer SET name_customer = ?, email_customer = ?, phone_number_customer = ?, address_customer = ?, img_customer = ?, id_img_customer = ? WHERE email_customer = ?", [nameDB, emailDB, phoneDB, addressDB, urlImageDB, idImageDB, emailUser], (err, rows) => {
         if (!err) {
           return res.status(200).send({
             mensaje: "Datos actualizados con exito."
