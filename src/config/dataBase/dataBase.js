@@ -11,21 +11,31 @@ const myConnectionDataBase = mysql.createConnection({
     password: process.env.PASSWORD_USERS,
     database: process.env.DATA_BASE,
     charset: process.env.CHARSET_DB,
-    port: 3308,
+    port: 3306
 });
 
-// Intentar establecer la conexión y manejar errores
-try {
+const maxConnectionAttempts = 3; // Número máximo de intentos de conexión
+let connectionAttempts = 0; // Contador de intentos de conexión
+
+// Función para intentar establecer la conexión
+function tryConnect() {
     myConnectionDataBase.connect((err) => {
         if (err) {
-            console.log("Error base datos:  ", err);
+            console.log("Error base datos: ", err);
+            if (connectionAttempts < maxConnectionAttempts) {
+                connectionAttempts++;
+                console.log(`Intento de conexión número ${connectionAttempts}`);
+                setTimeout(tryConnect, 3000); // Espera 3 segundos antes de intentar nuevamente
+            } else {
+                console.log(`Se alcanzó el número máximo de intentos (${maxConnectionAttempts}). No se pudo establecer la conexión.`);
+            }
         } else {
             console.log("✔️✔️ You are connected to the database");
         }
     });
-} catch (error) {
-    console.log("Error connecting to the database \n", error, "\n______________________________________-");
 }
 
-// Exportar la conexión a la base de datos como módulo
+// Intentar establecer la conexión
+tryConnect();
+
 export default myConnectionDataBase;

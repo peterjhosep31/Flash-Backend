@@ -3,9 +3,11 @@ import connectionDB from "../config/dataBase/dataBase.js";
 const buys = {};
 
 buys.addBuy = (req, res) => {
-  try {
+  // try {
+    let bann = false;
     let precio = req.params.price
-    if (req.params.idProduct != 0) {
+    if (req.params.idProduct > 0) {
+      let product = req.params.idProduct
       let emailCustomer = req.user.emailUser;
       let price = (req.body.data.price) ? req.body.data.price * -1 : null;
       let amountProduct = req.body.data.amount;
@@ -13,7 +15,7 @@ buys.addBuy = (req, res) => {
       let phoneCustomer = req.body.data.phone;
       let total = price * amountProduct;
       let idCustomer = req.body.data.id;
-      let typeBuy = req.body.venta;
+      let typeBuy = req.body.data.venta;
 
       connectionDB.query("SELECT id_store_product, name_product FROM product WHERE id_product = ?", [product], (err, rows) => {
         if (!err && rows.length > 0) {
@@ -46,6 +48,8 @@ buys.addBuy = (req, res) => {
                         nombre_product: nameProduct,
                         tipo_venta: typeBuy
                       }, (err, rows) => {
+                        console.log("entro", err);
+
                         if (!err) {
                           return res.status(200).send({
                             mensaje: "Compra exitosa",
@@ -66,13 +70,12 @@ buys.addBuy = (req, res) => {
         }
       })
     } else if (precio > 0) {
-      let bann = false;
       let total = req.params.price
       let emailCustomer = (req.user.emailUser) ? req.user.emailUser : null;
       let adressCustomer = (req.body.data.adress) ? req.body.data.adress : null;
       let phoneCustomer = (req.body.data.phone) ? req.body.data.phone : null;
       let idCustomer = (req.body.data.id) ? req.body.data.id : null;
-      let typeBuy = (req.body.venta) ? req.body.venta : null;
+      let typeBuy = (req.body.data.venta) ? req.body.data.venta : null;
       let id = (req.user.idUser) ? req.user.idUser : null;
 
       connectionDB.query("SELECT * FROM cardshopping WHERE id_customer = ?", [id], (err, rows) => {
@@ -117,6 +120,7 @@ buys.addBuy = (req, res) => {
                               nombre_product: nameProduct,
                               tipo_venta: typeBuy
                             }, (err, rows) => {
+                              console.log(err);
                               if (!err) {
                                 connectionDB.query("DELETE FROM `cardshopping` WHERE id_customer = ? AND id_product = ?", [id, product], (err, rows) => {
                                   if (!err) {
@@ -143,52 +147,44 @@ buys.addBuy = (req, res) => {
           }
         }
       })
-      function sendResponse() {
-        if (bann) {
-          console.log('compra');
-          return res.status(200).send({
-            mensaje: "Compra exitosa",
-          });
-        }
-      }
     } else if (precio == 0 && req.params.idProduct == 0) {
-      connectionDB.query("SELECT email_employee FROM employee WHERE id_store = ?", [req.body.emailEmployee], (err, rows) => {
+      connectionDB.query("SELECT email_employee FROM employee WHERE id_store = ?", [req.body.data.store], (err, rows) => {
+        console.log("entro", err);
+console.log(rows);
         if (rows.length > 0 && !err) {
           let emailEmployee = rows[0].email_employee;
-          connectionDB.query("SELECT name_store FROM store WHERE id_store = ?", [idStore], (err, rows) => {
+          connectionDB.query("SELECT name_store FROM store WHERE id_store = ?", [req.body.data.store], (err, rows) => {
+            console.log("entro", err);
+
             if (!err, rows.length > 0) {
               let nameStore = rows[0].name_store;
               connectionDB.query("INSERT INTO buys SET ?", {
-                email_customer: req.body.dataemailCustomer,
-                id_product: req.body.idProduct,
-                id_store: req.body.store,
+                email_customer: req.body.data.dataemailCustomer,
+                id_product: req.body.data.idProduct,
+                id_store: req.body.data.store,
                 email_employee: emailEmployee,
-                price_product: req.body.price,
-                amount_product: req.body.quantity,
+                price_product: req.body.data.price,
+                amount_product: req.body.data.quantity,
                 direcion_cliente: req.body.data.adress,
                 telefono_cliente: req.body.data.phone,
-                total,
+                total: req.body.data.total,
                 nombre_cliente: 'anonimo',
                 id_user: 1,
-                nombre_tienda: nameStore,
-                // nombre_tienda: nameStore,
-                // nombre_empleado: nameEmployee,
-                // nombre_product: nameProduct,
-                // tipo_venta: typeBuy
+                nombre_tienda: req.body.data.nameStore,
+                nombre_empleado: req.body.data.employee,
+                nombre_product: req.body.data.product,
+                tipo_venta: req.body.data.venta
               }, (err, rows) => {
                 if (!err) {
-                  connectionDB.query("DELETE FROM `cardshopping` WHERE id_customer = ? AND id_product = ?", [id, product], (err, rows) => {
-                    if (!err) {
-                      completedRows++;
-                      if (completedRows === totalRows) {
-                        bann = true;
-                        sendResponse();
-                      }
-                    }
+                  return res.status(200).send({
+                    mensaje: "Compra exitosa",
+                    rows
                   })
                 } else {
-                  console.log("no se borro del carrito");
-                  sendResponse();
+                  return res.status(404).send({
+                    mensaje: "Error al realizar la compra",
+                    err
+                  })
                 }
               })
             }
@@ -199,16 +195,29 @@ buys.addBuy = (req, res) => {
           })
         }
       })
-      console.log(req.body);
-      console.log(req.user);
+    }
+  
+    function sendResponse() {
+      if (bann) {
+        console.log('compra');
+        return res.status(200).send({
+          mensaje: "Compra exitosa",
+        });
+      } else {
+        console.log('no compra');
+        return res.status(404).send({
+          mensaje: "Error al realizar la compra"
+        });
 
+      }
     }
 
-  } catch (error) {
-    return res.status(500).send({
-      mensaje: "Error al realizar la compra"
-    })
-  }
+  // } catch (error) {
+  //   return res.status(500).send({
+  //     mensaje: "Error al realizar la compra",
+  //     error
+  //   })
+  // }
 }
 
 buys.getBuys = (req, res) => {

@@ -61,7 +61,7 @@ card.getShopping = async (req, res) => {
     })
   }
   connectionDB.query("SELECT id_customer FROM customer WHERE id_customer = ?", [req.user.idUser], (err, rows) => {
-    if (!err) {
+    if (!err && rows.length > 0) {
       connectionDB.query("SELECT * FROM cardshopping WHERE id_customer = ?", [rows[0].id_customer], (err, rows) => {
         if (!err) {
           res.status(200).send({
