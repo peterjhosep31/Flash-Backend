@@ -7,43 +7,40 @@ const controllerCategory = {};
 
 controllerCategory.postCategory = async (req, res) => {
   try {
-  const nameCategory = (req.body['data[name]']) ? req.body['data[name]'] : null;
-  const routeImage = (req.files['data[image]'].tempFilePath) ? req.files['data[image]'].tempFilePath : null;
-  let emailUser = (req.user.emailUser) ? req.user.emailUser : null;
-  let photoCategory = (routeImage != null) ? await cloudinaryUpload.uploadImagesCategories(routeImage) : null;
-  let urlImage = (photoCategory != null) ? photoCategory.secure_url : null;
-  let idImage = (photoCategory != null) ? photoCategory.public_id : null;
-  console.log(nameCategory);
-  console.log(routeImage);
-  // Insertar la nueva categoría en la base de datos
-  connectionDb.query("SELECT id_store FROM store WHERE email_store = ?", [emailUser], (err, rows) => {
-    console.log(err);
-    if (!err) {
-      if (rows.length > 0) {
-        connectionDb.query("INSERT INTO category SET ?", {
-          name_category: nameCategory,
-          img_category: urlImage,
-          id_img_category: idImage,
-          id_store: rows[0].id_store
-        }, (err, rows) => {
-          if (!err) {
-            return res.status(200).send({
-              mensaje: "Categoria insertada con exito."
-            });
-          }
-        });
+    const nameCategory = (req.body['data[name]']) ? req.body['data[name]'] : null;
+    const routeImage = (req.files['data[image]'].tempFilePath) ? req.files['data[image]'].tempFilePath : null;
+    let emailUser = (req.user.emailUser) ? req.user.emailUser : null;
+    let photoCategory = (routeImage != null) ? await cloudinaryUpload.uploadImagesCategories(routeImage) : null;
+    let urlImage = (photoCategory != null) ? photoCategory.secure_url : null;
+    let idImage = (photoCategory != null) ? photoCategory.public_id : null;
+    // Insertar la nueva categoría en la base de datos
+    connectionDb.query("SELECT id_store FROM store WHERE email_store = ?", [emailUser], (err, rows) => {
+      if (!err) {
+        if (rows.length > 0) {
+          connectionDb.query("INSERT INTO category SET ?", {
+            name_category: nameCategory,
+            img_category: urlImage,
+            id_img_category: idImage,
+            id_store: rows[0].id_store
+          }, (err, rows) => {
+            if (!err) {
+              return res.status(200).send({
+                mensaje: "Categoria insertada con exito."
+              });
+            }
+          });
+        } else {
+          return res.status(404).send({
+            mensaje: "No hay ningun usuario registrado en la base de datos."
+          });
+        }
       } else {
-        return res.status(404).send({
-          mensaje: "No hay ningun usuario registrado en la base de datos."
+        return res.status(500).send({
+          mensaje: "error",
+          err
         });
       }
-    } else {
-      return res.status(500).send({
-        mensaje: "error",
-        err
-      });
-    }
-  });
+    });
   } catch (error) {
     return res.status(500).send({
       mensaje: "Error en el servidor"
@@ -133,7 +130,6 @@ controllerCategory.getCategoriesStore = async (req, res) => {
     connectionDb.query("SELECT id_store  FROM store WHERE email_store = ?", [email], (err, rows) => {
       if (!err) {
         connectionDb.query("SELECT * FROM category WHERE id_store = ?", [rows[0].id_store], (err, rows) => {
-          console.log(rows);
           if (!err) {
             return res.status(200).send({
               mensaje: "Mostrando categorias con exito",
@@ -159,8 +155,6 @@ controllerCategory.getCategoriesStore = async (req, res) => {
 };
 
 controllerCategory.putCategory = async (req, res) => {
-  console.log("entro");
-
   let idCategory = req.params.code;
   let nameCategory = (req.body.data.name) ? req.body.data.name : null;
 
@@ -169,7 +163,6 @@ controllerCategory.putCategory = async (req, res) => {
       if (rows.length > 0) {
         let nameCategoryDb = (nameCategory != null) ? nameCategory : rows[0].name_category;
         connectionDb.query("UPDATE category SET name_category = ? WHERE id_category = ?", [nameCategoryDb, idCategory], (err, rows) => {
-          console.log(err);
           if (!err) {
             return res.status(200).send({
               mensaje: "Categoria actualizada con exito."
@@ -198,8 +191,6 @@ controllerCategory.putCategory = async (req, res) => {
 
 
 controllerCategory.deleteCategory = (req, res) => {
-  console.log(req.body);
-  console.log(req.params);
   try {
     let idCategory = req.params.code;
     connectionDb.query('DELETE FROM category WHERE id_category  = ?', [idCategory], async (err, rows) => {

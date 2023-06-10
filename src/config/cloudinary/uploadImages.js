@@ -10,15 +10,13 @@ confiCloudinary();
 cloudinaryUploadImages.createFolder = name => {
   return cloudinary.api.create_folder("Flash/stores/" + name, (err, result) => {
     if (err) {
-      console.log("________________________________");
       console.log(err);
-      console.log("________________________________");
     } else {
       cloudinary.api.create_folder(result.path + "/products", (err, result) => {
         if (err) {
-          console.log("________________________________");
+  
           console.log(err);
-          console.log("________________________________");
+  
         }
       })
     }
@@ -35,9 +33,7 @@ cloudinaryUploadImages.uploadImagesStore = (image, folder) => {
     crop: "fill"
   }, (err, result) => {
     if (err) {
-      console.log("________________________________");
       console.log(err);
-      console.log("________________________________");
     }
   }
   )
@@ -53,9 +49,7 @@ cloudinaryUploadImages.uploadImagesCategories = (image) => {
     crop: "fill"
   }, (err, result) => {
     if (err) {
-      console.log("________________________________");
       console.log(err);
-      console.log("________________________________");
 
     }
   })
@@ -81,9 +75,9 @@ cloudinaryUploadImages.uploadImagesUserAdmin = image => {
   },
     (err, result) => {
       if (err) {
-        console.log("________________________________");
+
         console.log(err);
-        console.log("________________________________");
+
       }
     }
   );
@@ -97,9 +91,9 @@ cloudinaryUploadImages.uploadImagesUserEmployee = image => {
   },
     (err, result) => {
       if (err) {
-        console.log("________________________________");
+
         console.log(err);
-        console.log("________________________________");
+
       }
     }
   );
@@ -113,9 +107,9 @@ cloudinaryUploadImages.uploadImagesUserCustomer = image => {
   },
     (err, result) => {
       if (err) {
-        console.log("________________________________");
+
         console.log(err);
-        console.log("________________________________");
+
       }
     }
   )

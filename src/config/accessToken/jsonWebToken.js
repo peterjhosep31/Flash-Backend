@@ -15,7 +15,6 @@ jsonWebToken.generateAccessToken = async (user) => {
 
 jsonWebToken.validateToken = (req, res, next) => {
   const accessToken = req.headers["token"] || req.query.accessToken;
-
   if (!accessToken) return res.status("404").send("No cuenta con una verificacion");
 
   let decoded = jwt.verify(

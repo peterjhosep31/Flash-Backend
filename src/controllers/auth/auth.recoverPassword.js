@@ -109,8 +109,6 @@ controllerRecoverPassword.updatePassword = (req, res) => {
 controllerRecoverPassword.recoverPasswordUserCode = async (req, res) => {
   let codeRecover = password.codePassword();
   let email = (req.body.data.email) ? req.body.data.email : null;
-  console.log(email);
-  console.log(req.body);
 
   connectionDB.query("SELECT name_admin FROM administrator WHERE email_admin = ?", [email], (err, rows) => {
     if (!err && rows.length > 0) {
@@ -122,7 +120,6 @@ controllerRecoverPassword.recoverPasswordUserCode = async (req, res) => {
             mensaje: "Se envio un correo electronico"
           })
         } else {
-          console.log(err)
           return res.status(402).send({
             mensaje: "error",
             err
@@ -131,13 +128,10 @@ controllerRecoverPassword.recoverPasswordUserCode = async (req, res) => {
       })
     } else if (rows.length == 0) {
       connectionDB.query("SELECT name_customer FROM customer WHERE email_customer = ?", [email], async (err, rows) => {
-        console.log(err);
-        console.log(rows);
         if (rows.length > 0) {
           let nameCustomer = rows[0].name_customer
           connectionDB.query("UPDATE customer SET code_recover = ? WHERE email_customer = ?", [codeRecover, email], async (err, rows) => {
             if (!err) {
-              console.log(rows);
               await emailSend.recoverPassword(email, codeRecover, nameCustomer);
               return res.status(200).send({
                 mensaje: "correo enviado"

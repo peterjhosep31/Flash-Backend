@@ -6,9 +6,6 @@ import { query } from "express";
 const controllerProduct = {};
 
 controllerProduct.postProduct = async (req, res) => {
-  console.log(req.files);
-  console.log(req.body);
-  console.log("____________________________");
   try {
     let nameProduct = (req.body['data[name]']) ? req.body['data[name]'] : null;
     let descriptionProduct = (req.body['data[description]']) ? req.body['data[description]'] : null;
@@ -39,7 +36,7 @@ controllerProduct.postProduct = async (req, res) => {
           id_product_category: categoryProduct,
           dicount: offerProduct
         }, (err, rows) => {
-          console.log(err);
+
           if (err) return res.status(403).send({
             mensaje: "Error al insertar producto",
             error: err
@@ -70,7 +67,6 @@ controllerProduct.getProductStore = async (req, res) => {
       if (!err && rows.length > 0) {
         let idStore = rows[0].id_store;
         connectionDB.query("SELECT * FROM product WHERE id_store_product  = ?", [idStore], (err, rows) => {
-          console.log(err);
           if (err) return res.status(403).send({
             mensaje: "Error al consultar productos",
             error: err
@@ -94,7 +90,6 @@ controllerProduct.getProduct = async (req, res) => {
   try {
     let limit = req.params.limit;
     let code = req.params.code;
-    console.log(code);
 
     if (limit == 0 && code == 0) {
       connectionDB.query("SELECT * FROM product order by id_product DESC", (err, rows) => {

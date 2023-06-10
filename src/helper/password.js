@@ -1,6 +1,6 @@
 const password = {};
+
 password.cretaePassword = () => {
-  // crear una funcion ramdom de 6 carateres
   const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
   let password = '';
   for (let i = 0; i < 6; i++) {
@@ -10,7 +10,6 @@ password.cretaePassword = () => {
 }
 
 password.codePassword = () => {
-  // crear una funcion ramdom de 4 carateres
   const characters = '0123456789';
   let password = '';
   for (let i = 0; i < 4; i++) {

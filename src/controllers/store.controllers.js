@@ -207,6 +207,54 @@ controllerStore.getStoreAdmin = async (req, res) => {
   }
 };
 
+controllerStore.getPedidos = async (req, res) => {
+  let code = req.params.x;
+  if (code == 0) {
+    connectionDB.query("SELECT DISTINCT date_buys, id_product, amount_product, nombre_cliente, nombre_product, total, direcion_cliente, price_product, id_buys, check_buy FROM `buys` WHERE id_store = ?", [req.params.code], (err, rows) => {
+      if (!err) {
+        return res.status(200).send({
+          mensaje: "Pedidos obtenidos",
+          data: rows
+        });
+      } else {
+        return res.status(202).send({
+          mensaje: "Error al obtener los pedidos",
+          error: err
+        });
+      }
+    })
+  } else {
+    connectionDB.query("SELECT COUNT(*) AS count_check_buy_1 FROM `buys` WHERE id_store = ? AND check_buy = 0", [req.params.code], (err, rows) => {
+      if (!err) {
+        return res.status(200).send({
+          mensaje: "Pedidos obtenidos",
+          data: rows
+        });
+      } else {
+        return res.status(202).send({
+          mensaje: "Error al obtener los pedidos",
+          error: err
+        });
+      }
+    })
+  }
+}
+
+controllerStore.updateChech = async (req, res) => {
+  let idBuy = req.params.code;
+  connectionDB.query("UPDATE `buys` SET `check_buy` = '1' WHERE `buys`.`id_buys` = ?", [idBuy], (err, rows) => {
+    if (!err) {
+      return res.status(200).send({
+        mensaje: "Se actualizo"
+      })
+    } else {
+      return res.status(404).send({
+        mensaje: "no se actualizo"
+      })
+    }
+  })
+}
+
 controllerStore.putStore = async (req, res) => {
 
   let emailStore = req.user.emailUser;
@@ -284,54 +332,5 @@ controllerStore.deleteStore = async (req, res) => {
     });
   }
 };
-
-controllerStore.getPedidos = async (req, res) => {
-  let code = req.params.x;
-  if (code == 0) {
-  connectionDB.query("SELECT DISTINCT date_buys, id_product, amount_product, nombre_cliente, nombre_product, total, direcion_cliente, price_product, id_buys, check_buy FROM `buys` WHERE id_store = ?", [req.params.code], (err, rows) => {
-    if (!err) {
-      return res.status(200).send({
-        mensaje: "Pedidos obtenidos",
-        data: rows
-      });
-    } else {
-      return res.status(202).send({
-        mensaje: "Error al obtener los pedidos",
-        error: err
-      });
-    }
-  })
-  } else {
-    console.log("Rntro a la cantidad");
-    connectionDB.query("SELECT COUNT(*) AS count_check_buy_1 FROM `buys` WHERE id_store = ? AND check_buy = 0", [req.params.code], (err, rows) => {
-      if (!err) {
-        return res.status(200).send({
-          mensaje: "Pedidos obtenidos",
-          data: rows
-        });
-      } else {
-        return res.status(202).send({
-          mensaje: "Error al obtener los pedidos",
-          error: err
-        });
-      }
-    })
-  }
-}
-
-controllerStore.updateChech = (req, res) => {
-  let idBuy = req.params.code; 
-  connectionDB.query("UPDATE `buys` SET `check_buy` = '1' WHERE `buys`.`id_buys` = ?", [idBuy], (err, rows) => {
-    if (!err) {
-      return res.status(200).send({
-        mensaje: "Se actualizo"
-      })
-    } else{
-      return res.status(404).send({
-        mensaje: "no se actualizo"
-      })
-    }
-  })
-}
 
 export default controllerStore

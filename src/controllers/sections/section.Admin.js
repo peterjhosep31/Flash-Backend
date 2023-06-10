@@ -7,18 +7,13 @@ import deleteImage from "../../config/cloudinary/deleteImages.js";
 const adminEdit = {};
 
 adminEdit.updateProfile = async (req, res) => {
-  console.log(req.files);
-  // console.log(req.files.data.tempFilePath);
-
-  let emailUserConcurrent = req.user.emailUser;
-
   let nameUSer = (req.body['data[name]']) ? req.body['data[name]'] : null;
   let emailUser = (req.body['data[email]']) ? req.body['data[email]'] : null;
-  // let direccion = (req.body.data.addres) ? req.body.data.addres : null;
   let imageUser = (req.files) ? req.files.data.tempFilePath : null;
   let photoUSer = (imageUser != null) ? await uploadImageUser.uploadImagesUser(imageUser) : null;
   let urlPhoto = (photoUSer != null) ? photoUSer.url : null;
   let idPhoto = (photoUSer != null) ? photoUSer.id : null;
+  let emailUserConcurrent = req.user.emailUser;
   
   connectionDB.query("SELECT * FROM administrator WHERE email_center = ?", [emailUserConcurrent], async (err, rows) => {
     if (!err && rows.length > 0) {
@@ -29,9 +24,7 @@ adminEdit.updateProfile = async (req, res) => {
       let idImgAdmin = (idPhoto != null) ? idPhoto : rows[0].id_img_admin;
       connectionDB.query("UPDATE administrator SET name_admin  = ?, email_admin = ?, img_admin = ?, id_img_admin = ? WHERE email_admin = ?", [nameAdmin, emialAdmin, imgAdmin, idImgAdmin, emailUserConcurrent], (err, rows) => {
         if (!err) {
-          console.log("entra");
           if (rows.affectedRows > 0) {
-            console.log(rows);
             return res.status(200).send({
               mensaje: "Datos actualizados con exito",
               rows: rows
@@ -55,7 +48,6 @@ adminEdit.updateProfile = async (req, res) => {
 
 adminEdit.getData = async (req, res) => {
   connectionDB.query("SELECT * FROM administrator WHERE email_admin = ?", [req.user.emailUser], (err, rows) => {
-    console.log(rows);
     if (rows.length > 0) {
       return res.status(200).send({
         mensaje: "Datos encontrados",

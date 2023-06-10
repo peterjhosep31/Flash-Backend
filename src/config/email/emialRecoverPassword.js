@@ -24,9 +24,6 @@ emailRecoverPassword.recoverPassword = async (email,code, name) => {
       <body>
         <div class="containerEmail">
           <div class="boxBig">
-            <div class="box">
-              <img src="https://res.cloudinary.com/djaejhxwz/image/upload/v1683804733/Flash/Bienvenidoa_4_g4vfak.png" alt="">
-            </div>
             <div class="box-primary">
               <div class="welcome">
                 ¡Hola ${name}!

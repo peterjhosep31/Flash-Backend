@@ -1,6 +1,4 @@
-import {
-  v2 as cloudinary
-} from "cloudinary";
+import { v2 as cloudinary } from "cloudinary";
 import dotenv from "dotenv";
 
 dotenv.config();
@@ -31,22 +29,22 @@ cloudinaryFolders.createFolder = (name) => {
 cloudinaryFolders.uploadImagesStore = (image, folder) => {
   return cloudinary.uploader.upload(
     image, {
-      folder: folder,
-      format: "jpg",
-    }, (err, result) => {
-      if (err) {
-        console.log(err);
-      }
+    folder: folder,
+    format: "jpg",
+  }, (err, result) => {
+    if (err) {
+      console.log(err);
     }
+  }
   )
 }
 
 cloudinaryFolders.uploadImagesUser = (image) => {
   return cloudinary.uploader.upload(
     image, {
-      folder: "Flash",
-      format: "jpg",
-    },
+    folder: "Flash",
+    format: "jpg",
+  },
     (err, result) => {
       if (err) {
         console.log(err);

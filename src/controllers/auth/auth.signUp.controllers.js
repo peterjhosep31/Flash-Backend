@@ -70,7 +70,6 @@ controllerAuth.signUpAdminToken = async (req, res) => {
   connectionDb.query("SELECT token FROM administrator WHERE email_admin = ?", [req.user.emailUser], async (err, rows) => {
     if (!err && rows.length > 0) {
       let compare = await bcryptjs.matchPassword(req.body.data, rows[0].token);
-      console.log(compare);
       if (compare) {
         return res.status(200).send({
           mensaje: "Token correcto"

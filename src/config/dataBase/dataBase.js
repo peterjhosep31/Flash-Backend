@@ -14,7 +14,7 @@ const myConnectionDataBase = mysql.createConnection({
     port: 3306
 });
 
-const maxConnectionAttempts = 3; // Número máximo de intentos de conexión
+const maxConnectionAttempts = 5; // Número máximo de intentos de conexión
 let connectionAttempts = 0; // Contador de intentos de conexión
 
 // Función para intentar establecer la conexión
@@ -25,7 +25,7 @@ function tryConnect() {
             if (connectionAttempts < maxConnectionAttempts) {
                 connectionAttempts++;
                 console.log(`Intento de conexión número ${connectionAttempts}`);
-                setTimeout(tryConnect, 3000); // Espera 3 segundos antes de intentar nuevamente
+                setTimeout(tryConnect, 5000); // Espera 3 segundos antes de intentar nuevamente
             } else {
                 console.log(`Se alcanzó el número máximo de intentos (${maxConnectionAttempts}). No se pudo establecer la conexión.`);
             }

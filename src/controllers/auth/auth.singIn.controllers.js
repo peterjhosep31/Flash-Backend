@@ -18,8 +18,6 @@ controllerAuth.singIn = async (req, res) => {
       if (rows.length > 0) {
         let passwordUserDB = rows[0].password_admin;
         let passwordCompare = await encrypted.matchPassword(passwordUser, passwordUserDB);
-        console.log(passwordUserDB);
-        console.log(passwordCompare);
         if (passwordCompare) {
           let user = {
             email: rows[0].email_admin,
@@ -41,9 +39,7 @@ controllerAuth.singIn = async (req, res) => {
           if (!err) {
             if (rows.length > 0) {
               let passwordUserDB = rows[0].password_store;
-              console.log(passwordUserDB);
               let passwordCompare = await encrypted.matchPassword(passwordUser, passwordUserDB);
-              console.log(passwordCompare);
               if (passwordCompare) {
                 let user = {
                   email: rows[0].email_store,
