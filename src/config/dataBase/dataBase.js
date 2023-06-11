@@ -1,4 +1,4 @@
-import mysql from 'mysql';
+import mysql from 'mysql2';
 import dotenv from 'dotenv';
 
 // Configuración de la conexión a la base de datos
@@ -6,11 +6,11 @@ dotenv.config();
 
 // Creación de la conexión a la base de datos
 const myConnectionDataBase = mysql.createConnection({
-    host: 'bez5f6lyzt5s0fjsqegf-mysql.services.clever-cloud.com',
-    user: 'uryc28gay4afg17f',
-    password: 'AnTQv7J9bN3KNZMWwcKk',
-    database: 'bez5f6lyzt5s0fjsqegf',
-    port: 3306
+    host: 'containers-us-west-130.railway.app',
+    user: 'root',
+    password: '9RNDxjEv97quu96RdA7y',
+    database: 'railway',
+    port: 6757
 });
 
 const maxConnectionAttempts = 5; // Número máximo de intentos de conexión
