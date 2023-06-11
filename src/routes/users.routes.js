@@ -17,6 +17,7 @@ routes.get("/getEmployee", jsonWebToken.validateToken, employee.getData)
 
 routes.put("/updateCustomer", jsonWebToken.validateToken, fileUpload({ useTempFiles: true, tempFileDir: "./uploads", }), customer.updateData);
 routes.get("/gatDataCustomer", jsonWebToken.validateToken, customer.getData);
+routes.get("/getBuysCustomer", jsonWebToken.validateToken, customer.getShopping);
 
 
 export default routes;
