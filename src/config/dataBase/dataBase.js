@@ -6,11 +6,10 @@ dotenv.config();
 
 // Creación de la conexión a la base de datos
 const myConnectionDataBase = mysql.createConnection({
-    host: process.env.HOST_DB,
-    user: process.env.USER_DB,
-    password: process.env.PASSWORD_USERS,
-    database: process.env.DATA_BASE,
-    charset: process.env.CHARSET_DB,
+    host: 'bez5f6lyzt5s0fjsqegf-mysql.services.clever-cloud.com',
+    user: 'uryc28gay4afg17f',
+    password: 'AnTQv7J9bN3KNZMWwcKk',
+    database: 'bez5f6lyzt5s0fjsqegf',
     port: 3306
 });
 
