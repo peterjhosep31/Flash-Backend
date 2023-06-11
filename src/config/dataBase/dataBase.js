@@ -1,4 +1,4 @@
-import mysql from 'mysql';
+import mysql from 'mysql2';
 import dotenv from 'dotenv';
 
 // Configuración de la conexión a la base de datos
@@ -6,12 +6,11 @@ dotenv.config();
 
 // Creación de la conexión a la base de datos
 const myConnectionDataBase = mysql.createConnection({
-    host: process.env.HOST_DB,
-    user: process.env.USER_DB,
-    password: process.env.PASSWORD_USERS,
-    database: process.env.DATA_BASE,
-    charset: process.env.CHARSET_DB,
-    port: 3306
+    host: 'containers-us-west-130.railway.app',
+    user: 'root',
+    password: '9RNDxjEv97quu96RdA7y',
+    database: 'railway',
+    port: 6757
 });
 
 const maxConnectionAttempts = 5; // Número máximo de intentos de conexión
