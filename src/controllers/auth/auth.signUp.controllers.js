@@ -91,28 +91,28 @@ controllerAuth.signUpCustomer = async (req, res) => {
     let passwordHash = (passwordUser != null) ? await encrypted.encryptPassword(passwordUser) : null;
     let codePermission = "cliente";
 
-    await connectionDb.query("SELECT * FROM customer WHERE email_customer = ?", [emailUser], async (err, rows) => {
+    connectionDb.query("SELECT * FROM customer WHERE email_customer = ?", [emailUser], (err, rows) => {
       if (!err) {
         if (rows.length > 0) {
-          return res.status("202").send({
+          return res.status(404).send({
             mensaje: "El usuario ya existe",
             userName: rows[0].name_customer
           });
         } else if (rows.length === 0) {
-          await connectionDb.query("INSERT INTO customer SET ?", {
+          connectionDb.query("INSERT INTO customer SET ?", {
             name_customer: nameUser,
             email_customer: emailUser,
             password_customer: passwordHash,
             rol: codePermission
-          }, (err, rows) => {
+          }, async (err, rows) => {
             if (err) {
-              return res.status("202").send({
+              return res.status(404).send({
                 mensaje: "Error al registrar el usuario",
                 error: err
               });
             } else {
-              emailSend.confirmUser(emailUser, nameUser)
-              return res.status("200").send({
+              await emailSend.confirmUser(emailUser, nameUser)
+              return res.status(200).send({
                 mensaje: "Usuario registrado con exito"
               });
             }
