@@ -7,7 +7,8 @@
   "scripts": {
     "build": "babel src --out-dir build",
     "dev": "nodemon src/index.js",
-    "start": "node build/index.js"
+    "start": "node build/index.js",
+    "test": "cross-env NODE_ENV=test jest --watchAll --verbose --silent"
   },
   "author": "Team_Developer_Flash",
   "license": "ISC",
@@ -26,9 +27,10 @@
     "jsonwebtoken": "^9.0.0",
     "morgan": "^1.10.0",
     "mysql": "^2.18.1",
-    "mysql2": "^3.3.3",
+    "mysql2": "^3.3.5",
     "nodemailer": "^6.8.0",
     "sib-api-v3-sdk": "^8.5.0",
+    "stripe": "^12.9.0",
     "yup": "^1.0.2"
   },
   "devDependencies": {

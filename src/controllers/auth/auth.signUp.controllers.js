@@ -75,8 +75,8 @@ controllerAuth.signUpAdminToken = async (req, res) => {
           mensaje: "Token correcto"
         })
       } else {
-        return res.status(400).send({
-          mensaje: "Token incorrecto"
+        return res.status(404).send({
+          mensaje: "Token incorrecto, acceso denegado"
         })
       }
     }

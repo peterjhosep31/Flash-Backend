@@ -81,7 +81,7 @@ controllerAuth.singIn = async (req, res) => {
                     }
                   } else if (rows.length === 0) {
                     return res.status("401").send({
-                      mensaje: "El Usuario no existee"
+                      mensaje: "El Usuario no existe"
                     });
                   }
                 } else {

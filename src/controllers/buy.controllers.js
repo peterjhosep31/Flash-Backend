@@ -1,6 +1,9 @@
+import { Stripe } from 'stripe';
+
 import connectionDB from "../config/dataBase/dataBase.js";
 
 const buys = {};
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 
 buys.addBuy = (req, res) => {
   // try {
@@ -31,6 +34,17 @@ buys.addBuy = (req, res) => {
                 connectionDB.query("SELECT name_store FROM store WHERE id_store = ?", [idStore], (err, rows) => {
                   if (!err, rows.length > 0) {
                     let nameStore = rows[0].name_store;
+                    stripe.checkout.sessions.create({
+                      line_items:{
+                        price_data:{
+                          product_data:{
+                            name: nameProduct,
+                            images: ['https://i.imgur.com/EHyR2nP.png']
+                          }
+                        }
+                      }
+                    })
+                    /*
                     connectionDB.query("INSERT INTO buys SET ?", {
                       email_customer: emailCustomer,
                       id_product: product,
@@ -66,6 +80,7 @@ buys.addBuy = (req, res) => {
                         })
                       }
                     })
+                    */
                   }
                 })
               }
@@ -75,8 +90,8 @@ buys.addBuy = (req, res) => {
       }
     })
   } else if (precio > 0) {
-    let total = req.params.price
-    let emailCustomer = (req.user.emailUser) ? req.user.emailUser : null;
+    let total = req.params.price;
+    let emailCustomer = req.user.emailUser;
     let adressCustomer = (req.body.data.adress) ? req.body.data.adress : null;
     let phoneCustomer = (req.body.data.phone) ? req.body.data.phone : null;
     let idCustomer = (req.body.data.id) ? req.body.data.id : null;
@@ -96,7 +111,7 @@ buys.addBuy = (req, res) => {
 
           connectionDB.query("SELECT id_store_product, name_product FROM product WHERE id_product = ?", [product], (err, rows) => {
             if (!err && rows.length > 0) {
-              let idStore = rows[0].id_store_product;
+              let idStore = rows[0].id_store_product
               let nameProduct = rows[0].name_product;
               connectionDB.query("SELECT email_employee, name_employee FROM employee WHERE id_store = ?", [idStore], (err, rows) => {
                 if (!err && rows.length > 0) {

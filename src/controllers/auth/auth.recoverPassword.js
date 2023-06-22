@@ -112,47 +112,66 @@ controllerRecoverPassword.recoverPasswordUserCode = async (req, res) => {
 
   connectionDB.query("SELECT name_admin FROM administrator WHERE email_admin = ?", [email], (err, rows) => {
     if (!err && rows.length > 0) {
-      let nameAdmin = rows[0].name_admin
+      let nameAdmin = rows[0].name_admin;
       connectionDB.query("UPDATE administrator SET code_recover = ? WHERE email_admin = ?", [codeRecover, email], async (err, rows) => {
         if (!err) {
-          await emailSend.recoverPassword(email, codeRecover, nameAdmin);
-          return res.status(200).send({
-            mensaje: "Se envio un correo electronico"
-          })
+          try {
+            await emailSend.recoverPassword(email, codeRecover, nameAdmin);
+            return res.status(200).send({
+              mensaje: "Se envió un correo electrónico"
+            });
+          } catch (error) {
+            return res.status(402).send({
+              mensaje: "Error al enviar el correo electrónico",
+              error: error.message
+            });
+          }
         } else {
           return res.status(402).send({
-            mensaje: "error",
-            err
-          })
+            mensaje: "Error al actualizar el código de recuperación",
+            error: err
+          });
         }
-      })
+      });
     } else if (rows.length == 0) {
       connectionDB.query("SELECT name_customer FROM customer WHERE email_customer = ?", [email], async (err, rows) => {
-        if (rows.length > 0) {
-          let nameCustomer = rows[0].name_customer
+        if (!err && rows.length > 0) {
+          let nameCustomer = rows[0].name_customer;
           connectionDB.query("UPDATE customer SET code_recover = ? WHERE email_customer = ?", [codeRecover, email], async (err, rows) => {
             if (!err) {
-              await emailSend.recoverPassword(email, codeRecover, nameCustomer);
-              return res.status(200).send({
-                mensaje: "correo enviado"
-              })
+              try {
+                await emailSend.recoverPassword(email, codeRecover, nameCustomer);
+                return res.status(200).send({
+                  mensaje: "Se envió un correo electrónico"
+                });
+              } catch (error) {
+                return res.status(402).send({
+                  mensaje: "Error al enviar el correo electrónico",
+                  error: error.message
+                });
+              }
+            } else {
+              return res.status(402).send({
+                mensaje: "Error al actualizar el código de recuperación",
+                error: err
+              });
             }
-          })
+          });
         } else {
           return res.status(402).send({
-            mensaje: "El usuario no Existe"
-          })
+            mensaje: "El usuario no existe"
+          });
         }
-      })
-
+      });
     } else {
       return res.status(402).send({
-        mensaje: "El usuario no Existe",
-        err
-      })
+        mensaje: "Error al buscar el usuario",
+        error: err
+      });
     }
-  })
-}
+  });
+};
+
 
 controllerRecoverPassword.recoverPasswordStore = () => {
   try {
