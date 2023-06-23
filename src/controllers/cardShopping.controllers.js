@@ -78,7 +78,6 @@ card.getShopping = async (req, res) => {
   })
 }
 
-
 card.deleteShopping = async (req, res) => {
   let codeProduct = req.params.idProduct;
   let idUser = req.user.idUser;
@@ -126,6 +125,21 @@ card.updateShopping = async (req, res) => {
     })
   }
 
+}
+
+card.allDelete = async (req, res) => {
+  let idUser = req.user.idUser;
+  connectionDB.query("DELETE FROM cardshopping WHERE id_customer = ?", [idUser], (err, rows) => {
+    if (!err) {
+      res.status(200).send({
+        message: "Productos eliminados del carrito"
+      })
+    } else {
+      res.status(500).send({
+        message: "Error al eliminar los productos del carrito"
+      })
+    }
+  })
 }
 
 

@@ -11,7 +11,7 @@ async function paymentBuy(data, total) {
 
   // Iterar sobre los objetos y generar los objetos necesarios para Stripe
   for (const item of data) {
-    const lineItemPrice = item.price_product * 100; // Stripe espera el precio en centavos
+    const lineItemPrice = (item.discount !== 0) ? ((item.price_product  * item.discount) / 100) * 100 : item.price_product * 100; // Stripe espera el precio en centavos
     const productData = {
       name: item.name_product,
       description: item.description_product,
@@ -28,8 +28,7 @@ async function paymentBuy(data, total) {
     };
 
     lineItems.push(lineItem);
-  }
-  console.log(lineItems);
+  }  
 
   // Crear la sesión de Stripe con los line_items adecuados
   const session = await stripe.checkout.sessions.create({
@@ -39,7 +38,7 @@ async function paymentBuy(data, total) {
     success_url: 'http://localhost:3000/cart/payment-buy',
     cancel_url: 'http://localhost:3000/cart/payment-process',
   });
-  return session.url
+  return session
 
 };
 
@@ -51,21 +50,23 @@ payment.paymenteCart = async (req, res) => {
   let typeBuy = req.body.data.venta;
   let emailCustomer = req.user.emailUser;
   let id = req.user.idUser;
-  connectionDB.query("SELECT * FROM cardshopping WHERE id_customer = ?", [id], (err, rows) => {
+  connectionDB.query("SELECT * FROM cardshopping WHERE id_customer = ?", [id], async (err, rows) => {
     if (!err && rows.length > 0) {
       let result = rows
-      const response = paymentBuy(result, total)
+      const response = await paymentBuy(result, total)
+      console.log(response);
       return res.status(200).send({
-
-        url: response,
-
+        mensaje: "peticion exitosa",
+        url: response.url
+      });
+    } else {
+      return res.status(404).send({
+        mensaje: "no se encontro el usuario",
+        err
       })
     }
   })
-
-
 }
-
 
 
 export default payment;
