@@ -291,4 +291,20 @@ buys.getBuysStore = (req, res) => {
   })
 }
 
+buys.buys = (req, res) => {
+  let id = req.user.idUser
+  connectionDB.query("SELECT * FROM buyspasarela WHERE id_customer = ?", [id], (err, rows) => {
+    if (!err) {
+      return res.status(200).send({
+        mensaje: "Mostrando compras con exito",
+        rows
+      })
+    } else {
+      return res.status(404).send({
+        mensaje: "Error al mostrar las compras"
+      })
+    }
+  })
+}
+
 export default buys;
