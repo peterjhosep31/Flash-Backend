@@ -4,16 +4,19 @@ import uploadImageUser from "../../config/cloudinary/uploadImagesUser.js";
 const controllerSesionCustomer = {};
 
 controllerSesionCustomer.updateData = async (req, res) => {
+  console.log(req.files)
+
   let emailUser = req.user.emailUser;
   let name = req.body ? req.body["data[name]"] : "anonymous";
   let email = req.body ? req.body["data[email]"] : null;
   let phone = req.body ? req.body["data[phone]"] : null;
-  let address = req.body ? req.body["data[adress]"] : null;
-  let routeImg = req.files ? req.files.data.tempFilePath : null;
+  let address = req.body ? req.body["data[addres]"] : null;
+  let routeImg = req.files ? req.files.data.tempFilePath || req.files.data.tempFilePath : null;
   let photoProfile =
     routeImg != null ? await uploadImageUser.uploadImagesUser(routeImg) : null;
   let urlImage = photoProfile != null ? photoProfile.secure_url : null;
   let idImage = photoProfile != null ? photoProfile.public_id : null;
+
 
   connectionDB.query(
     "SELECT * FROM customer WHERE email_customer = ?",

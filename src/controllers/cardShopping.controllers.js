@@ -1,4 +1,3 @@
-
 import connectionDB from "../config/dataBase/dataBase.js";
 
 const card = {};
@@ -127,20 +126,59 @@ card.updateShopping = async (req, res) => {
 
 }
 
-card.allDelete = async (req, res) => {
-  let idUser = req.user.idUser;
-  connectionDB.query("DELETE FROM cardshopping WHERE id_customer = ?", [idUser], (err, rows) => {
-    if (!err) {
-      res.status(200).send({
-        message: "Productos eliminados del carrito"
-      })
-    } else {
-      res.status(500).send({
-        message: "Error al eliminar los productos del carrito"
-      })
+card.cardDeleteAll = async (req, res) => {
+  try {
+    const idUser = req.user.idUser;
+    const emailCustomer = req.user.emailUser;
+
+    const result = await connectionDB.promise().query("SELECT * FROM cardshopping WHERE id_customer = ?", [idUser]);
+    const rows = result[0];
+
+    let stores = [];
+    let price = 0;
+    let productBuy = [];
+
+    for (let x = 0; x < rows.length; x++) {
+      const producto = rows[x];
+      const precioTotal = producto.price_product * producto.amount_Product;
+
+      if (producto.discount > 0) {
+        const descuento = (precioTotal * producto.discount) / 100;
+        price += precioTotal - descuento;
+      } else {
+        price += precioTotal;
+      }
+
+      const storeResult = await connectionDB.promise().query("SELECT * FROM store WHERE id_store = ?", [rows[x].id_store]);
+      const storeRows = storeResult[0];
+
+      if (storeRows.length > 0 && !stores.includes(storeRows[0].name_store)) {
+        stores.push(storeRows[0].name_store);
+      }
+
+      productBuy.push(producto.name_product);
     }
-  })
-}
+
+    const insertResult = await connectionDB.promise().query("INSERT INTO buysPasarela SET ?", {
+      id_customer: idUser,
+      price: price,
+      stores: stores.join(', '),
+      producto: productBuy.join(', ')
+    });
+
+    const insertId = insertResult[0].insertId;
+
+    res.status(200).send({
+      message: "Compra realizada con éxito",
+      data: { id: insertId }
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).send({
+      message: "Error al procesar la compra"
+    });
+  }
+};
 
 
 export default card;

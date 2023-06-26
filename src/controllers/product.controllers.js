@@ -7,16 +7,15 @@ const controllerProduct = {};
 
 controllerProduct.postProduct = async (req, res) => {
   try {
-    let nameProduct = (req.body['data[name]']) ? req.body['data[name]'] : null;
-    let descriptionProduct = (req.body['data[description]']) ? req.body['data[description]'] : null;
-    let availability = (req.body['data[availability]']) ? req.body['data[availability]'] : null;
+    let nameProduct = req.body['data[name]'];
+    let descriptionProduct = req.body['data[description]'];
     let offerProduct = (req.body['data[discount]']) ? req.body['data[discount]'] : 0;
-    let amountProduct = (req.body['data[amount]']) ? req.body['data[amount]'] : null;
-    let priceProduct = (req.body['data[price]']) ? req.body['data[price]'] : null;
+    let amountProduct = req.body['data[amount]'];
+    let priceProduct = req.body['data[price]'];
     let imgProductRute = (req.files['data[image]'].tempFilePath) ? req.files['data[image]'].tempFilePath : null;
-    let categoryProduct = (req.body['data[category]']) ? req.body['data[category]'] : null;
+    let categoryProduct = req.body['data[category]'];
     let storeProduct = req.user.emailUser;
-    
+
     connectionDB.query("SELECT id_store, name_store FROM store WHERE email_store = ?", [storeProduct], async (err, rows) => {
       if (!err && rows.length > 0) {
         let idStore = rows[0].id_store;
@@ -61,7 +60,7 @@ controllerProduct.postProduct = async (req, res) => {
 };
 
 controllerProduct.getProductStore = async (req, res) => {
-  
+  try {
     let email = req.user.emailUser;
     connectionDB.query("SELECT id_store FROM store WHERE email_store = ?", [email], async (err, rows) => {
       if (!err && rows.length > 0) {
@@ -83,7 +82,11 @@ controllerProduct.getProductStore = async (req, res) => {
         });
       }
     });
-
+  } catch (error) {
+    return res.status(500).send({
+      mensaje: "Ocurrio un error"
+    })
+  }
 };
 
 controllerProduct.getProduct = async (req, res) => {
@@ -210,55 +213,67 @@ controllerProduct.getProductDescount = (req, res) => {
 }
 
 controllerProduct.getProductMall = (req, res) => {
-  let code = req.params.code;
-  let idStore = req.params.idStore
+  try {
+    let code = req.params.code;
+    let idStore = req.params.idStore
 
-  if (idStore != 0) {
-    connectionDB.query("SELECT * FROM product WHERE id_store_product  = ?", [idStore], (err, rows) => {
-      if (err) {
-        return res.status(404).send({
-          mensaje: "Error al consultar productos",
-          error: err
-        });
-      } else {
-        return res.status("200").send({
-          mensaje: "Productos consultados con exito",
-          rows: rows
-        });
-      }
+    if (idStore != 0) {
+      connectionDB.query("SELECT * FROM product WHERE id_store_product  = ?", [idStore], (err, rows) => {
+        if (err) {
+          return res.status(404).send({
+            mensaje: "Error al consultar productos",
+            error: err
+          });
+        } else {
+          return res.status("200").send({
+            mensaje: "Productos consultados con exito",
+            rows: rows
+          });
+        }
+      })
+    } else {
+      connectionDB.query(`SELECT p.id_product, p.name_product, p.description_product, p.availability_product, p.amount_poduct, p.price_product, p.img_product, p.id_img_product, p.id_store_product, p.id_product_category, p.data_product, p.dicount FROM administrator a JOIN store s ON a.id_admin = s.id_admin JOIN product p ON s.id_store = p.id_store_product WHERE a.id_admin = ${code}`, (err, rows) => {
+        if (err) {
+          return res.status(404).send({
+            mensaje: "Error al consultar productos",
+            error: err
+          });
+        } else {
+          return res.status("200").send({
+            mensaje: "Productos consultados con exito",
+            rows: rows
+          });
+        }
+      });
+    }
+  } catch (error) {
+    return res.status(500).send({
+      mensaje: "Ocurrio un error"
     })
-  } else {
-    connectionDB.query(`SELECT p.id_product, p.name_product, p.description_product, p.availability_product, p.amount_poduct, p.price_product, p.img_product, p.id_img_product, p.id_store_product, p.id_product_category, p.data_product, p.dicount FROM administrator a JOIN store s ON a.id_admin = s.id_admin JOIN product p ON s.id_store = p.id_store_product WHERE a.id_admin = ${code}`, (err, rows) => {
-      if (err) {
-        return res.status(404).send({
-          mensaje: "Error al consultar productos",
-          error: err
-        });
-      } else {
-        return res.status("200").send({
-          mensaje: "Productos consultados con exito",
-          rows: rows
-        });
-      }
-    });
   }
 }
 
 controllerProduct.getProductCustomer = (req, res) => {
-  let code = req.params.code;
-  connectionDB.query("SELECT * FROM product WHERE id_store_product = ?", [code], (err, rows) => {
-    if (err) {
-      return res.status(404).send({
-        mensaje: "Error al consultar productos",
-        error: err
-      });
-    } else {
-      return res.status("200").send({
-        mensaje: "Productos consultados con exito",
-        data: rows
-      });
-    }
-  })
+  try {
+    let code = req.params.code;
+    connectionDB.query("SELECT * FROM product WHERE id_store_product = ?", [code], (err, rows) => {
+      if (err) {
+        return res.status(404).send({
+          mensaje: "Error al consultar productos",
+          error: err
+        });
+      } else {
+        return res.status("200").send({
+          mensaje: "Productos consultados con exito",
+          data: rows
+        });
+      }
+    })
+  } catch (error) {
+    return res.status(500).send({
+      mensaje: "Ocurrio un error"
+    })
+  }
 }
 
 controllerProduct.putProduct = async (req, res) => {
@@ -300,37 +315,49 @@ controllerProduct.putProduct = async (req, res) => {
 };
 
 controllerProduct.deleteProduct = async (req, res) => {
-  let idProduct = req.params.code;
-  connectionDB.query("DELETE FROM product WHERE id_product = ?", [idProduct], (err, rows) => {
-    if (!err) {
-      return res.status(200).send({
-        mensaje: "Producto eliminado con exito",
-        rows: rows
-      });
-    } else {
-      return res.status(403).send({
-        mensaje: "Error al eliminar producto",
-        error: err
-      });
-    }
-  });
+  try {
+    let idProduct = req.params.code;
+    connectionDB.query("DELETE FROM product WHERE id_product = ?", [idProduct], (err, rows) => {
+      if (!err) {
+        return res.status(200).send({
+          mensaje: "Producto eliminado con exito",
+          rows: rows
+        });
+      } else {
+        return res.status(403).send({
+          mensaje: "Error al eliminar producto",
+          error: err
+        });
+      }
+    });
+  } catch (error) {
+    return res.status(500).send({
+      mensaje: "Ocurrio un error"
+    })
+  }
 };
 
 controllerProduct.getProductCategory = async (req, res) => {
-  let category = req.params.code;
-  connectionDB.query("SELECT * FROM product WHERE id_product_category = ?", [category], (err, rows) => {
-    if (!err) {
-      return res.status(200).send({
-        mensaje: "Productos consultados con exito",
-        rows: rows
-      });
-    } else {
-      return res.status(403).send({
-        mensaje: "Error al consultar productos",
-        error: err
-      });
-    }
-  })
+  try {
+    let category = req.params.code;
+    connectionDB.query("SELECT * FROM product WHERE id_product_category = ?", [category], (err, rows) => {
+      if (!err) {
+        return res.status(200).send({
+          mensaje: "Productos consultados con exito",
+          rows: rows
+        });
+      } else {
+        return res.status(403).send({
+          mensaje: "Error al consultar productos",
+          error: err
+        });
+      }
+    })
+  } catch (error) {
+    return res.status(500).send({
+      mensaje: "Ocurrio un error"
+    })
+  }
 }
 
 export default controllerProduct;

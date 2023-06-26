@@ -7,7 +7,7 @@ const controllerCategory = {};
 
 controllerCategory.postCategory = async (req, res) => {
   try {
-    const nameCategory = (req.body['data[name]']) ? req.body['data[name]'] : null;
+    const nameCategory =  req.body['data[name]'];
     const routeImage = (req.files['data[image]'].tempFilePath) ? req.files['data[image]'].tempFilePath : null;
     let emailUser = (req.user.emailUser) ? req.user.emailUser : null;
     let photoCategory = (routeImage != null) ? await cloudinaryUpload.uploadImagesCategories(routeImage) : null;
@@ -155,6 +155,7 @@ controllerCategory.getCategoriesStore = async (req, res) => {
 };
 
 controllerCategory.putCategory = async (req, res) => {
+  try{
   let idCategory = req.params.code;
   let nameCategory = (req.body.data.name) ? req.body.data.name : null;
 
@@ -186,9 +187,13 @@ controllerCategory.putCategory = async (req, res) => {
       });
     }
   });
+  } catch (error) {
+    return res.status(500).send({
+      mensaje: "Ocurrio un error"
+    })
+  }
 
 };
-
 
 controllerCategory.deleteCategory = (req, res) => {
   try {

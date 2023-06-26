@@ -7,6 +7,7 @@ const routes = Router();
 
 // routes.post("/payment", payment);
 routes.post("/paymentCart/:price", jsonWebToken.validateToken, payment.paymenteCart);
+routes.post("/paymentBuy/:product", jsonWebToken.validateToken, payment.paimentDirect);
 
 
 export default routes;
